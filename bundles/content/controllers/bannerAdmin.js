@@ -351,4 +351,4 @@ class BannerAdminController extends Controller {
  *
  * @type {bannerAdminController}
  */
-module.exports = bannerAdminController;
+module.exports = BannerAdminController;

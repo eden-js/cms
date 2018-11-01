@@ -1,6 +1,6 @@
 {
-  "name": "@eden-js/cms",
-  "version": "1.0.0",
+  "name": "@edenjs/cms",
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/eden-js/cms/issues"
   },
-  "homepage": "https://github.com/eden-js/cms#readme"
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "homepage": "https://github.com/eden-js/cms#readme",
+  "dependencies": {
+    "slug": "^0.9.2"
+  }
 }
