@@ -142,6 +142,7 @@ class BlockAdminController extends Controller {
     block.set('type',      req.body.type);
     block.set('title',     req.body.title);
     block.set('content',   req.body.content);
+    block.set('priority',  parseInt(req.body.priority));
     block.set('placement', req.body.placement);
 
     // save block

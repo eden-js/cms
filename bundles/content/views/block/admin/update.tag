@@ -31,6 +31,10 @@
             <input type="text" class="form-control" value={ (block ().title || {})[lng] } each={ lng, i in this.languages } hide={ this.language !== lng } name="title[{ lng }]">
           </div>
           <div class="form-group">
+            <label for="priority">Block Priority</label>
+            <input type="number" class="form-control" value={ block ().priority } name="priority">
+          </div>
+          <div class="form-group">
             <label for="placement">Block Type</label>
             <select class="form-control" name="type" onchange={ onType }>
               <option value="html" selected={ this.type === 'html' }>

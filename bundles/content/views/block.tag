@@ -2,7 +2,7 @@
 
   <!-- main view -->
   <div data-placement={ opts.placement } if={ !this.acl.validate('block.update') }>
-    <div each={ block, i in this.blocks } block={ block } data-is="block-{ block.type || 'html' }" />
+    <div each={ block, i in this.getBlocks() } block={ block } data-is="block-{ block.type || 'html' }" />
   </div>
   <!-- / main view -->
 
@@ -14,7 +14,7 @@
 
     <div if={ !this.blocks || !this.blocks.length } class="py-4" />
 
-    <div each={ block, i in this.blocks } class={ 'block-edit-element' : true, 'hover' : block.quick }>
+    <div each={ block, i in this.getBlocks() } class={ 'block-edit-element' : true, 'hover' : block.quick }>
       <div class="block-edit-element-title">
         <div class="float-left">
           Block <code>{ block.id }</code>
@@ -68,6 +68,23 @@
     this.show    = true;
     this.blocks  = (this.eden.get('blocks') || {})[opts.placement] || [];
     this.updates = new Map();
+    
+    /**
+     * return get blocks
+     *
+     * @return {Array}
+     */
+    getBlocks () {
+      // return sorted blocks
+      return this.blocks.sort((a, b) => {
+        // return -1
+        if (a.priority < b.priority) return -1;
+        if (a.priority > b.priority) return 1;
+        
+        // return 0
+        return 0;
+      });
+    }
 
     /**
      * gets block with updates

@@ -39,6 +39,7 @@ class Block extends Model {
       'type'      : this.get('type'),
       'title'     : this.get('title')     || {},
       'content'   : this.get('content')   || {},
+      'priority'  : this.get('priority')  || 0,
       'placement' : this.get('placement') || ''
     };
   }
