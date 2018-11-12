@@ -48,6 +48,7 @@ class BlockAdminController extends Controller {
    * @menu    {ADMIN} Block
    * @title   Block Administration
    * @route   {get} /
+   * @parent  /admin/cms
    * @layout  admin
    */
   async indexAction (req, res) {

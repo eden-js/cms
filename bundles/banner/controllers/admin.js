@@ -52,6 +52,7 @@ class BannerAdminController extends Controller {
    * @menu    {ADMIN} banners
    * @title   banner Administration
    * @route   {get} /
+   * @parent  /admin/cms
    * @layout  admin
    */
   async indexAction (req, res) {

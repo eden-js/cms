@@ -48,6 +48,7 @@ class pageAdminController extends Controller {
    * @menu    {ADMIN} pages
    * @title   page Administration
    * @route   {get} /
+   * @parent  /admin/cms
    * @layout  admin
    */
   async indexAction (req, res) {

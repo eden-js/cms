@@ -12,22 +12,22 @@ const Block = model('block');
  * @mount    /
  * @priority 50
  */
-class ContentController extends Controller {
+class CMSController extends Controller {
   /**
    * construct Block controller
    */
   constructor () {
     // run super
-    super ();
+    super();
 
     // bind methods
-    this.build = this.build.bind (this);
+    this.build = this.build.bind(this);
 
     // bind private methods
-    this._middleware = this._middleware.bind (this);
+    this._middleware = this._middleware.bind(this);
 
     // run build method
-    this.build ();
+    this.build();
   }
 
   /**
@@ -93,7 +93,7 @@ class ContentController extends Controller {
 
     // load Page
     let page = await Page.findOne({
-      'slug' : req.params.Page
+      'slug' : req.params.page
     });
 
     // check Page
@@ -135,8 +135,8 @@ class ContentController extends Controller {
 }
 
 /**
- * export ContentController controller
+ * export CMSController controller
  *
- * @type {ContentController}
+ * @type {CMSController}
  */
-exports = module.exports = ContentController;
+exports = module.exports = CMSController;
