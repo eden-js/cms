@@ -13,6 +13,12 @@ const Controller = require('controller');
 const Image  = model('image');
 const Banner = model('banner');
 
+// add models
+const Widget = model('widget');
+
+// bind helpers
+const DashboardHelper = helper('dashboard');
+
 /**
  * build banner controller
  *
@@ -40,6 +46,49 @@ class BannerAdminController extends Controller {
 
     // bind private methods
     this._grid = this._grid.bind(this);
+
+    // register simple widget
+    DashboardHelper.widget('dashboard.cms.banners', {
+      'acl'         : ['admin.cms'],
+      'title'       : 'Banners Grid',
+      'description' : 'Shows grid of banners'
+    }, async (req, widget) => {
+      // get notes widget from db
+      let widgetModel = await Widget.findOne({
+        'uuid' : widget.uuid
+      }) || new Widget({
+        'uuid' : widget.uuid,
+        'type' : widget.type
+      });
+
+      // create new req
+      let fauxReq = {
+        'query' : widgetModel.get('state') || {}
+      };
+
+      // return
+      return {
+        'tag'   : 'grid',
+        'name'  : 'Banners',
+        'grid'  : await this._grid(req).render(fauxReq),
+        'title' : widgetModel.get('title') || ''
+      };
+    }, async (req, widget) => {
+      // get notes widget from db
+      let widgetModel = await Widget.findOne({
+        'uuid' : widget.uuid
+      }) || new Widget({
+        'uuid' : widget.uuid,
+        'type' : widget.type
+      });
+
+      // set data
+      widgetModel.set('state', req.body.data.state);
+      widgetModel.set('title', req.body.data.title);
+
+      // save widget
+      await widgetModel.save();
+    });
   }
 
   /**
@@ -49,7 +98,7 @@ class BannerAdminController extends Controller {
    * @param res
    *
    * @icon    fa fa-images
-   * @menu    {ADMIN} banners
+   * @menu    {ADMIN} Banners
    * @title   banner Administration
    * @route   {get} /
    * @parent  /admin/cms
@@ -86,13 +135,13 @@ class BannerAdminController extends Controller {
   async updateAction (req, res) {
     // set website variable
     let create = true;
-    let banner = new banner();
+    let banner = new Banner();
 
     // check for website model
     if (req.params.id) {
       // load by id
       create = false;
-      banner = await banner.findById(req.params.id);
+      banner = await Banner.findById(req.params.id);
     }
 
     // render page
@@ -132,7 +181,7 @@ class BannerAdminController extends Controller {
     // check for website model
     if (req.params.id) {
       // load by id
-      banner = await banner.findById(req.params.id);
+      banner = await Banner.findById(req.params.id);
       create = false;
     }
 

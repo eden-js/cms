@@ -1,49 +1,54 @@
 <page-admin-update-page>
   <div class="page page-page">
-    <!-- page header -->
-    <div class="mb-4 hidden-sm-down">
-      <h1 class="page-title h3 mb-0 text-center text-md-left text-uppercase">
-        <i class="if-icon-serials mr-3"></i> { opts.item.id ? 'Update' : 'Create '} Page
-      </h1>
+  
+    <admin-header title="{ opts.item.id ? 'Update' : 'Create'} Page">
+      <yield to="right">
+        <a href="/admin/page" class="btn btn-lg btn-primary">
+          Back
+        </a>
+      </yield>
+    </admin-header>
+    
+    <div class="container-fluid">
+
+      <form method="post" ref="form" action="/admin/page/{ opts.item.id ? (opts.item.id + '/update') : 'create' }" class="admin-form">
+        <div class="card mb-3">
+          <div class="card-header">
+            Page Information
+          </div>
+          <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs">
+              <li each={ lng, i in this.languages } class="nav-item">
+                <a class={ 'nav-link' : true, 'active' : this.language === lng } href="#!" data-lng={ lng } onclick={ onLanguage }>{ lng }</a>
+              </li>
+            </ul>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label for="title">Page Title</label>
+              <input type="text" id="title" name="title[{ lng }]" class="form-control" value={ (page ().title || {})[lng] } hide={ this.language !== lng } each={ lng, i in this.languages } onchange={ onSlug }>
+            </div>
+            <div class="form-group">
+              <label for="slug">Page Slug</label>
+              <input type="text" id="slug" name="slug" class="form-control" ref="slug" value={ page ().slug }>
+            </div>
+            <div class="form-group">
+              <label for="placement">Content</label>
+              <editor each={ lng, i in this.languages } hide={ this.language !== lng } name="content[{ lng }]" content={ (page ().content || {})[lng] } />
+            </div>
+          </div>
+
+          <!-- article submission -->
+          <div class="card-footer text-right">
+            <button class="btn btn-success" type="submit">
+              <i class="fa fa-save" /> Save
+            </button>
+          </div>
+          <!-- / article submission -->
+        </div>
+      </form>
+      
     </div>
-    <!-- / page header -->
-
-    <form method="post" ref="form" action="/admin/page/{ opts.item.id ? (opts.item.id + '/update') : 'create' }" class="admin-form">
-      <div class="card mb-3">
-        <div class="card-header">
-          Page Information
-        </div>
-        <div class="card-header">
-          <ul class="nav nav-tabs card-header-tabs">
-            <li each={ lng, i in this.languages } class="nav-item">
-              <a class={ 'nav-link' : true, 'active' : this.language === lng } href="#!" data-lng={ lng } onclick={ onLanguage }>{ lng }</a>
-            </li>
-          </ul>
-        </div>
-        <div class="card-body">
-          <div class="form-group">
-            <label for="title">Page Title</label>
-            <input type="text" id="title" name="title[{ lng }]" class="form-control" value={ (page ().title || {})[lng] } hide={ this.language !== lng } each={ lng, i in this.languages } onchange={ onSlug }>
-          </div>
-          <div class="form-group">
-            <label for="slug">Page Slug</label>
-            <input type="text" id="slug" name="slug" class="form-control" ref="slug" value={ page ().slug }>
-          </div>
-          <div class="form-group">
-            <label for="placement">Content</label>
-            <editor each={ lng, i in this.languages } hide={ this.language !== lng } name="content[{ lng }]" content={ (page ().content || {})[lng] } />
-          </div>
-        </div>
-
-        <!-- article submission -->
-        <div class="card-footer text-right">
-          <button class="btn btn-success" type="submit">
-            <i class="fa fa-save" /> Save
-          </button>
-        </div>
-        <!-- / article submission -->
-      </div>
-    </form>
   </div>
 
   <script>

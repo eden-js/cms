@@ -2,6 +2,9 @@
 // bind dependencies
 const Controller = require('controller');
 
+// require helpers
+const DashboardHelper = helper('dashboard');
+
 /**
  * build Block controller
  *
@@ -17,6 +20,7 @@ class CMSAdminController extends Controller {
   constructor () {
     // run super
     super();
+
   }
 
   /**
@@ -26,12 +30,19 @@ class CMSAdminController extends Controller {
    * @param  {Response}  res
    * @param  {Function}  next
    *
-   * @menu  {ADMIN} CMS
-   * @icon  fa fa-newspaper
-   * @route {GET} /
+   * @menu   {ADMIN} CMS
+   * @icon   fa fa-newspaper
+   * @route  {GET} /
+   * @layout admin
    */
   async indexAction (req, res) {
-
+    // Render admin page
+    res.render('admin', {
+      'name'      : 'Admin CMS',
+      'type'      : 'admin.cms',
+      'jumbotron' : 'CMS Dashboard',
+      'dashboard' : await DashboardHelper.render('admin.cms', req.user)
+    });
   }
 }
 

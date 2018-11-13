@@ -9,6 +9,12 @@ const Controller = require('controller');
 // require models
 const Page = model('page');
 
+// add models
+const Widget = model('widget');
+
+// bind helpers
+const DashboardHelper = helper('dashboard');
+
 /**
  * build user pageAdminController controller
  *
@@ -36,6 +42,49 @@ class pageAdminController extends Controller {
 
     // bind private methods
     this._grid = this._grid.bind(this);
+
+    // register simple widget
+    DashboardHelper.widget('dashboard.cms.pages', {
+      'acl'         : ['admin.cms'],
+      'title'       : 'Pages Grid',
+      'description' : 'Shows grid of recent pages'
+    }, async (req, widget) => {
+      // get notes widget from db
+      let widgetModel = await Widget.findOne({
+        'uuid' : widget.uuid
+      }) || new Widget({
+        'uuid' : widget.uuid,
+        'type' : widget.type
+      });
+
+      // create new req
+      let fauxReq = {
+        'query' : widgetModel.get('state') || {}
+      };
+
+      // return
+      return {
+        'tag'   : 'grid',
+        'name'  : 'Pages',
+        'grid'  : await this._grid(req).render(fauxReq),
+        'title' : widgetModel.get('title') || ''
+      };
+    }, async (req, widget) => {
+      // get notes widget from db
+      let widgetModel = await Widget.findOne({
+        'uuid' : widget.uuid
+      }) || new Widget({
+        'uuid' : widget.uuid,
+        'type' : widget.type
+      });
+
+      // set data
+      widgetModel.set('state', req.body.data.state);
+      widgetModel.set('title', req.body.data.title);
+
+      // save widget
+      await widgetModel.save();
+    });
   }
 
   /**
@@ -45,7 +94,7 @@ class pageAdminController extends Controller {
    * @param res
    *
    * @icon    fa fa-file
-   * @menu    {ADMIN} pages
+   * @menu    {ADMIN} Pages
    * @title   page Administration
    * @route   {get} /
    * @parent  /admin/cms
