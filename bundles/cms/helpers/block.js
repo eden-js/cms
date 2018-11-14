@@ -79,9 +79,15 @@ class BlockHelper extends Helper {
    *
    * @return {Array}
    */
-  renderBlocks () {
+  renderBlocks (include) {
     // map blocks
-    return this.__blocks.map((block) => {
+    return this.__blocks.filter((block) => {
+      // check for
+      if (include && block.for) return block.for.includes(include);
+
+      // return true
+      return true;
+    }).map((block) => {
       // return block
       return {
         'type' : block.type,

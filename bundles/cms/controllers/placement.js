@@ -107,7 +107,7 @@ class PlacementController extends Controller {
 
         // return render
         return data;
-      }))).filter((w) => w),
+      }))).filter((b) => b),
       'message' : 'Successfully got blocks'
     });
   }

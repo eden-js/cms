@@ -13,7 +13,7 @@
     // set update
     this.rows      = [1, 2, 3, 4, 5, 6, 7, 8];
     this.type      = opts.type;
-    this.blocks    = [];
+    this.blocks    = (opts.placement || {}).render || [];
     this.loading   = {};
     this.updating  = {};
     this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});
@@ -428,7 +428,8 @@
       // check type
       if (opts.type !== this.type) {
         // set type
-        this.type = opts.type;
+        this.type   = opts.type;
+        this.blocks = (opts.placement || {}).render || [];
 
         // trigger mount
         this.trigger('mount');
@@ -449,9 +450,6 @@
 
       // set placement
       this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});
-
-      // check id
-      if (this.placement.get('id')) this.loadBlocks(this.placement);
 
       // loads block
       socket.on('placement.' + this.placement.get('id') + '.block', (block) => {

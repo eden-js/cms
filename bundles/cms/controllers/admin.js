@@ -52,9 +52,9 @@ class CMSAdminController extends Controller {
     res.render('admin', {
       'name'       : 'Admin CMS',
       'type'       : 'admin.cms',
-      'blocks'     : BlockHelper.renderBlocks(),
+      'blocks'     : BlockHelper.renderBlocks('admin'),
       'jumbotron'  : 'Manage CMS',
-      'dashboards' : await Promise.all(dashboards.map(async (dashboard) => dashboard.sanitise()))
+      'dashboards' : await Promise.all(dashboards.map(async (dashboard, i) => dashboard.sanitise(i === 0 ? req : null)))
     });
   }
 }
