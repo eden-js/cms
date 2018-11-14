@@ -318,11 +318,11 @@ class pageAdminController extends Controller {
       page = await Page.findById(req.params.id);
     }
 
+    // alert Removed
+    req.alert('success', 'Successfully removed ' + (page.get('_id').toString()));
+
     // delete website
     await page.remove();
-
-    // alert Removed
-    req.alert ('success', 'Successfully removed ' + (page.get('_id').toString()));
 
     // render index
     return this.indexAction(req, res);

@@ -37,7 +37,7 @@
           </div>
           <div class="form-group">
             <label for="slug">Page Slug</label>
-            <input type="text" id="slug" name="slug" class="form-control" ref="slug" data-input="slug" value={ page.get('slug') }>
+            <input type="text" id="slug" name="slug" class="form-control" ref="slug" data-input="slug" value={ page.get('slug') } onchange={ onInput }>
           </div>
           <div class="form-group">
             <label for="layout">Page Layout</label>

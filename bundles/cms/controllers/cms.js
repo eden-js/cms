@@ -59,6 +59,36 @@ class CMSController extends Controller {
   }
 
   /**
+   * Index action
+   *
+   * @param    {Request}  req
+   * @param    {Response} res
+   *
+   * @name     HOME
+   * @route    {get} /
+   * @menu     {MAIN} Home
+   * @priority 2
+   */
+  async indexAction (req, res) {
+    // load Page
+    let page = await Page.findOne({
+      'slug' : 'HOME'
+    }) || new Page({
+      'slug' : 'HOME'
+    });
+
+    // check Page
+    if (!page.get('_id')) await page.save();
+
+    // render Page
+    res.render('page', {
+      'item'   : await page.sanitise(req),
+      'title'  : page.get('title.' + req.language) || '',
+      'layout' : page.get('layout') || 'main'
+    });
+  }
+
+  /**
    * gets blocks
    *
    * @param  {Request}   req
