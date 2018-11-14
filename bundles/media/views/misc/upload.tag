@@ -68,7 +68,7 @@
       if (file.thumb) return file.thumb;
 
       // return file
-      return this.media.url(file, 'sm-sq');
+      return this.media.url(file, '3x-sq');
     }
 
     /**

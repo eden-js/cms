@@ -119,6 +119,17 @@ class mediaController extends controller {
     await (await image.thumb('md-sq')).resize(300, 300).background({r: 0, g: 0, b: 0, alpha: 0}).embed().png().save();
     await (await image.thumb('lg-sq')).resize(600, 600).background({r: 0, g: 0, b: 0, alpha: 0}).embed().png().save();
 
+    // resize image
+    await (await image.thumb('1x-sq')).resize(150, 150, {
+      'fit' : 'cover'
+    }).png().save();
+    await (await image.thumb('2x-sq')).resize(300, 300, {
+      'fit' : 'cover'
+    }).png().save();
+    await (await image.thumb('3x-sq')).resize(600, 600, {
+      'fit' : 'cover'
+    }).png().save();
+
     // set user
     image.set('temp', req.body.temp);
     image.set('user', req.user);

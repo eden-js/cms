@@ -11,6 +11,7 @@
         <div class="col-4 d-flex align-items-center">
           <div class="w-100">
             <div class="btn-group float-right">
+              <yield from="buttons" />
               <button class="btn btn-sm btn-primary" onclick={ onRefresh }>
                 <i class={ 'fa fa-sync' : true, 'fa-spin' : this.refreshing || opts.block.refreshing } />
               </button>
@@ -49,7 +50,7 @@
             </label>
             <input class="form-control" ref="class" value={ opts.data.class } onchange={ onClass } />
           </div>
-          <yield to="modal" />
+          <yield from="modal" />
         </div>
       </div>
     </div>
