@@ -83,7 +83,7 @@ class BlockHelper extends Helper {
     // map blocks
     return this.__blocks.filter((block) => {
       // check for
-      if (include && block.for) return block.for.includes(include);
+      if (include && block.opts.for) return block.opts.for.includes(include);
 
       // return true
       return true;

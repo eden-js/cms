@@ -3,6 +3,7 @@
 const Controller = require('controller');
 
 // load models
+const Block     = model('block');
 const Dashboard = model('dashboard');
 
 // require helpers
@@ -24,6 +25,42 @@ class CMSAdminController extends Controller {
     // run super
     super();
 
+    // register simple block
+    BlockHelper.block('frotend.content', {
+      'for'         : ['frontend'],
+      'title'       : 'WYSIWYG Area',
+      'description' : 'Lets you add HTML to a block'
+    }, async (req, block) => {
+      // get notes block from db
+      let blockModel = await Block.findOne({
+        'uuid' : block.uuid
+      }) || new Block({
+        'uuid' : block.uuid,
+        'type' : block.type
+      });
+
+      // return
+      return {
+        'tag'     : 'content',
+        'title'   : blockModel.get('title') || '',
+        'content' : blockModel.get('content') || ''
+      };
+    }, async (req, block) => {
+      // get notes block from db
+      let blockModel = await Block.findOne({
+        'uuid' : block.uuid
+      }) || new Block({
+        'uuid' : block.uuid,
+        'type' : block.type
+      });
+
+      // set data
+      blockModel.set('title',   req.body.data.title);
+      blockModel.set('content', req.body.data.content);
+
+      // save block
+      await blockModel.save();
+    });
   }
 
   /**

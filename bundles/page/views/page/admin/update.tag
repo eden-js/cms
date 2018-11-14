@@ -1,66 +1,119 @@
 <page-admin-update-page>
-  <div class="page page-page">
-  
-    <admin-header title="{ opts.item.id ? 'Update' : 'Create'} Page">
-      <yield to="right">
-        <a href="/admin/page" class="btn btn-lg btn-primary">
-          Back
-        </a>
-      </yield>
-    </admin-header>
-    
-    <div class="container-fluid">
+  <admin-header title="{ opts.item.id ? 'Update' : 'Create' } Page { this.page.get('title.' + this.language) }" on-preview={ onPreview }>
+    <yield to="right">
 
-      <form method="post" ref="form" action="/admin/page/{ opts.item.id ? (opts.item.id + '/update') : 'create' }" class="admin-form">
-        <div class="card mb-3">
-          <div class="card-header">
-            Page Information
-          </div>
-          <div class="card-header">
-            <ul class="nav nav-tabs card-header-tabs">
-              <li each={ lng, i in this.languages } class="nav-item">
-                <a class={ 'nav-link' : true, 'active' : this.language === lng } href="#!" data-lng={ lng } onclick={ onLanguage }>{ lng }</a>
-              </li>
-            </ul>
-          </div>
-          <div class="card-body">
-            <div class="form-group">
-              <label for="title">Page Title</label>
-              <input type="text" id="title" name="title[{ lng }]" class="form-control" value={ (page ().title || {})[lng] } hide={ this.language !== lng } each={ lng, i in this.languages } onchange={ onSlug }>
-            </div>
-            <div class="form-group">
-              <label for="slug">Page Slug</label>
-              <input type="text" id="slug" name="slug" class="form-control" ref="slug" value={ page ().slug }>
-            </div>
-            <div class="form-group">
-              <label for="placement">Content</label>
-              <editor each={ lng, i in this.languages } hide={ this.language !== lng } name="content[{ lng }]" content={ (page ().content || {})[lng] } />
-            </div>
-          </div>
+      <button class="btn btn-lg btn-success mr-3" onclick={ opts.onPreview }>
+        { this.preview ? 'Back' : 'Preview' }
+      </button>
+      <button class="btn btn-lg mr-3 btn-primary" data-toggle="modal" data-target="#block-modal">
+        Add Block
+      </button>
 
-          <!-- article submission -->
-          <div class="card-footer text-right">
-            <button class="btn btn-success" type="submit">
-              <i class="fa fa-save" /> Save
-            </button>
-          </div>
-          <!-- / article submission -->
+      <a href="/admin/page" class="btn btn-lg btn-primary">
+        Back
+      </a>
+
+    </yield>
+  </admin-header>
+
+  <div class="container-fluid">
+
+    <div ref="form" class="admin-form" show={ !this.preview }>
+      <div class="card mb-3">
+        <div class="card-header">
+          Page Information
         </div>
-      </form>
-      
+        <div class="card-header">
+          <ul class="nav nav-tabs card-header-tabs">
+            <li each={ lng, i in this.languages } class="nav-item">
+              <a class={ 'nav-link' : true, 'active' : this.language === lng } href="#!" data-lng={ lng } onclick={ onLanguage }>{ lng }</a>
+            </li>
+          </ul>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label for="title">Page Title</label>
+            <input type="text" id="title" name="title[{ lng }]" class="form-control" value={ (page.get('title') || {})[lng] } data-input="title.{ lng }" hide={ this.language !== lng } each={ lng, i in this.languages } onchange={ onSlug }>
+          </div>
+          <div class="form-group">
+            <label for="slug">Page Slug</label>
+            <input type="text" id="slug" name="slug" class="form-control" ref="slug" data-input="slug" value={ page.get('slug') }>
+          </div>
+          <div class="form-group">
+            <label for="layout">Page Layout</label>
+            <input type="text" id="layout" name="layout" class="form-control" ref="layout" data-input="layout" value={ page.get('layout') } onchange={ onInput }>
+          </div>
+        </div>
+
+      </div>
     </div>
+
+    <div data-is={ this.preview ? 'editor-view' : 'editor-update' } placement={ this.page.get('placement') || {} } for="frontend" blocks={ opts.blocks } type={ opts.type } on-save={ onPlacement } />
+
   </div>
 
   <script>
-    // do mixin
-    this.mixin ('i18n');
+    // do mixins
+    this.mixin('i18n');
+    this.mixin('model');
+
+    // set update
+    this.type       = opts.type;
+    this.page       = this.model('page', opts.item);
+    this.preview    = false;
+    this.loading    = {};
+    this.updating   = {};
+    this.showSelect = false;
 
     // load data
-    this.language  = this.i18n.lang ();
-    this.languages = this.eden.get ('i18n').lngs || [];
+    this.language  = this.i18n.lang();
+    this.languages = this.eden.get('i18n').lngs || [];
 
     // check has language
-    if (this.languages.indexOf (this.i18n.lang ()) === -1) this.languages.unshift (this.i18n.lang ());
+    if (this.languages.indexOf(this.i18n.lang()) === -1) this.languages.unshift(this.i18n.lang());
+
+    /**
+     * set placement
+     *
+     * @param  {Placement} placement
+     */
+    async onPlacement (placement) {
+      // check id
+      if (placement.get('id') !== (this.page.get('placement') || {}).id) {
+        // update placement
+        this.page.set('placement', placement.get());
+
+        // save
+        await this.savePage(this.page);
+      }
+    }
+
+    /**
+     * on preview
+     *
+     * @param  {Event} e
+     */
+    onInput (e) {
+      // save page
+      this.savePage(this.page);
+    }
+
+    /**
+     * on preview
+     *
+     * @param  {Event} e
+     */
+    onPreview (e) {
+      // prevent default
+      e.preventDefault();
+      e.stopPropagation();
+
+      // set logic
+      this.preview = !this.preview;
+
+      // update view
+      this.update();
+    }
 
     /**
      * on language
@@ -69,10 +122,10 @@
      */
     onLanguage (e) {
       // set language
-      this.language = e.target.getAttribute ('data-lng');
+      this.language = e.target.getAttribute('data-lng');
 
       // update view
-      this.update ();
+      this.update();
     }
 
     /**
@@ -82,29 +135,91 @@
      */
     onSlug (e) {
       // require slug
-      let slug = require ('slug');
+      let slug = require('slug');
 
       // set slug
-      this.refs.slug.value = slug (e.target.value).toLowerCase ();
+      this.refs.slug.value = slug(e.target.value).toLowerCase();
+
+      // save page
+      this.savePage(this.page);
     }
 
     /**
-     * get category
+     * saves page
      *
-     * @return {Object}
+     * @param  {Object}  page
+     *
+     * @return {Promise}
      */
-    page () {
-      // return category
-      return opts.item;
+    async savePage (page) {
+      // set loading
+      this.loading.save = true;
+
+      // update view
+      this.update();
+
+      // check type
+      if (!page.type) page.set('type', opts.type);
+
+      // set input values
+      jQuery('[data-input]', this.refs.form).each((i, elem) => {
+        // set value
+        page.set(jQuery(elem).attr('data-input'), jQuery(elem).val());
+      });
+
+      // log data
+      let res = await fetch('/admin/page/' + (page.get('id') ? page.get('id') + '/update' : 'create'), {
+        'body'    : JSON.stringify(this.page.get()),
+        'method'  : 'post',
+        'headers' : {
+          'Content-Type' : 'application/json'
+        },
+        'credentials' : 'same-origin'
+      });
+
+      // load data
+      let data = await res.json();
+
+      // set logic
+      for (let key in data.result) {
+        // clone to page
+        page.set(key, data.result[key]);
+      }
+
+      // set loading
+      this.loading.save = false;
+
+      // update view
+      this.update();
     }
 
+
     /**
-     * on language update function
+     * on update
+     *
+     * @type {update}
      */
-    this.on ('update', () => {
+    this.on('update', () => {
+      // check frontend
+      if (!this.eden.frontend) return;
+
       // set language
-      this.language = this.i18n.lang ();
+      this.language = this.i18n.lang();
+
     });
 
+    /**
+     * on mount
+     *
+     * @type {mount}
+     */
+    this.on('mount', () => {
+      // check frontend
+      if (!this.eden.frontend) return;
+
+      // set page
+      this.page = this.model('page', opts.item);
+
+    });
   </script>
 </page-admin-update-page>

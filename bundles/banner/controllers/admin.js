@@ -50,7 +50,7 @@ class BannerAdminController extends Controller {
     // register simple block
     BlockHelper.block('dashboard.cms.banners', {
       'acl'         : ['admin.cms'],
-      'for'         : ['dashboard'],
+      'for'         : ['admin'],
       'title'       : 'Banners Grid',
       'description' : 'Shows grid of banners'
     }, async (req, block) => {

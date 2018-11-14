@@ -7,13 +7,13 @@ const config     = require('config');
 const Controller = require('controller');
 
 // require models
-const Page = model('page');
-
-// add models
-const Block = model('block');
+const Page      = model('page');
+const Block     = model('block');
+const Placement = model('placement');
 
 // bind helpers
 const BlockHelper = helper('cms/block');
+const ModelHelper = helper('model');
 
 /**
  * build user pageAdminController controller
@@ -44,9 +44,9 @@ class pageAdminController extends Controller {
     this._grid = this._grid.bind(this);
 
     // register simple block
-    BlockHelper.block('dashboard.cms.pages', {
+    BlockHelper.block('page.cms.pages', {
       'acl'         : ['admin.cms'],
-      'for'         : ['dashboard'],
+      'for'         : ['page'],
       'title'       : 'Pages Grid',
       'description' : 'Shows grid of recent pages'
     }, async (req, block) => {
@@ -85,6 +85,67 @@ class pageAdminController extends Controller {
 
       // save block
       await blockModel.save();
+    });
+  }
+
+  /**
+   * socket listen action
+   *
+   * @param  {String} id
+   * @param  {Object} opts
+   *
+   * @call   model.listen.page
+   * @return {Async}
+   */
+  async listenAction (id, uuid, opts) {
+    // join room
+    opts.socket.join('page.' + id);
+
+    // add to room
+    return await ModelHelper.listen(opts.sessionID, await Page.findById(id), uuid);
+  }
+
+  /**
+   * socket listen action
+   *
+   * @param  {String} id
+   * @param  {Object} opts
+   *
+   * @call   model.deafen.page
+   * @return {Async}
+   */
+  async liveDeafenAction (id, uuid, opts) {
+    // add to room
+    return await ModelHelper.deafen(opts.sessionID, await Page.findById(id), uuid);
+  }
+
+  /**
+   * add/edit action
+   *
+   * @route    {get} /:id/view
+   * @layout   admin
+   * @priority 12
+   */
+  async viewAction (req, res) {
+    // set website variable
+    let page   = new Page();
+    let create = true;
+
+    // check for website model
+    if (req.params.id) {
+      // load by id
+      page   = await Page.findById(req.params.id);
+      create = false;
+    }
+
+    // res JSON
+    let sanitised = await page.sanitise();
+
+    // return JSON
+    res.json({
+      'state'   : 'success',
+      'result'  : await page.sanitise(),
+      'message' : 'Successfully got blocks'
     });
   }
 
@@ -141,10 +202,13 @@ class pageAdminController extends Controller {
       create = false;
     }
 
-    // render page
+    // Render admin page
     res.render('page/admin/update', {
-      'item'  : await page.sanitise(),
-      'title' : create ? 'Create page' : 'Update ' + page.get('_id').toString()
+      'name'      : 'Admin Home',
+      'item'      : await page.sanitise(req),
+      'title'     : create ? 'Create page' : 'Update ' + page.get('_id').toString(),
+      'blocks'    : BlockHelper.renderBlocks('frontend'),
+      'jumbotron' : 'Update Page',
     });
   }
 
@@ -159,14 +223,16 @@ class pageAdminController extends Controller {
     return this.updateSubmitAction(...arguments);
   }
 
+
+
   /**
    * add/edit action
    *
    * @param req
    * @param res
    *
-   * @route   {post} /:id/update
-   * @layout  admin
+   * @route  {post} /:id/update
+   * @layout admin
    */
   async updateSubmitAction (req, res) {
     // set website variable
@@ -181,10 +247,14 @@ class pageAdminController extends Controller {
     }
 
     // update page
-    page.set('page',    req.body.page);
-    page.set('slug',    req.body.slug);
-    page.set('title',   req.body.title);
-    page.set('content', req.body.content);
+    page.set('user',   req.user);
+    page.set('type',   req.body.type);
+    page.set('slug',   req.body.slug);
+    page.set('title',  req.body.title);
+    page.set('layout', req.body.layout);
+
+    // check placement
+    if (req.body.placement) page.set('placement', await Placement.findById(req.body.placement.id));
 
     // save page
     await page.save();
@@ -192,10 +262,11 @@ class pageAdminController extends Controller {
     // send alert
     req.alert('success', 'Successfully ' + (create ? 'Created' : 'Updated') + ' page!');
 
-    // render page
-    res.render('page/admin/update', {
-      'item'  : await page.sanitise(),
-      'title' : create ? 'Create page' : 'Update ' + page.get('_id').toString()
+    // return JSON
+    res.json({
+      'state'   : 'success',
+      'result'  : await page.sanitise(),
+      'message' : 'Successfully updated page'
     });
   }
 
@@ -302,6 +373,12 @@ class pageAdminController extends Controller {
       'format' : async (col, row) => {
         return col ? col[req.language].toString() : '<i>N/A</i>';
       }
+    }).column('layout', {
+      'sort'   : true,
+      'title'  : 'Layout',
+      'format' : async (col, row) => {
+        return col ? col.toString() : '<i>N/A</i>';
+      }
     }).column('updated_at', {
       'sort'   : true,
       'title'  : 'Updated',
@@ -331,6 +408,7 @@ class pageAdminController extends Controller {
           '<div class="btn-group btn-group-sm" role="group">',
             '<a href="/admin/page/' + row.get('_id').toString() + '/update" class="btn btn-primary"><i class="fa fa-pencil"></i></a>',
             '<a href="/admin/page/' + row.get('_id').toString() + '/remove" class="btn btn-danger"><i class="fa fa-times"></i></a>',
+            '<a href="/' + row.get('slug').toString() + '" class="btn btn-info"><i class="fa fa-eye"></i></a>',
           '</div>'
         ].join('');
       }

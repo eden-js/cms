@@ -101,8 +101,9 @@ class CMSController extends Controller {
 
     // render Page
     res.render('page', {
-      'item'  : await page.sanitise(),
-      'title' : page.get('title')[req.language]
+      'item'   : await page.sanitise(req),
+      'title'  : page.get('title')[req.language],
+      'layout' : page.get('layout') || 'main'
     });
   }
 

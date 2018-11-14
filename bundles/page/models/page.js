@@ -32,13 +32,15 @@ class Page extends Model {
    *
    * @return {Object}
    */
-  async sanitise () {
+  async sanitise (req) {
     // return sanitised bot
     return {
-      'id'      : this.get('_id') ? this.get('_id').toString() : null,
-      'slug'    : this.get('slug') || '',
-      'title'   : this.get('title'),
-      'content' : this.get('content') || {},
+      'id'        : this.get('_id') ? this.get('_id').toString() : null,
+      'type'      : this.get('type'),
+      'slug'      : this.get('slug') || '',
+      'title'     : this.get('title'),
+      'layout'    : this.get('layout') || 'main',
+      'placement' : await this.get('placement') ? await (await this.get('placement')).sanitise(req) : null
     };
   }
 }

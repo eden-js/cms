@@ -2,7 +2,7 @@
   <div class="eden-blocks eden-blocks-view">
     <div ref="placement" class="block-placements" if={ !this.placing }>
       <div each={ row, x in this.rows } data-row={ x } class="row row-eq-height">
-        <div each={ block, i in getBlocks(x) } data-block={ block.uuid } if={ getBlockData(block) } class="col" data-is="block-{ getBlockData(block).tag }-view" data={ getBlockData(block) } block={ block } on-refresh={ this.onRefreshBlock } />
+        <div each={ block, i in getBlocks(x) } data-block={ block.uuid } if={ getBlockData(block) } class="col" data-is="block-view-{ getBlockData(block).tag }" data={ getBlockData(block) } block={ block } on-refresh={ this.onRefreshBlock } />
       </div>
     </div>
   </div>
@@ -13,7 +13,7 @@
 
     // set update
     this.rows      = [1, 2, 3, 4, 5, 6, 7, 8];
-    this.blocks    = [];
+    this.blocks    = (opts.placement || {}).render || [];
     this.loading   = {};
     this.updating  = {};
     this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});

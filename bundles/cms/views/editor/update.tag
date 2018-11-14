@@ -238,7 +238,7 @@
       placements[0].unshift(block.uuid);
 
       // set
-      this.placement.set('blocks',    blocks);
+      this.placement.set('blocks',     blocks);
       this.placement.set('placements', placements);
 
       // save placement
@@ -276,13 +276,13 @@
       // load data
       let data = await res.json();
 
-      // set placement
-      opts.placement = data.result;
-
       // set logic
       for (let key in data.result) {
         // clone to placement
         placement.set(key, data.result[key]);
+        
+        // set in opts
+        if (data.result[key]) opts.placement[key] = data.result[key];
       }
 
       // on save
