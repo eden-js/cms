@@ -36,6 +36,13 @@ $eden-admin-aside-hover-color: $white!default;
       line-height : $h2-font-size;
       margin-left : ($spacer / 2);
     }
+
+    .btn {
+      width         : 31px;
+      text-align    : center;
+      padding-left  : 0;
+      padding-right : 0;
+    }
   }
 
 

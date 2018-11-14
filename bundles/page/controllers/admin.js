@@ -68,6 +68,7 @@ class pageAdminController extends Controller {
         'tag'   : 'grid',
         'name'  : 'Pages',
         'grid'  : await this._grid(req).render(fauxReq),
+        'class' : blockModel.get('class') || null,
         'title' : blockModel.get('title') || ''
       };
     }, async (req, block) => {
@@ -80,6 +81,7 @@ class pageAdminController extends Controller {
       });
 
       // set data
+      blockModel.set('class', req.body.data.class);
       blockModel.set('state', req.body.data.state);
       blockModel.set('title', req.body.data.title);
 

@@ -42,6 +42,7 @@ class CMSAdminController extends Controller {
       // return
       return {
         'tag'     : 'content',
+        'class'   : blockModel.get('class') || null,
         'title'   : blockModel.get('title') || '',
         'content' : blockModel.get('content') || ''
       };
@@ -55,6 +56,7 @@ class CMSAdminController extends Controller {
       });
 
       // set data
+      blockModel.set('class',   req.body.data.class);
       blockModel.set('title',   req.body.data.title);
       blockModel.set('content', req.body.data.content);
 

@@ -1,7 +1,7 @@
 <editor-update>
   <div ref="placement" class="eden-blocks" if={ !this.placing }>
     <div each={ row, x in this.rows } data-row={ x } class="row mb-3 row-eq-height">
-      <div each={ block, i in getBlocks(x) } data-block={ block.uuid } if={ getBlockData(block) } class="col" data-is="block-{ getBlockData(block).tag }" data={ getBlockData(block) } block={ block } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } />
+      <div each={ block, i in getBlocks(x) } data-block={ block.uuid } if={ getBlockData(block) } class={ getBlockData(block).class || 'col' } data-is="block-{ getBlockData(block).tag }" data={ getBlockData(block) } block={ block } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } />
     </div>
   </div>
   <block-modal blocks={ opts.blocks } add-block={ onAddBlock } />
