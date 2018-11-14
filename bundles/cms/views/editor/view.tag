@@ -1,7 +1,7 @@
 <editor-view>
-  <div class="dashboard">
+  <div class="eden-blocks eden-blocks-view">
     <div ref="placement" class="block-placements" if={ !this.placing }>
-      <div each={ row, x in this.rows } data-row={ x } class="row mb-3 row-eq-height">
+      <div each={ row, x in this.rows } data-row={ x } class="row row-eq-height">
         <div each={ block, i in getBlocks(x) } data-block={ block.uuid } if={ getBlockData(block) } class="col" data-is="block-{ getBlockData(block).tag }-view" data={ getBlockData(block) } block={ block } on-refresh={ this.onRefreshBlock } />
       </div>
     </div>
@@ -146,26 +146,6 @@
     }
 
     /**
-     * init dragula
-     */
-    initDragula () {
-      // require dragula
-      const dragula = require('dragula');
-
-      // do dragula
-      this.dragula = dragula(jQuery('.row', this.refs.placement).toArray()).on('drop', (el, target, source, sibling) => {
-        // save order
-        this.savePlacements();
-      }).on('drag', () => {
-        // add is dragging
-        jQuery(this.refs.placement).addClass('is-dragging');
-      }).on('dragend', () => {
-        // remove is dragging
-        jQuery(this.refs.placement).removeClass('is-dragging');
-      });
-    }
-
-    /**
      * on update
      *
      * @type {update}
@@ -177,7 +157,8 @@
       // check type
       if (opts.type !== this.type) {
         // set type
-        this.type = opts.type;
+        this.type   = opts.type;
+        this.blocks = (opts.placement || {}).render || [];
 
         // trigger mount
         this.trigger('mount');
@@ -193,14 +174,8 @@
       // check frontend
       if (!this.eden.frontend) return;
 
-      // init dragula
-      if (!this.dragula) this.initDragula();
-
       // set dashboard
       this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});
-
-      // check id
-      if (this.placement.get('id')) this.loadBlocks(this.placement);
 
       // loads block
       socket.on('dashboard.' + this.placement.get('id') + '.block', (block) => {
