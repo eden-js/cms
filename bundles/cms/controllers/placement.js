@@ -40,6 +40,9 @@ class PlacementController extends Controller {
    * @return {Async}
    */
   async listenAction (id, uuid, opts) {
+    /// return if no id
+    if (!id) return;
+
     // join room
     opts.socket.join('placement.' + id);
 
@@ -57,6 +60,9 @@ class PlacementController extends Controller {
    * @return {Async}
    */
   async liveDeafenAction (id, uuid, opts) {
+    /// return if no id
+    if (!id) return;
+
     // add to room
     return await ModelHelper.deafen(opts.sessionID, await Placement.findById(id), uuid);
   }
@@ -213,7 +219,7 @@ class PlacementController extends Controller {
     // update placement
     placement.set('type',       req.body.type);
     placement.set('name',       req.body.name);
-    placement.set('blocks',    req.body.blocks);
+    placement.set('blocks',     req.body.blocks);
     placement.set('placements', req.body.placements);
 
     // save placement

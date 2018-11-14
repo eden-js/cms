@@ -22,8 +22,10 @@ class Block extends Model {
   async sanitise () {
     // return placement
     return {
-      'id'   : this.get('_id') ? this.get('_id').toString() : null,
-      'type' : this.get('type')
+      'id'         : this.get('_id') ? this.get('_id').toString() : null,
+      'type'       : this.get('type'),
+      'blocks'     : this.get('blocks'),
+      'placements' : this.get('placements')
     };
   }
 }

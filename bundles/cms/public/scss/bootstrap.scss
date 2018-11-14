@@ -1,2 +1,55 @@
 
 @import '~quill/dist/quill.snow';
+
+// set primary color
+$eden-admin-primary: #563d7c!default;
+$eden-admin-aside-hover-color: $white!default;
+
+// alter dashboard options
+.eden-blocks {
+
+  .card-header {
+
+    line-height : $h2-font-size;
+
+    // alter edit
+    i.fa.fa-update {
+      color          : $eden-admin-primary;
+      width          : $h2-font-size;
+      height         : $h2-font-size;
+      font-size      : $font-size-base;
+      text-align     : center;
+      background     : $gray-300;
+      line-height    : $h2-font-size;
+      margin-right   : ($spacer / 2);
+      border-radius  : 50%;
+      vertical-align : top;
+
+      &:hover {
+        color      : $eden-admin-aside-hover-color!important;
+        background : $eden-admin-primary;
+      }
+    }
+
+    i.fa.fa-caret {
+      font-size   : $font-size-base;
+      line-height : $h2-font-size;
+      margin-left : ($spacer / 2);
+    }
+  }
+
+
+  // is dragging
+  &.is-dragging {
+
+    > .row {
+      border  : ($spacer / 8) dashed $gray-400;
+      margin  : 0;
+      padding : $spacer;
+
+      > .col {
+        margin : 0;
+      }
+    }
+  }
+}

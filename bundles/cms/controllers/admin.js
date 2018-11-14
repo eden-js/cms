@@ -2,8 +2,11 @@
 // bind dependencies
 const Controller = require('controller');
 
+// load models
+const Dashboard = model('dashboard');
+
 // require helpers
-const DashboardHelper = helper('dashboard');
+const BlockHelper = helper('cms/block');
 
 /**
  * build Block controller
@@ -36,12 +39,22 @@ class CMSAdminController extends Controller {
    * @layout admin
    */
   async indexAction (req, res) {
+    // get dashboards
+    let dashboards = await Dashboard.where({
+      'type' : 'admin.cms'
+    }).or({
+      'user.id' : req.user.get('_id').toString()
+    }, {
+      'public' : true
+    }).find();
+
     // Render admin page
     res.render('admin', {
-      'name'      : 'Admin CMS',
-      'type'      : 'admin.cms',
-      'jumbotron' : 'CMS Dashboard',
-      'dashboard' : await DashboardHelper.render('admin.cms', req.user)
+      'name'       : 'Admin CMS',
+      'type'       : 'admin.cms',
+      'blocks'     : BlockHelper.renderBlocks(),
+      'jumbotron'  : 'Manage CMS',
+      'dashboards' : await Promise.all(dashboards.map(async (dashboard) => dashboard.sanitise()))
     });
   }
 }

@@ -75,6 +75,22 @@ class BlockHelper extends Helper {
   }
 
   /**
+   * render blocks
+   *
+   * @return {Array}
+   */
+  renderBlocks () {
+    // map blocks
+    return this.__blocks.map((block) => {
+      // return block
+      return {
+        'type' : block.type,
+        'opts' : block.opts
+      };
+    });
+  }
+
+  /**
    * returns placement list
    *
    * @param  {User}    user
@@ -85,14 +101,10 @@ class BlockHelper extends Helper {
   async render (type, user) {
     // return object
     return {
-      'blocks' : this.__blocks.map((block) => {
-        // return block
-        return {
-          'type' : block.type,
-          'opts' : block.opts
-        };
-      }),
+      'blocks'    : this.renderBlocks(),
       'placement' : (await Placement.findOne({
+        'type' : type
+      }) || new Placement({
         'type' : type
       })).sanitise()
     };

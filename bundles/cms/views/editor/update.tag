@@ -1,11 +1,10 @@
 <editor-update>
-  <div class="dashboard">
-    <div ref="placement" class="block-placements" if={ !this.placing }>
-      <div each={ row, x in this.rows } data-row={ x } class="row mb-3 row-eq-height">
-        <div each={ block, i in getBlocks(x) } data-block={ block.uuid } if={ getBlockData(block) } class="col" data-is="block-{ getBlockData(block).tag }" data={ getBlockData(block) } block={ block } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } />
-      </div>
+  <div ref="placement" class="eden-blocks" if={ !this.placing }>
+    <div each={ row, x in this.rows } data-row={ x } class="row mb-3 row-eq-height">
+      <div each={ block, i in getBlocks(x) } data-block={ block.uuid } if={ getBlockData(block) } class="col" data-is="block-{ getBlockData(block).tag }" data={ getBlockData(block) } block={ block } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } />
     </div>
   </div>
+  <block-modal blocks={ opts.blocks } add-block={ onAddBlock } />
 
   <script>
     // do mixins
@@ -13,6 +12,7 @@
 
     // set update
     this.rows      = [1, 2, 3, 4, 5, 6, 7, 8];
+    this.type      = opts.type;
     this.blocks    = [];
     this.loading   = {};
     this.updating  = {};
@@ -81,7 +81,7 @@
       }
 
       // log data
-      let res = await fetch('/dashboard/' + this.placement.get('id') + '/block/save', {
+      let res = await fetch('/placement/' + this.placement.get('id') + '/block/save', {
         'body' : JSON.stringify({
           'data'   : data,
           'block' : block
@@ -98,7 +98,7 @@
 
       // set logic
       for (let key in result.result) {
-        // clone to dashboard
+        // clone to placement
         data[key] = result.result[key];
       }
 
@@ -143,7 +143,7 @@
 
       // set logic
       for (let key in result.result) {
-        // clone to dashboard
+        // clone to placement
         data[key] = result.result[key];
       }
 
@@ -168,7 +168,7 @@
       this.update();
 
       // log data
-      let res = await fetch('/dashboard/' + this.placement.get('id') + '/block/remove', {
+      let res = await fetch('/placement/' + this.placement.get('id') + '/block/remove', {
         'body' : JSON.stringify({
           'data'   : data,
           'block' : block
@@ -195,7 +195,7 @@
         return row.filter((id) => id !== block.uuid);
       }));
 
-      // save dashboard
+      // save placement
       await this.savePlacement(this.placement);
 
       // set loading
@@ -221,7 +221,7 @@
       if (!this.placement.get('placements')) this.placement.set('placements', []);
 
       // get placements/blocks
-      let blocks    = this.placement.get('blocks')    || [];
+      let blocks     = this.placement.get('blocks')    || [];
       let placements = this.placement.get('placements') || [];
 
       // check placements
@@ -241,19 +241,19 @@
       this.placement.set('blocks',    blocks);
       this.placement.set('placements', placements);
 
-      // save dashboard
+      // save placement
       await this.savePlacement(this.placement);
       await this.loadBlocks(this.placement);
     }
 
     /**
-     * saves dashboard
+     * saves placement
      *
-     * @param  {Object}  dashboard
+     * @param  {Object}  placement
      *
      * @return {Promise}
      */
-    async savePlacement (dashboard) {
+    async savePlacement (placement) {
       // set loading
       this.loading.save = true;
 
@@ -261,11 +261,11 @@
       this.update();
 
       // check type
-      if (!dashboard.type) dashboard.set('type', opts.type);
+      if (!placement.type) placement.set('type', opts.type);
 
       // log data
-      let res = await fetch('/dashboard/' + (dashboard.get('id') ? dashboard.get('id') + '/update' : 'create'), {
-        'body'    : JSON.stringify(this.placement.get()),
+      let res = await fetch('/placement/' + (placement.get('id') ? placement.get('id') + '/update' : 'create'), {
+        'body'    : JSON.stringify(placement.get()),
         'method'  : 'post',
         'headers' : {
           'Content-Type' : 'application/json'
@@ -276,11 +276,17 @@
       // load data
       let data = await res.json();
 
+      // set placement
+      opts.placement = data.result;
+
       // set logic
       for (let key in data.result) {
-        // clone to dashboard
-        dashboard.set(key, data.result[key]);
+        // clone to placement
+        placement.set(key, data.result[key]);
       }
+
+      // on save
+      if (opts.onSave) opts.onSave(placement);
 
       // set loading
       this.loading.save = false;
@@ -299,7 +305,7 @@
       let placements = [];
 
       // each row
-      jQuery('> .row', this.refs.dashboard).each((i, item) => {
+      jQuery('> .row', this.refs.placement).each((i, item) => {
         // get row
         let row = [];
 
@@ -352,13 +358,13 @@
     }
 
     /**
-     * loads dashboard blocks
+     * loads placement blocks
      *
-     * @param  {Model} dashboard
+     * @param  {Model} placement
      *
      * @return {Promise}
      */
-    async loadBlocks (dashboard) {
+    async loadBlocks (placement) {
       // set loading
       this.loading.blocks = true;
 
@@ -366,10 +372,10 @@
       this.update();
 
       // check type
-      if (!dashboard.type) dashboard.set('type', opts.type);
+      if (!placement.type) placement.set('type', opts.type);
 
       // log data
-      let res = await fetch('/dashboard/' + this.placement.get('id') + '/view', {
+      let res = await fetch('/placement/' + placement.get('id') + '/view', {
         'method'  : 'get',
         'headers' : {
           'Content-Type' : 'application/json'
@@ -441,14 +447,14 @@
       // init dragula
       if (!this.dragula) this.initDragula();
 
-      // set dashboard
+      // set placement
       this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});
 
       // check id
       if (this.placement.get('id')) this.loadBlocks(this.placement);
 
       // loads block
-      socket.on('dashboard.' + this.placement.get('id') + '.block', (block) => {
+      socket.on('placement.' + this.placement.get('id') + '.block', (block) => {
         // get found
         let found = this.blocks.find((b) => b.uuid === block.uuid);
 
