@@ -21,6 +21,9 @@
               <button class="btn btn-sm btn-danger" onclick={ onRemove }>
                 <i class={ 'fa fa-times' : true, 'fa-spin' : this.removing || opts.block.removing } />
               </button>
+              <span class="btn btn-sm btn-secondary move">
+                <i class="fa fa-arrows" />
+              </span>
             </div>
           </div>
         </div>
@@ -111,8 +114,6 @@
       
       // update view
       this.update();
-      
-      console.log(opts);
 
       // run opts
       if (opts.onRemove) await opts.onRemove(opts.block, opts.data);
