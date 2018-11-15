@@ -155,7 +155,7 @@
       if (!this.eden.frontend) return;
 
       // check type
-      if (opts.type !== this.type) {
+      if (opts.type !== this.type || (opts.placement || {}).id !== this.placement.get('id')) {
         // set type
         this.type   = opts.type;
         this.blocks = (opts.placement || {}).render || [];
