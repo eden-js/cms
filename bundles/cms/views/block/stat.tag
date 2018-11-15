@@ -1,48 +1,21 @@
 <block-stat>
   <div class="card bg-{ opts.data.color || 'primary' }"}>
 
-    <div class="card-header">
-      <div class="row row-eq-height">
-        <div class="col-8 d-flex align-items-center">
-          <div class="w-100">
-
-            <!-- update buttons -->
-            <a href="#!" onclick={ onShouldUpdateTitle } if={ !this.updating.title && !this.loading.title }>
-              <i class="fa fa-update fa-pencil" />
-            </a>
-            <a href="#!" onclick={ onCompleteUpdateTitle } if={ this.updating.title && !this.loading.title }>
-              <i class="fa fa-update fa-check bg-success text-white" />
-            </a>
-            <span if={ this.loading.title }>
-              <i class="fa fa-update fa-spinner fa-spin bg-info text-white" />
-            </span>
-            <!-- / update buttons -->
-
-            <i if={ !opts.data.title && !this.updating.title }>Untitled { opts.data.name }</i>
-            <span if={ !this.updating.title || this.loading.title }>{ opts.data.title }</span>
-            <i contenteditable={ this.updating.title } if={ this.updating.title && !this.loading.title } class="d-inline-block px-2" ref="name" onkeyup={ onUpdateTitle }>{ opts.data.title }</i>
-
-          </div>
-        </div>
-        <div class="col-4 d-flex align-items-center">
-          <div class="w-100">
-            <div class="btn-group float-right">
-              <yield from="buttons" />
-              <button class="btn btn-sm btn-primary" onclick={ onRefresh }>
-                <i class={ 'fa fa-sync' : true, 'fa-spin' : this.refreshing || opts.block.refreshing } />
-              </button>
-              <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#block-{ opts.block.uuid }-update">
-                <i class="fa fa-pencil" />
-              </button>
-              <button class="btn btn-sm btn-danger" onclick={ onRemove }>
-                <i class={ 'fa fa-times' : true, 'fa-spin' : this.removing || opts.block.removing } />
-              </button>
-              <span class="btn btn-sm btn-secondary move">
-                <i class="fa fa-arrows" />
-              </span>
-            </div>
-          </div>
-        </div>
+    <div class="card-header text-right">
+      <div class="btn-group">
+        <yield from="buttons" />
+        <button class="btn btn-sm btn-primary" onclick={ onRefresh }>
+          <i class={ 'fa fa-sync' : true, 'fa-spin' : this.refreshing || opts.block.refreshing } />
+        </button>
+        <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#block-{ opts.block.uuid }-update">
+          <i class="fa fa-pencil" />
+        </button>
+        <button class="btn btn-sm btn-danger" onclick={ onRemove }>
+          <i class={ 'fa fa-times' : true, 'fa-spin' : this.removing || opts.block.removing } />
+        </button>
+        <span class="btn btn-sm btn-secondary move">
+          <i class="fa fa-arrows" />
+        </span>
       </div>
     </div>
 
@@ -262,75 +235,6 @@
 
       // update view
       this.update();
-    }
-
-    /**
-     * on update name
-     *
-     * @param  {Event} e
-     */
-    onUpdateTitle (e) {
-      // on enter
-      let keycode = (event.keyCode ? event.keyCode : event.which);
-
-      // check if enter
-      if (parseInt(keycode) === 13) {
-        // return on complete update
-        return this.onCompleteUpdateTitle(e);
-      }
-
-      // set update
-      opts.data.title = jQuery(e.target).val();
-    }
-
-    /**
-     * on update name
-     *
-     * @param  {Event} e
-     */
-    async onCompleteUpdateTitle (e) {
-      // prevent default
-      e.preventDefault();
-      e.stopPropagation();
-
-      // set update
-      this.loading.title = true;
-      this.updating.title = false;
-
-      // set name
-      opts.data.title = jQuery('[ref="name"]', this.root).text();
-
-      // update
-      this.update();
-
-      // do update
-      await opts.onSave(opts.block, opts.data);
-
-      // set loading
-      this.loading.title = false;
-
-      // update
-      this.update();
-    }
-
-    /**
-     * on update name
-     *
-     * @param  {Event} e
-     */
-    onShouldUpdateTitle (e) {
-      // prevent default
-      e.preventDefault();
-      e.stopPropagation();
-
-      // set update
-      this.updating.title = !this.updating.title;
-
-      // update
-      this.update();
-
-      // set inner test
-      jQuery('[ref="name"]', this.root).focus();
     }
 
     /**

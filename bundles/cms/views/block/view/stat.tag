@@ -1,13 +1,6 @@
 <block-view-stat>
   <div class="card mb-3 bg-{ opts.data.color || 'primary' }">
 
-    <div class="card-header">
-
-      <i if={ !(opts.data.title || '').length }>Untitled { opts.data.name }</i>
-      { opts.data.title }
-      
-    </div>
-
     <a class="card-body text-white" href={ opts.data.href }>
       <div class="row">
         <div class="col-6">
