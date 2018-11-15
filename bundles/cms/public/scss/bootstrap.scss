@@ -64,4 +64,53 @@ $eden-admin-aside-hover-color: $white!default;
       display : none;
     }
   }
+
+
+  .block-wysiwyg {
+
+    .editor {
+      margin : -1px;
+      height : 100%;
+
+      .ql-container.ql-snow,
+      .ql-toolbar.ql-snow {
+        border : 0;
+      }
+    }
+  }
+}
+
+.cms-placement {
+  position : relative;
+
+  // update placement
+  .cms-placement-update {
+    @include transition(all 0.5s ease);
+
+    top        : 0;
+    left       : 0;
+    right      : 0;
+    opacity    : 0;
+    z-index    : 15;
+    padding    : ($spacer / 2);
+    position   : absolute;
+    background : rgba(255,255,255,0.25);
+  }
+
+  &:hover {
+    // set opacity
+    .cms-placement-update {
+      opacity : 1;
+    }
+  }
+
+  &.updating {
+
+    .cms-placement-update {
+      opacity       : 1;
+      padding       : $spacer;
+      position      : static;
+      margin-bottom : $spacer;
+    }
+  }
 }

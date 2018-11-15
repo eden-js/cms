@@ -48,7 +48,7 @@
       </div>
     </div>
 
-    <div data-is={ this.preview ? 'editor-view' : 'editor-update' } placement={ this.page.get('placement') || {} } for="frontend" blocks={ opts.blocks } type={ opts.type } on-save={ onPlacement } />
+    <div data-is={ this.preview ? 'eden-view' : 'eden-update' } placement={ this.page.get('placement') || {} } for="frontend" blocks={ opts.blocks } type={ opts.type } on-save={ onPlacement } />
 
   </div>
 

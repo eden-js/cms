@@ -1,4 +1,4 @@
-<editor-update>
+<eden-update>
   <div ref="placement" class="eden-blocks" if={ !this.placing }>
     <div each={ row, x in this.rows } data-row={ x } class="row eden-blocks-row mb-3 row-eq-height">
       <div each={ block, i in getBlocks(x) } data-block={ block.uuid } if={ getBlockData(block) } class={ getBlockData(block).class || 'col' } data-is="block-{ getBlockData(block).tag }" data={ getBlockData(block) } block={ block } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } />
@@ -83,7 +83,7 @@
       // log data
       let res = await fetch('/placement/' + this.placement.get('id') + '/block/save', {
         'body' : JSON.stringify({
-          'data'   : data,
+          'data'  : data,
           'block' : block
         }),
         'method'  : 'post',
@@ -100,6 +100,9 @@
       for (let key in result.result) {
         // clone to placement
         data[key] = result.result[key];
+        
+        // set in placement
+        opts.placement[data] = result.result[key];
       }
 
       // check prevent update
@@ -454,6 +457,12 @@
 
       // set placement
       this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});
+        
+      // check blocks
+      if ((this.placement.get('blocks') || []).length !== this.blocks.length) {
+        // load blocks
+        this.loadBlocks(this.placement);
+      }
 
       // loads block
       socket.on('placement.' + this.placement.get('id') + '.block', (block) => {
@@ -480,4 +489,4 @@
       });
     });
   </script>
-</editor-update>
+</eden-update>

@@ -41,7 +41,7 @@
      */
     getBlocks () {
       // return sorted blocks
-      return opts.blocks.sort((a, b) => {
+      return (opts.blocks || []).sort((a, b) => {
         // Return sort
         return ('' + a.opts.title).localeCompare(b.opts.title);
       });

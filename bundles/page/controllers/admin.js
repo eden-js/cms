@@ -16,15 +16,15 @@ const BlockHelper = helper('cms/block');
 const ModelHelper = helper('model');
 
 /**
- * build user pageAdminController controller
+ * build user PageAdminController controller
  *
  * @acl   admin.page.view
  * @fail  /
  * @mount /admin/page
  */
-class pageAdminController extends Controller {
+class PageAdminController extends Controller {
   /**
-   * construct user pageAdminController controller
+   * construct user PageAdminController controller
    */
   constructor () {
     // run super
@@ -46,7 +46,7 @@ class pageAdminController extends Controller {
     // register simple block
     BlockHelper.block('page.cms.pages', {
       'acl'         : ['admin.cms'],
-      'for'         : ['page'],
+      'for'         : ['admin'],
       'title'       : 'Pages Grid',
       'description' : 'Shows grid of recent pages'
     }, async (req, block) => {
@@ -210,7 +210,7 @@ class pageAdminController extends Controller {
       'item'      : await page.sanitise(req),
       'title'     : create ? 'Create page' : 'Update ' + page.get('_id').toString(),
       'blocks'    : BlockHelper.renderBlocks('frontend'),
-      'jumbotron' : 'Update Page',
+      'jumbotron' : 'Update Page'
     });
   }
 
@@ -462,8 +462,8 @@ class pageAdminController extends Controller {
 }
 
 /**
- * export pageAdminController controller
+ * export PageAdminController controller
  *
  * @type {ADMIN}
  */
-exports = module.exports = pageAdminController;
+exports = module.exports = PageAdminController;

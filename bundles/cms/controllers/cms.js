@@ -3,8 +3,12 @@
 const Controller = require('controller');
 
 // require models
-const Page  = model('page');
-const Block = model('block');
+const Page      = model('page');
+const Block     = model('block');
+const Placement = model('placement');
+
+// require helpers
+const BlockHelper = helper('cms/block');
 
 /**
  * build Block controller
@@ -40,21 +44,24 @@ class CMSController extends Controller {
     // on render
     this.eden.pre('view.compile', async (render) => {
       // set Block
-      render.blocks = {};
+      render.placements = {};
 
       // move menus
-      if (render.state.placements) await Promise.all(render.state.placements.map(async (placement) => {
+      if (render.state.placements) await Promise.all(render.state.placements.map(async (position) => {
         // get Block
-        let Blocks = await Block.find({
-          'placement' : placement
+        let placement = await Placement.findOne({
+          'position' : position
         });
 
         // set null or Block
-        render.blocks[placement] = Blocks && Blocks.length ? await Promise.all(Blocks.map((block) => block.sanitise())) : [];
+        render.placements[position] = placement ? await placement.sanitise(render.req) : null;
       }));
 
-      // delete from state
-      delete render.state.placements;
+      // check blocks
+      if (!render.blocks) {
+        // render blocks
+        render.blocks = BlockHelper.renderBlocks('frontend');
+      }
     });
   }
 
@@ -70,41 +77,11 @@ class CMSController extends Controller {
    * @priority 2
    */
   async indexAction (req, res) {
-    // load Page
-    let page = await Page.findOne({
-      'slug' : 'HOME'
-    }) || new Page({
-      'slug' : 'HOME'
-    });
-
-    // check Page
-    if (!page.get('_id')) await page.save();
+    // set placements
+    req.placement('home');
 
     // render Page
-    res.render('page', {
-      'item'   : await page.sanitise(req),
-      'title'  : page.get('title.' + req.language) || '',
-      'layout' : page.get('layout') || 'main'
-    });
-  }
-
-  /**
-   * gets blocks
-   *
-   * @param  {Request}   req
-   * @param  {Response}  res
-   * @param  {Function}  next
-   *
-   * @route {post} /blocks/:placement
-   */
-  async blocksAction (req, res) {
-    // return JSON blocks
-    let Blocks = await Block.find({
-      'placement' : req.params.placement
-    });
-
-    // return JSON stringify
-    res.json(Blocks && Blocks.length ? await Promise.all(Blocks.map((block) => block.sanitise())) : []);
+    res.render('cms/home');
   }
 
   /**

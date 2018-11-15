@@ -25,10 +25,10 @@ class Placement extends Model {
   async sanitise (req) {
     // return placement
     return {
-      'id'         : this.get('_id') ? this.get('_id').toString() : null,
-      'type'       : this.get('type'),
-      'name'       : this.get('name'),
-      'render'     : req ? (await Promise.all((this.get('blocks') || []).map(async (block) => {
+      'id'     : this.get('_id') ? this.get('_id').toString() : null,
+      'type'   : this.get('type'),
+      'name'   : this.get('name'),
+      'render' : req ? (await Promise.all((this.get('blocks') || []).map(async (block) => {
         // get from register
         let registered = BlockHelper.blocks().find((b) => b.type === block.type);
 
@@ -44,7 +44,8 @@ class Placement extends Model {
         // return render
         return data;
       }))).filter((b) => b) : null,
-      'blocks'     : this.get('blocks')     || [],
+      'blocks'     : this.get('blocks') || [],
+      'position'   : this.get('position'),
       'placements' : this.get('placements') || []
     };
   }

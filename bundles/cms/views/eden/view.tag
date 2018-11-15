@@ -1,4 +1,4 @@
-<editor-view>
+<eden-view>
   <div class="eden-blocks eden-blocks-view">
     <div ref="placement" class="block-placements" if={ !this.placing }>
       <div each={ row, x in this.rows } data-row={ x } class="row row-eq-height">
@@ -107,13 +107,13 @@
     }
 
     /**
-     * loads dashboard blocks
+     * loads placement blocks
      *
-     * @param  {Model} dashboard
+     * @param  {Model} placement
      *
      * @return {Promise}
      */
-    async loadBlocks (dashboard) {
+    async loadBlocks (placement) {
       // set loading
       this.loading.blocks = true;
 
@@ -121,10 +121,10 @@
       this.update();
 
       // check type
-      if (!dashboard.type) dashboard.set('type', opts.type);
+      if (!placement.type) placement.set('type', opts.type);
 
       // log data
-      let res = await fetch('/dashboard/' + this.placement.get('id') + '/view', {
+      let res = await fetch('/placement/' + placement.get('id') + '/view', {
         'method'  : 'get',
         'headers' : {
           'Content-Type' : 'application/json'
@@ -176,9 +176,15 @@
 
       // set dashboard
       this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});
+        
+      // check blocks
+      if ((this.placement.get('blocks') || []).length !== this.blocks.length) {
+        // load blocks
+        this.loadBlocks(this.placement);
+      }
 
       // loads block
-      socket.on('dashboard.' + this.placement.get('id') + '.block', (block) => {
+      socket.on('placement.' + this.placement.get('id') + '.block', (block) => {
         // get found
         let found = this.blocks.find((b) => b.uuid === block.uuid);
 
@@ -202,4 +208,4 @@
       });
     });
   </script>
-</editor-view>
+</eden-view>

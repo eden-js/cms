@@ -122,7 +122,9 @@ class PlacementController extends Controller {
   async saveBlockAction (req, res) {
     // set website variable
     let create    = true;
-    let placement = new Placement();
+    let placement = new Placement({
+      'position' : req.body.position
+    });
 
     // check for website model
     if (req.params.id) {
@@ -132,7 +134,7 @@ class PlacementController extends Controller {
     }
 
     // get block
-    let blocks = placement.get('blocks') || [];
+    let blocks  = placement.get('blocks') || [];
     let current = blocks.find((block) => block.uuid === req.body.block.uuid);
 
     // update
@@ -220,6 +222,7 @@ class PlacementController extends Controller {
     placement.set('type',       req.body.type);
     placement.set('name',       req.body.name);
     placement.set('blocks',     req.body.blocks);
+    placement.set('position',   req.body.position);
     placement.set('placements', req.body.placements);
 
     // save placement

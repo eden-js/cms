@@ -1,5 +1,5 @@
 <page-page>
-  <editor-view placement={ opts.item.placement } />
+  <eden-view placement={ opts.item.placement } />
 
   <script>
     // do mixins
