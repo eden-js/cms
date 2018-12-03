@@ -19,7 +19,7 @@
         </div>
       </div>
     </div>
-    <div class="cms-placement-blocks" data-placement={ opts.placement } data-is="eden-{ this.updating ? 'update' : 'view' }" blocks={ this.getBlocks() } placement={ getPlacement() } position={ opts.placement }>
+    <div class="cms-placement-blocks" data-placement={ opts.placement } data-is="eden-{ this.updating ? 'update' : 'view' }" blocks={ this.getBlocks() } placement={ getPlacement() } on-save={ onSave } position={ opts.placement }>
       { opts.placement }
     </div>
   </div>
@@ -50,6 +50,22 @@
     }
     
     /**
+     * on save placements
+     *
+     * @return {Model}
+     */
+    onSave (placement) {
+      // get placements
+      let placements = this.eden.get('placements') || {};
+        
+      // set placement
+      placements[opts.placement] = placement.get();
+      
+      // set placements
+      this.eden.set('placements', placements);
+    }
+    
+    /**
      * gets blocks
      *
      * @return {Array}
@@ -66,7 +82,7 @@
      */
     getPlacement () {
       // return placement
-      return this.eden.get('placements.' + opts.placement) ? this.eden.get('placements.' + opts.placement) : {
+      return (this.eden.get('placements') || {})[opts.placement] ? this.eden.get('placements')[opts.placement] : {
         'position' : opts.placement
       };
     }

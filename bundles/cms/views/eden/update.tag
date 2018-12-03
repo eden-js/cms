@@ -264,7 +264,7 @@
       this.update();
 
       // check type
-      if (!placement.type) placement.set('type', opts.type);
+      if (!placement.type) placement.set('type', opts.type || opts.placement);
 
       // log data
       let res = await fetch('/placement/' + (placement.get('id') ? placement.get('id') + '/update' : 'create'), {
@@ -287,6 +287,9 @@
         // set in opts
         if (data.result[key]) opts.placement[key] = data.result[key];
       }
+      
+      // set placement
+      this.placement = placement;
 
       // on save
       if (opts.onSave) opts.onSave(placement);
@@ -368,6 +371,7 @@
      * @return {Promise}
      */
     async loadBlocks (placement) {
+      console.log(placement);
       // set loading
       this.loading.blocks = true;
 
