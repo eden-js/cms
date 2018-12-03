@@ -30,6 +30,10 @@
               <input type="text" id="title" name="title[{ lng }]" class="form-control" value={ (banner().title || {})[lng] } hide={ this.language !== lng } each={ lng, i in this.languages } onchange={ onSlug }>
             </div>
             <div class="form-group">
+              <label for="category">Banner Category</label>
+              <input type="text" id="category" name="category" class="form-control" value={ banner().category }>
+            </div>
+            <div class="form-group">
               <editor label="Content" content={ (parent.banner().content || {})[lng] } each={ lng, i in this.languages } hide={ this.language !== lng } name="content[{ lng }]" />
             </div>
           </div>

@@ -116,7 +116,9 @@ $eden-admin-aside-hover-color: $white!default;
 }
 
 .ql-html:after {
-  content : '#';
+  content     : '\f121';
+  font-family : 'Font Awesome 5 Pro';
+  font-weight : 300;
 }
 
 .editor .ql-html-editor {

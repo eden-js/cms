@@ -2,7 +2,7 @@
   <div class="row row-eq-height upload upload-images">
     <div each={ file, i in this.value } class="{ opts.col || 'col-6 col-md-4 col-xl-3' } form-group-image mb-2">
       <div class="card card-outline-primary" style="background-image: url({ thumb(file) })">
-        <span class="btn-group p-0">
+        <span class="btn-group p-0" if={ this.multi }>
           <button onclick={ onPrev } class="btn btn-primary">
             <i class="fa fa-chevron-left" />
           </button>
