@@ -315,6 +315,44 @@ class BannerAdminController extends Controller {
       'format' : async (col, row) => {
         return col ? ((col || {})[req.language] || '').toString() : '<i>N/A</i>';
       }
+    }).column('category', {
+      'sort'   : true,
+      'title'  : 'Category',
+      'format' : async (col, row) => {
+        return col ? col.toString() : '<i>N/A</i>';
+      },
+      'update' : async (row, value) => {
+        // Set value
+        await row.lock();
+
+        // Set username
+        row.set('category', value);
+
+        // Save
+        await row.save();
+
+        // Unlock
+        row.unlock();
+      }
+    }).column('class', {
+      'sort'   : true,
+      'title'  : 'Class',
+      'format' : async (col, row) => {
+        return col ? col.toString() : '<i>N/A</i>';
+      },
+      'update' : async (row, value) => {
+        // Set value
+        await row.lock();
+
+        // Set username
+        row.set('class', value);
+
+        // Save
+        await row.save();
+
+        // Unlock
+        row.unlock();
+      }
     }).column('updated_at', {
       'sort'   : true,
       'title'  : 'Updated',
