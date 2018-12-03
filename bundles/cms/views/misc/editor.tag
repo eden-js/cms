@@ -2,7 +2,7 @@
   <div class={ 'editor' : true, 'd-none' : !this.eden.frontend }>
     <label if={ opts.label }>{ opts.label }</label>
     <div ref="editor">{ opts.content }</div>
-    <input type="file" ref="upload" name="file" onchange={ onFile } class="d-none" />
+    <input if={ opts.name } class="hidden" type="hidden" name={ opts.name } value={ this.content } ref="value" />
   </div>
 
   <script>
@@ -10,8 +10,8 @@
     this.mixin('media');
 
     // set variables
-    this.value = opts.content;
-    this.editor = false;
+    this.editor  = false;
+    this.content = opts.content;
 
     /**
      * set next
@@ -98,8 +98,6 @@
               // await json
               res = await res.json();
 
-              console.log(res)
-
               // return src
               return this.media.url(res.upload);
             }
@@ -111,6 +109,12 @@
       this.editor.on('text-change', (delta) => {
         // set content
         this.content = this.refs.editor.firstChild.innerHTML;
+
+        // set to value
+        if (this.refs.value) {
+          // set content
+          this.refs.value.value = this.content;
+        }
 
         // on update
         if (opts.onUpdate) {

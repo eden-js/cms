@@ -172,7 +172,7 @@ class BannerAdminController extends Controller {
    *
    * @route   {post} /:id/update
    * @layout  admin
-   * @upload  {single} image
+   * @upload  {any}
    */
   async updateSubmitAction (req, res) {
     // set website variable
@@ -187,40 +187,10 @@ class BannerAdminController extends Controller {
     }
 
     // let image
-    let image = null;
-
-    // check avatar
-    if (req.file) {
-      // create avatar
-      let image = new Image();
-
-      // run try/catch
-      try {
-        // load image
-        await image.file(req.file.path, req.file.originalname);
-
-        // create thumb
-        let ThumbSm = image.thumb('sm-sq');
-        let ThumbMd = image.thumb('md-banner');
-
-        // resize
-        await ThumbSm.resize(350, 350).png ().save ();
-
-        // resize
-        await ThumbMd.resize(1024, 900).png ().save ();
-
-        // save image
-        await image.save();
-
-        // set avatar
-        banner.set('image', image);
-      } catch (e) {
-        // check error
-        res.alert('error', 'File error: "' + e.toString() + '", please try another image.');
-      }
-    }
+    let image = req.body.image ? await Image.findById(req.body.image) : await banner.get('image');
 
     // update banner
+    banner.set('image',   image);
     banner.set('title',   req.body.title);
     banner.set('content', req.body.content);
 

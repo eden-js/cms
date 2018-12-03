@@ -24,22 +24,13 @@
             </ul>
           </div>
           <div class="card-body">
+            <upload name="image" multi={ false } image={ banner().image } />
             <div class="form-group">
               <label for="title">Banner Title</label>
-              <input type="text" id="title" name="title[{ lng }]" class="form-control" value={ (banner ().title || {})[lng] } hide={ this.language !== lng } each={ lng, i in this.languages } onchange={ onSlug }>
-            </div>
-            <div class="image rounded d-inline-block p-1 border border-light mb-3" if={ banner ().image }>
-              <media-img image={ banner ().image } label="sm-sq" classes="img-fluid rounded img-avatar" />
+              <input type="text" id="title" name="title[{ lng }]" class="form-control" value={ (banner().title || {})[lng] } hide={ this.language !== lng } each={ lng, i in this.languages } onchange={ onSlug }>
             </div>
             <div class="form-group">
-              <label for="image">Banner Image</label>
-              <label for="image" class="custom-file d-block" lang="en">
-                <input type="file" name="image" class="custom-file-input" id="image" aria-describedby="image" />
-                <span class="custom-file-label"></span>
-              </label>
-            </div>
-            <div class="form-group">
-              <editor label="Content" content={ (parent.banner ().content || {})[lng] } each={ lng, i in this.languages } hide={ this.language !== lng } name="content[{ lng }]" />
+              <editor label="Content" content={ (parent.banner().content || {})[lng] } each={ lng, i in this.languages } hide={ this.language !== lng } name="content[{ lng }]" />
             </div>
           </div>
           <div class="card-footer">
@@ -55,14 +46,14 @@
 
   <script>
     // do mixin
-    this.mixin ('i18n');
+    this.mixin('i18n');
 
     // set variables
-    this.language  = this.i18n.lang ();
-    this.languages = this.eden.get ('i18n').lngs || [];
+    this.language  = this.i18n.lang();
+    this.languages = this.eden.get('i18n').lngs || [];
 
     // check has language
-    if (this.languages.indexOf (this.i18n.lang ()) === -1) this.languages.unshift (this.i18n.lang ());
+    if (this.languages.indexOf(this.i18n.lang()) === -1) this.languages.unshift(this.i18n.lang());
 
     /**
      * on language
@@ -71,10 +62,10 @@
      */
     onLanguage (e) {
       // set language
-      this.language = e.target.getAttribute ('data-lng');
+      this.language = e.target.getAttribute('data-lng');
 
       // update view
-      this.update ();
+      this.update();
     }
 
     /**
@@ -90,9 +81,9 @@
     /**
      * on language update function
      */
-    this.on ('update', () => {
+    this.on('update', () => {
       // set language
-      this.language = this.i18n.lang ();
+      this.language = this.i18n.lang();
 
     });
 
