@@ -1,10 +1,10 @@
 <block-view-slider>
-  <div id="slider-{ opts.data.uuid }" class="carousel slide" data-ride="carousel">
+  <div id="slider-{ opts.data.uuid }" class="carousel slide" ref="carousel">
     <ol class="carousel-indicators" if={ (opts.data.show || {}).indicators }>
       <li data-target="#slider-{ opts.data.uuid }" each={ indicator, i in opts.data.slides } data-slide-to={ i } class={ 'active' : i === 0 }></li>
     </ol>
     <div class="carousel-inner">
-      <div each={ banner, i in opts.data.slides } class={ 'carousel-item' : true, 'active' : i === 0 } style={ (opts.data.show || {}).background ? 'background-image:url(' + this.media.url(banner.image) + ');' : null }>
+      <div each={ banner, i in opts.data.slides } class="{ 'carousel-item' : true, 'active' : i === 0 } { banner.id } { banner.class }" style={ (opts.data.show || {}).background ? 'background-image:url(' + this.media.url(banner.image) + ');' : null }>
         <img src={ this.media.url(banner.image) } alt={ banner.title[this.language] } class="d-block w-100" if={ !(opts.data.show || {}).background }>
         <div class="carousel-caption d-none d-md-block" if={ (opts.data.show || {}).caption }>
           <h5 class="banner-title">{ banner.title[this.language] }</h5>
@@ -43,6 +43,19 @@
       // set language
       this.language = this.i18n.lang();
 
+    });
+    
+    /**
+     * on mount function
+     */
+    this.on('mount', () => {
+      // return if not frontend
+      if (!this.eden.frontend) return;
+      
+      // set interval
+      jQuery(this.refs.carousel).carousel({
+        'interval' : opts.data.interval || 2000
+      });
     });
   </script>
 </block-view-slider>

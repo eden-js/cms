@@ -191,6 +191,7 @@ class BannerAdminController extends Controller {
 
     // update banner
     banner.set('image',    image);
+    banner.set('class',    req.body.class);
     banner.set('title',    req.body.title);
     banner.set('content',  req.body.content);
     banner.set('category', req.body.category);

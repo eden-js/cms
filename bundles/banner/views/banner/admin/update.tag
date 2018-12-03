@@ -34,6 +34,10 @@
               <input type="text" id="category" name="category" class="form-control" value={ banner().category }>
             </div>
             <div class="form-group">
+              <label for="class">Banner Class</label>
+              <input type="text" id="class" name="class" class="form-control" value={ banner().class }>
+            </div>
+            <div class="form-group">
               <editor label="Content" content={ (parent.banner().content || {})[lng] } each={ lng, i in this.languages } hide={ this.language !== lng } name="content[{ lng }]" />
             </div>
           </div>

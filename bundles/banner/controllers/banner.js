@@ -60,6 +60,7 @@ class BannerController extends Controller {
       })).map((banner) => banner.sanitise()));
       data.class    = blockModel.get('class') || 'col';
       data.title    = blockModel.get('title') || '';
+      data.interval = blockModel.get('interval')  || 2000;
       data.category = blockModel.get('category')  || '';
 
       // return
@@ -76,6 +77,7 @@ class BannerController extends Controller {
       // set data
       blockModel.set('class',    req.body.data.class);
       blockModel.set('title',    req.body.data.title);
+      blockModel.set('interval', parseInt(req.body.data.interval));
       blockModel.set('category', req.body.data.category);
 
       // set show

@@ -1,5 +1,5 @@
 <block-slider>
-  <block on-refresh={ opts.onRefresh } on-save={ opts.onSave } on-remove={ opts.onRemove } block={ opts.block } data={ opts.data } on-update-title={ onUpdateTitle } on-complete-update-title={ onCompleteUpdateTitle } on-should-update-title={ onShouldUpdateTitle } on-update-category={ onUpdateCategory } on-update-show={ onUpdateShow } ref="block" class="block-slider">
+  <block on-refresh={ opts.onRefresh } on-save={ opts.onSave } on-remove={ opts.onRemove } block={ opts.block } data={ opts.data } on-update-title={ onUpdateTitle } on-complete-update-title={ onCompleteUpdateTitle } on-should-update-title={ onShouldUpdateTitle } on-update-interval={ onUpdateInterval } on-update-category={ onUpdateCategory } on-update-show={ onUpdateShow } ref="block" class="block-slider">
     <yield to="header">
       
       <!-- update buttons -->
@@ -24,6 +24,10 @@
         <div class="form-group">
           <label>Category</label>
           <input class="form-control" name="category" onchange={ opts.onUpdateCategory } value={ opts.data.category } />
+        </div>
+        <div class="form-group">
+          <label>Interval</label>
+          <input class="form-control" name="interval" onchange={ opts.onUpdateInterval } value={ opts.data.interval } />
         </div>
         <div class="form-group">
           <label>Show Buttons</label>
@@ -116,6 +120,19 @@
     async onUpdateCategory (e) {
       // set name
       opts.data.category = e.target.value;
+
+      // do update
+      await opts.onSave(opts.block, opts.data);
+    }
+
+    /**
+     * on update category
+     *
+     * @param  {Event} e
+     */
+    async onUpdateInterval (e) {
+      // set name
+      opts.data.interval = parseInt(e.target.value);
 
       // do update
       await opts.onSave(opts.block, opts.data);
