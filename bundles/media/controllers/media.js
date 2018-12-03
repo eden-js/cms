@@ -92,7 +92,7 @@ class mediaController extends controller {
    * @param res
    *
    * @acl      true
-   * @route    {post} /image
+   * @route    {post}   /image
    * @upload   {single} file
    * @priority 2
    */

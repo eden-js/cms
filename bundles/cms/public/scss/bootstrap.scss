@@ -114,3 +114,19 @@ $eden-admin-aside-hover-color: $white!default;
     }
   }
 }
+
+.ql-html:after {
+  content : '#';
+}
+
+.editor .ql-html-editor {
+  top        : 0;
+  left       : 0;
+  width      : 100%;
+  border     : 0;
+  bottom     : 0;
+  padding    : 12px;
+  position   : absolute;
+  background : #fffff0;
+  box-sizing : border-box;
+}

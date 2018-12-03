@@ -28,9 +28,6 @@
               <label for="title">Banner Title</label>
               <input type="text" id="title" name="title[{ lng }]" class="form-control" value={ (banner ().title || {})[lng] } hide={ this.language !== lng } each={ lng, i in this.languages } onchange={ onSlug }>
             </div>
-            <div class="form-group">
-              <editor label="Content" content={ (parent.banner ().content || {})[lng] } each={ lng, i in this.languages } hide={ this.language !== lng } name="content[{ lng }]" />
-            </div>
             <div class="image rounded d-inline-block p-1 border border-light mb-3" if={ banner ().image }>
               <media-img image={ banner ().image } label="sm-sq" classes="img-fluid rounded img-avatar" />
             </div>
@@ -40,6 +37,9 @@
                 <input type="file" name="image" class="custom-file-input" id="image" aria-describedby="image" />
                 <span class="custom-file-label"></span>
               </label>
+            </div>
+            <div class="form-group">
+              <editor label="Content" content={ (parent.banner ().content || {})[lng] } each={ lng, i in this.languages } hide={ this.language !== lng } name="content[{ lng }]" />
             </div>
           </div>
           <div class="card-footer">
