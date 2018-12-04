@@ -66,16 +66,13 @@ $eden-admin-aside-hover-color: $white!default;
   }
 
 
-  .block-wysiwyg {
+  .block-wysiwyg,
+  .block-notes {
 
-    .editor {
-      margin : -1px;
+    .note-editor.note-frame.card {
       height : 100%;
-
-      .ql-container.ql-snow,
-      .ql-toolbar.ql-snow {
-        border : 0;
-      }
+      border : 0;
+      margin : $border-width;
     }
   }
 }

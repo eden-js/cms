@@ -1,8 +1,8 @@
 <editor>
   <div class={ 'editor' : true, 'd-none' : !this.eden.frontend }>
     <label if={ opts.label }>{ opts.label }</label>
-    <div ref="editor">{ opts.content }</div>
-    <input if={ opts.name } class="hidden" type="hidden" name={ opts.name } value={ this.content } ref="value" />
+    <textarea name={ opts.name } ref="editor">{ opts.content }</textarea>
+    <input type="file" ref="upload" name="file" onchange={ onFile } class="d-none" />
   </div>
 
   <script>
@@ -10,8 +10,191 @@
     this.mixin('media');
 
     // set variables
-    this.editor  = false;
-    this.content = opts.content;
+    this.value = opts.content;
+    this.summernote = false;
+
+    /**
+     * on image upload
+     *
+     * @param {File} image
+     */
+    _image (image) {
+      // loop image
+      if (!image || !image.length) return;
+
+      // loop image
+      for (var i = 0; i < image.length; i++) {
+        // let file
+        let fl = image[i];
+
+        // create new reader
+        let fr = new FileReader();
+
+        // onload
+        fr.onload = () => {
+          // require uuid
+          const uuid = require('uuid');
+          
+          // let uuid
+          let id = uuid();
+
+          // let value
+          let value = {
+            'id'        : id,
+            'src'       : fr.result,
+            'file'      : fl,
+            'name'      : fl.name,
+            'size'      : fl.size,
+            'temp'      : id,
+            'thumb'     : fr.result,
+            'uploaded'  : 0,
+            'selection' : this.selection,
+          };
+
+          // create figure
+          let imageHTML   = jQuery('<img src="' + value.src + '" data-id="' + value.temp + '" class="img-resize img-fluid img-grayscale" />');
+          let figureHTML  = jQuery('<figure class="embed figure-image" style="display:table" />');
+          let captionHTML = jQuery('<figcaption class="img-caption" />');
+
+          // append/prepend elements
+          imageHTML.prependTo(figureHTML);
+          captionHTML.appendTo(figureHTML);
+
+          // insert image
+          let insert = jQuery(this.refs.editor).summernote('insertNode', figureHTML[0]);
+
+          // do upload
+          this._ajaxUpload(value);
+        };
+
+        // read file
+        fr.readAsDataURL(fl);
+      }
+    }
+
+    /**
+     * ajax upload function
+     *
+     * @param {Object} value
+     *
+     * @private
+     */
+    _ajaxUpload (value, type) {
+      // require uuid
+      const uuid = require('uuid');
+      
+      // let change
+      this.change = uuid();
+
+      // set change
+      let change = this.change;
+
+      // create form data
+    	let data = new FormData();
+
+      // append image
+    	data.append('file', value.file);
+      data.append('temp', value.temp);
+
+      // kill timeout
+      if (this.timeout) clearTimeout(this.timeout);
+
+      // submit ajax form
+    	jQuery.ajax ({
+        'url'   : '/media/' + (type || 'image'),
+        'data'  : data,
+        'type'  : 'post',
+        'cache' : false,
+        'error' : () => {
+          // do error
+          eden.alert.alert('error', 'Error uploading image');
+
+          // remove from array
+          this._remove (value);
+        },
+        'success' : (data) => {
+          // clear ref
+          this.refs.upload.value = '';
+
+          // remove overlay
+          jQuery('.note-link-popover').hide();
+
+          // load image
+          let place = jQuery('[data-id="' + value.temp + '"]', this.root);
+
+          // check if error
+          if (data.error) {
+            // do message
+            return eden.alert.alert('error', data.message);
+
+            // remove image
+            if (place) place.remove();
+          }
+
+          // check if image
+          if (data.upload) {
+            // check image
+            if (place) {
+              // set img
+              place.attr (type === 'file' ? 'href' : 'src', this.media.url(data.upload));
+
+              // remove gray
+              place.removeClass('img-grayscale');
+
+              // remove i
+              let i = jQuery('i', place);
+
+              // check i
+              if (i && i.length) i.remove();
+            }
+
+            // do update
+            if (opts.onChange) opts.onChange(jQuery(this.refs.editor).summernote('code'));
+
+            // set html
+            jQuery(this.refs.editor).val(jQuery(this.refs.editor).summernote('code'));
+
+            // set value
+            this.value = jQuery(this.refs.editor).summernote('code');
+          }
+        },
+        'dataType'    : 'json',
+        'contentType' : false,
+        'processData' : false
+      });
+    }
+
+    /**
+     * on file upload
+     *
+     * @param {Event} e
+     */
+    onFile (e) {
+      // check files
+      if (!e.target.files.length) return;
+      
+      // require uuid
+      const uuid = require('uuid');
+
+      // let uuid
+      let id = uuid();
+
+      // let value
+      let value = {
+        'id'       : id,
+        'file'     : e.target.files[0],
+        'name'     : e.target.files[0].name,
+        'size'     : e.target.files[0].size,
+        'temp'     : id,
+        'uploaded' : 0
+      };
+
+      // insert image
+      let insert = jQuery(this.refs.editor).summernote('insertNode', jQuery('<a href="#uploading" target="_blank" data-id="' + id + '">' + e.target.files[0].name + ' <i>Uploading...</i></a>')[0]);
+
+      // do upload
+      this._ajaxUpload(value, 'file');
+    }
 
     /**
      * set next
@@ -20,7 +203,7 @@
      */
     shouldUpdate (next) {
       // check next
-      if (!this.editor) return true;
+      if (!this.summernote) return true;
 
       // return false
       return false;
@@ -33,7 +216,7 @@
      */
     val () {
       // return value
-      return this.content;
+      return jQuery(this.refs.editor).summernote('code');
     }
 
     /**
@@ -41,118 +224,95 @@
      *
      * @private
      */
-    init () {
-      // require quill
-      const Quill = require('quill');
+    _summernote () {
+      // set icon replacements
+      let icons = {
+        'align'         : 'fa fa-align',
+        'alignCenter'   : 'fa fa-align-center',
+        'alignJustify'  : 'fa fa-align-justify',
+        'alignLeft'     : 'fa fa-align-left',
+        'alignRight'    : 'fa fa-align-right',
+        'indent'        : 'fa fa-indent',
+        'outdent'       : 'fa fa-outdent',
+        'arrowsAlt'     : 'fa fa-arrows-alt',
+        'bold'          : 'fa fa-bold',
+        'caret'         : 'fa fa-caret',
+        'circle'        : 'fa fa-circle',
+        'close'         : 'fa fa-close',
+        'code'          : 'fa fa-code',
+        'eraser'        : 'fa fa-eraser',
+        'font'          : 'fa fa-font',
+        'frame'         : 'fa fa-frame',
+        'italic'        : 'fa fa-italic',
+        'link'          : 'fa fa-link',
+        'unlink'        : 'fa fa-chain-broken',
+        'magic'         : 'fa fa-magic',
+        'menuCheck'     : 'fa fa-check',
+        'minus'         : 'fa fa-minus',
+        'orderedlist'   : 'fa fa-list-ol',
+        'pencil'        : 'fa fa-pencil',
+        'picture'       : 'fa fa-image',
+        'question'      : 'fa fa-question',
+        'redo'          : 'fa fa-redo',
+        'square'        : 'fa fa-square',
+        'strikethrough' : 'fa fa-strikethrough',
+        'subscript'     : 'fa fa-subscript',
+        'superscript'   : 'fa fa-superscript',
+        'table'         : 'fa fa-table',
+        'textHeight'    : 'fa fa-text-height',
+        'trash'         : 'fa fa-trash',
+        'underline'     : 'fa fa-underline',
+        'undo'          : 'fa fa-undo',
+        'unorderedlist' : 'fa fa-list-ul',
+        'video'         : 'fa fa-film'
+      };
 
-      // set quill to window
-      window.Quill = Quill;
+      // set toolbar
+      let toolbar = [
+        ['style', ['style']],
+        ['style', ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear']],
+        ['fontname', ['fontname']],
+        ['fontsize', ['fontsize']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['height', ['height']],
+        ['table', ['table']],
+        ['insert', ['link', 'picture', 'videoAttributes', 'caption', 'hr', 'file']],
+        ['view', ['fullscreen', 'codeview']],
+        ['help', ['help']]
+      ];
 
-      // require image upload
-      require('quill-image-drop-module/image-drop.min.js');
-      require('quill-image-resize-module/image-resize.min.js');
-      require('quill-image-uploader/dist/quill.imageUploader.min.js');
-
-      // create editor
-      this.editor = new Quill(this.refs.editor, {
-        'theme'   : 'snow',
-        'modules' : {
-          'toolbar' : {
-            'container' : [
-              ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-              ['blockquote', 'code-block'],
-              [{ 'align': [] }],
-
-              [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-              [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-
-              [{ 'font': [] }],
-              [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-
-              [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-
-              ['image'],
-            	['html'],
-
-              ['clean']
-            ]
+      // run summernote
+      this.summernote = jQuery(this.refs.editor).summernote({
+        'focus'     : false,
+        'icons'     : icons,
+        'toolbar'   : toolbar,
+        'onChange'  : () => {
+          // trigger change
+          this.trigger('change');
+        },
+        'callbacks' : {
+          'onBlur' : () => {
+            // trigger change
+            this.trigger('change');
           },
-          'imageDrop'     : true,
-          'imageResize'   : {},
-          'imageUploader' : {
-            'upload' : async (file) => {
-              // form data
-              const data = new FormData();
-              const uuid = require('uuid');
-
-              // append file
-              data.append('file', file);
-              data.append('temp', uuid());
-
-              // fetch
-              let res = await fetch('/media/image', {
-                'body'   : data,
-                'method' : 'POST'
-              });
-
-              // await json
-              res = await res.json();
-
-              // return src
-              return this.media.url(res.upload);
-            }
-          }
+          'onImageUpload' : this._image
+        },
+        'popover' : {
+          'image' : [
+            ['remove', ['removeMedia']]
+          ],
         }
       });
-
-      // set content
-      this.editor.on('text-change', (delta) => {
-        // set content
-        this.content = this.refs.editor.firstChild.innerHTML;
-
-        // set to value
-        if (this.refs.value) {
-          // set content
-          this.refs.value.value = this.content;
-        }
-
-        // on update
-        if (opts.onUpdate) {
-          // set content
-          opts.onUpdate(this.content);
-        }
+      
+      // trigger change on keyup
+      jQuery('.note-codable', this.root).on('keyup', () => {
+        // trigger change on keyup
+        this.trigger('change');
       });
 
-      // add html button
-      const htmlButton = document.querySelector('.ql-html');
-
-      // on click
-      htmlButton.addEventListener('click', () => {
-        // get editor
-      	let htmlEditor = document.querySelector('.ql-html-editor');
-
-        // check html editor
-        if (htmlEditor) {
-          // replace inner html
-        	this.editor.root.innerHTML = htmlEditor.value.replace(/\n/g, '');
-          this.editor.container.removeChild(htmlEditor.parentNode);
-        } else {
-          // get tidy
-          const pretty = require('pretty');
-
-          // create textarea element
-          htmlEditor = document.createElement('textarea');
-          htmlEditor.className = 'ql-editor ql-html-editor';
-          htmlEditor.innerHTML = pretty(this.editor.root.innerHTML).replace(/\n\n/g, '\n');
-
-          // create wrapper
-          let htmlWrapper = document.createElement('code');
-
-          // append child
-          htmlWrapper.appendChild(htmlEditor);
-          this.editor.container.appendChild(htmlWrapper);
-        }
-      });
+      // remove toolbar
+      jQuery('body > .note-popover').hide();
     }
 
     /**
@@ -165,10 +325,33 @@
       if (!this.eden.frontend) return;
 
       // set inner html
-      this.refs.editor.innerHTML = opts.content || '';
+      this.refs.editor.innerHTML = opts.content;
 
       // init summernote
-      this.init();
+      this._summernote();
+    });
+    
+    /**
+     * on change function
+     *
+     * @param {Event} 'change'
+     */
+    this.on('change', () => {
+      // check if frontend
+      if (!this.eden.frontend) return;
+      console.log('CHANGE');
+      
+      // set value
+      this.value = jQuery('.note-codable', this.root).is(':visible') ? jQuery('.note-codable', this.root).val() : jQuery(this.refs.editor).summernote('code');
+      
+      // on update
+      if (opts.onUpdate) {
+        // set content
+        opts.onUpdate(this.value);
+      }
+
+      // set value
+      jQuery(this.refs.editor).val(jQuery(this.refs.editor).summernote('code'));
     });
 
     /**
@@ -180,6 +363,8 @@
       // check if frontend
       if (!this.eden.frontend) return;
 
+      // destroy summernote
+      jQuery(this.refs.editor).summernote('destroy');
     });
   </script>
 </editor>
