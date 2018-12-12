@@ -1,13 +1,24 @@
-<eden-update>
+<eden-blocks>
   <div ref="placement" class="eden-blocks" if={ !this.placing }>
-    <div each={ row, x in this.rows } data-row={ x } class="row eden-blocks-row mb-3 row-eq-height">
-      <div each={ block, i in getBlocks(x) } data-block={ block.uuid } if={ getBlockData(block) } class={ getBlockData(block).class || 'col' } data-is="block-{ getBlockData(block).tag }" data={ getBlockData(block) } block={ block } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } />
+    <div each={ row, x in this.rows } data-row={ x } class="row eden-blocks-row row-eq-height">
+    
+      <div each={ block, i in getBlocks(x) } if={ this.acl.validate('admin') && getBlockData(block) } class="block-dropzone { getBlockData(block).class || 'col' }">
+        <div class="dropzone-top" />
+        <div class="dropzone-left" />
+        <div class="dropzone-right" />
+        <div class="dropzone-bottom" />
+        <div data-block={ block.uuid } data-is="block-{ getBlockData(block).tag }" data={ getBlockData(block) } block={ block } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } />
+      </div>
+      
+      <div each={ block, i in getBlocks(x) } if={ !this.acl.validate('admin') && getBlockData(block) } data-block={ block.uuid } class={ getBlockData(block).class || 'col' } data-is="block-{ getBlockData(block).tag }" data={ getBlockData(block) } block={ block } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } />
     </div>
   </div>
+  
   <block-modal blocks={ opts.blocks } add-block={ onAddBlock } />
 
   <script>
     // do mixins
+    this.mixin('acl');
     this.mixin('model');
 
     // set update
@@ -371,7 +382,6 @@
      * @return {Promise}
      */
     async loadBlocks (placement) {
-      console.log(placement);
       // set loading
       this.loading.blocks = true;
 
@@ -413,12 +423,15 @@
       // do dragula
       this.dragula = dragula(jQuery('.row.eden-blocks-row', this.refs.placement).toArray(), {
         'moves' : (el, container, handle) => {
-          return jQuery(handle).closest('.card-header').length;
+          return jQuery(handle).closest('.eden-block-hover').length;
         }
       }).on('drop', (el, target, source, sibling) => {
         // save order
         this.savePlacements();
-      }).on('drag', () => {
+      }).on('drag', (el, source) => {
+        // add drop zones
+        console.log('add drop zones');
+        
         // add is dragging
         jQuery(this.refs.placement).addClass('is-dragging');
       }).on('dragend', () => {
@@ -493,4 +506,4 @@
       });
     });
   </script>
-</eden-update>
+</eden-blocks>

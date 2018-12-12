@@ -287,6 +287,7 @@
         'focus'     : false,
         'icons'     : icons,
         'toolbar'   : toolbar,
+        'airMode'   : !!opts.airMode,
         'onChange'  : () => {
           // trigger change
           this.trigger('change');
@@ -298,7 +299,7 @@
           },
           'onImageUpload' : this._image
         },
-        'popover' : {
+        'popover' : !!opts.airMode ? undefined : {
           'image' : [
             ['remove', ['removeMedia']]
           ],
@@ -339,7 +340,6 @@
     this.on('change', () => {
       // check if frontend
       if (!this.eden.frontend) return;
-      console.log('CHANGE');
       
       // set value
       this.value = jQuery('.note-codable', this.root).is(':visible') ? jQuery('.note-codable', this.root).val() : jQuery(this.refs.editor).summernote('code');

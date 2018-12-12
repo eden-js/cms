@@ -4,64 +4,93 @@
 
 // set primary color
 $eden-admin-primary: #563d7c!default;
+$eden-admin-dropzone-width: ($spacer / 4)!default;
 $eden-admin-aside-hover-color: $white!default;
 
 // alter dashboard options
 .eden-blocks {
 
-  .card-header {
+  .eden-block {
+    position : relative;
 
-    line-height : $h2-font-size;
+    // alter hover
+    > .eden-block-hover {
+      @include transition(all 0.5s ease);
 
-    // alter edit
-    i.fa.fa-update {
-      color          : $eden-admin-primary;
-      width          : $h2-font-size;
-      height         : $h2-font-size;
-      font-size      : $font-size-base;
-      text-align     : center;
-      background     : $gray-300;
-      line-height    : $h2-font-size;
-      margin-right   : ($spacer / 2);
-      border-radius  : 50%;
-      vertical-align : top;
+      top      : 0;
+      right    : 0;
+      opacity  : 0;
+      z-index  : 20;
+      position : absolute;
+    }
 
-      &:hover {
-        color      : $eden-admin-aside-hover-color!important;
-        background : $eden-admin-primary;
+    &:hover {
+      > .eden-block-hover {
+        opacity : 1;
       }
-    }
-
-    i.fa.fa-caret {
-      font-size   : $font-size-base;
-      line-height : $h2-font-size;
-      margin-left : ($spacer / 2);
-    }
-
-    .btn {
-      width         : 31px;
-      text-align    : center;
-      padding-left  : 0;
-      padding-right : 0;
     }
   }
 
+  .is-dragging {
 
-  // is dragging
-  &.is-dragging {
+    // set show
+    .dropzone-top,
+    .dropzone-left,
+    .dropzone-right,
+    .dropzone-bottom {
 
-    > .row {
-      border  : ($spacer / 8) dashed $gray-400;
-      margin  : 0;
-      padding : $spacer;
+    }
+  }
 
-      > .col {
-        margin : 0;
-      }
+  .block-dropzone {
+    position : relative;
+
+    .dropzone-top,
+    .dropzone-left,
+    .dropzone-right,
+    .dropzone-bottom {
+      display  : none;
+      opacity  : 0;
+      position : absolute;
+
+      top    : 0;
+      left   : 0;
+      right  : 0;
+      bottom : 0;
     }
 
-    .chart-wrapper {
-      display : none;
+    .dropzone-top,
+    .dropzone-bottom {
+      height        : ($spacer * 2);
+      margin-top    : -($eden-admin-dropzone-width / 2);
+      margin-bottom : -($eden-admin-dropzone-width / 2);
+    }
+    .dropzone-left,
+    .dropzone-right {
+      width        : ($spacer * 2);
+      margin-left  : -($eden-admin-dropzone-width / 2);
+      margin-right : -($eden-admin-dropzone-width / 2);
+    }
+
+    .dropzone-top {
+      bottom        : auto;
+      margin-top    : -(($spacer * 2) + ($eden-admin-dropzone-width / 2));
+      border-bottom : $eden-admin-dropzone-width solid theme-color(primary);
+    }
+    .dropzone-left {
+      right        : auto;
+      margin-left  : -(($spacer * 2) + ($eden-admin-dropzone-width / 2));
+      border-right : $eden-admin-dropzone-width solid theme-color(primary);
+    }
+    .dropzone-right {
+      left         : auto;
+      border-left  : $eden-admin-dropzone-width solid theme-color(primary);
+      margin-right : -(($spacer * 2) + ($eden-admin-dropzone-width / 2));
+    }
+    .dropzone-bottom {
+      top           : auto;
+      border-top    : $eden-admin-dropzone-width solid theme-color(primary);
+      margin-bottom : -(($spacer * 2) + ($eden-admin-dropzone-width / 2));
     }
   }
 
@@ -84,9 +113,9 @@ $eden-admin-aside-hover-color: $white!default;
   .cms-placement-update {
     @include transition(all 0.5s ease);
 
-    top        : 0;
     left       : 0;
     right      : 0;
+    bottom     : 100%;
     opacity    : 0;
     z-index    : 15;
     padding    : ($spacer / 2);
@@ -100,32 +129,4 @@ $eden-admin-aside-hover-color: $white!default;
       opacity : 1;
     }
   }
-
-  &.updating {
-
-    .cms-placement-update {
-      opacity       : 1;
-      padding       : $spacer;
-      position      : static;
-      margin-bottom : $spacer;
-    }
-  }
-}
-
-.ql-html:after {
-  content     : '\f121';
-  font-family : 'Font Awesome 5 Pro';
-  font-weight : 300;
-}
-
-.editor .ql-html-editor {
-  top        : 0;
-  left       : 0;
-  width      : 100%;
-  border     : 0;
-  bottom     : 0;
-  padding    : 12px;
-  position   : absolute;
-  background : #fffff0;
-  box-sizing : border-box;
 }
