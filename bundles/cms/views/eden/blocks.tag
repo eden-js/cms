@@ -6,9 +6,7 @@
         Root
       </span>
       <eden-add type="top" onclick={ onAddBlock } way="unshift" placement="" />
-      
       <div each={ el, i in this.elements } el={ el } data-is={ el.tag || 'eden-loading' } on-add-block={ onAddBlock } placement={ i } i={ i } />
-      
       <eden-add type="bottom" onclick={ onAddBlock } way="push" placement="" />
     </div>
     
