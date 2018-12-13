@@ -1,20 +1,28 @@
 <eden-blocks>
   <div ref="placement" class="eden-blocks" if={ !this.placing }>
-    <div each={ row, x in this.rows } data-row={ x } class="row eden-blocks-row row-eq-height">
+
+    <div class="eden-dropzone">
+      <span class="eden-dropzone-label">
+        Root
+      </span>
+      <eden-add type="top" onclick={ onAddBlock } way="unshift" placement="" />
+      
+      <div each={ el, i in this.elements } el={ el } data-is={ el.tag || 'eden-loading' } on-add-block={ onAddBlock } placement={ i } i={ i } />
+      
+      <eden-add type="bottom" onclick={ onAddBlock } way="push" placement="" />
+    </div>
     
+    <div each={ row, x in this.rows } data-row={ x } class="row eden-blocks-row row-eq-height">
+
       <div each={ block, i in getBlocks(x) } if={ this.acl.validate('admin') && getBlockData(block) } class="block-dropzone { getBlockData(block).class || 'col' }">
-        <div class="dropzone-top" />
-        <div class="dropzone-left" />
-        <div class="dropzone-right" />
-        <div class="dropzone-bottom" />
         <div data-block={ block.uuid } data-is="block-{ getBlockData(block).tag }" data={ getBlockData(block) } block={ block } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } />
       </div>
-      
+
       <div each={ block, i in getBlocks(x) } if={ !this.acl.validate('admin') && getBlockData(block) } data-block={ block.uuid } class={ getBlockData(block).class || 'col' } data-is="block-{ getBlockData(block).tag }" data={ getBlockData(block) } block={ block } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } />
     </div>
   </div>
-  
-  <block-modal blocks={ opts.blocks } add-block={ onAddBlock } />
+
+  <block-modal blocks={ opts.blocks } add-block={ onSetBlock } />
 
   <script>
     // do mixins
@@ -27,7 +35,20 @@
     this.blocks    = (opts.placement || {}).render || [];
     this.loading   = {};
     this.updating  = {};
+    this.elements  = [];
     this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});
+
+    // set elements
+    if (!this.elements.length) {
+      // set elements
+      this.elements = [{
+        'tag'      : 'eden-container',
+        'children' : [{
+          'tag'      : 'eden-row',
+          'children' : []
+        }]
+      }];
+    }
 
     /**
      * gets blocks
@@ -74,6 +95,25 @@
       // return found
       return found;
     }
+    
+    /**
+     * on add block
+     *
+     * @param  {Event} e
+     *
+     * @return {*}
+     */
+    onAddBlock (e) {
+      // get target
+      let target = !jQuery(e.target).is('eden-add') ? jQuery(e.target).closest('eden-add') : jQuery(e.target);
+      
+      // way
+      this.way      = target.attr('way');
+      this.position = target.attr('placement');
+      
+      // open modal
+      jQuery('.add-block-modal', this.root).modal('show');
+    }
 
     /**
      * on refresh block
@@ -111,7 +151,7 @@
       for (let key in result.result) {
         // clone to placement
         data[key] = result.result[key];
-        
+
         // set in placement
         opts.placement[data] = result.result[key];
       }
@@ -226,38 +266,25 @@
      *
      * @return {*}
      */
-    async onAddBlock (type) {
+    async onSetBlock (type) {
       // get uuid
-      const uuid = require('uuid');
-
-      // add block to first row
-      if (!this.placement.get('blocks')) this.placement.set('blocks', []);
-      if (!this.placement.get('placements')) this.placement.set('placements', []);
-
-      // get placements/blocks
-      let blocks     = this.placement.get('blocks')    || [];
-      let placements = this.placement.get('placements') || [];
-
-      // check placements
-      if (!placements.length) placements.push([]);
+      const uuid    = require('uuid');
+      const dotProp = require('dot-prop');
 
       // create block
       let block = {
         'uuid' : uuid(),
         'type' : type
       };
-
-      // push to blocks
-      blocks.push(block);
-      placements[0].unshift(block.uuid);
-
-      // set
-      this.placement.set('blocks',     blocks);
-      this.placement.set('placements', placements);
-
-      // save placement
-      await this.savePlacement(this.placement);
-      await this.loadBlocks(this.placement);
+      
+      // get from position
+      let pos = dotProp.get(this.elements, this.position);
+      
+      // do thing
+      pos[this.way](block);
+      
+      // update view
+      this.update();
     }
 
     /**
@@ -294,11 +321,11 @@
       for (let key in data.result) {
         // clone to placement
         placement.set(key, data.result[key]);
-        
+
         // set in opts
         if (data.result[key]) opts.placement[key] = data.result[key];
       }
-      
+
       // set placement
       this.placement = placement;
 
@@ -421,22 +448,28 @@
       const dragula = require('dragula');
 
       // do dragula
-      this.dragula = dragula(jQuery('.row.eden-blocks-row', this.refs.placement).toArray(), {
+      this.dragula = dragula(jQuery('.row.eden-blocks-row, .eden-dropzone', this.refs.placement).toArray(), {
         'moves' : (el, container, handle) => {
           return jQuery(handle).closest('.eden-block-hover').length;
         }
       }).on('drop', (el, target, source, sibling) => {
         // save order
-        this.savePlacements();
+        // this.savePlacements();
       }).on('drag', (el, source) => {
         // add drop zones
         console.log('add drop zones');
-        
+
         // add is dragging
         jQuery(this.refs.placement).addClass('is-dragging');
       }).on('dragend', () => {
         // remove is dragging
         jQuery(this.refs.placement).removeClass('is-dragging');
+      }).on('over', function (el, container) {
+        // add class
+        jQuery(container).addClass('eden-block-over');
+      }).on('out', function (el, container) {
+        // remove class
+        jQuery(container).removeClass('eden-block-over');
       });
     }
 
@@ -474,7 +507,7 @@
 
       // set placement
       this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});
-        
+
       // check blocks
       if ((this.placement.get('blocks') || []).length !== this.blocks.length) {
         // load blocks
