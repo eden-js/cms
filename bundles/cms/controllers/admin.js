@@ -27,7 +27,7 @@ class CMSAdminController extends Controller {
 
     // register simple block
     BlockHelper.block('frotend.content', {
-      'for'         : ['frontend'],
+      'for'         : ['frontend', 'admin'],
       'title'       : 'WYSIWYG Area',
       'description' : 'Lets you add HTML to a block'
     }, async (req, block) => {
@@ -42,8 +42,6 @@ class CMSAdminController extends Controller {
       // return
       return {
         'tag'     : 'content',
-        'class'   : blockModel.get('class') || null,
-        'title'   : blockModel.get('title') || '',
         'content' : blockModel.get('content') || ''
       };
     }, async (req, block) => {
@@ -56,8 +54,6 @@ class CMSAdminController extends Controller {
       });
 
       // set data
-      blockModel.set('class',   req.body.data.class);
-      blockModel.set('title',   req.body.data.title);
       blockModel.set('content', req.body.data.content);
 
       // save block

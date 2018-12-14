@@ -267,6 +267,15 @@
       // get from position
       let pos = (this.position || '').length ? dotProp.get(this.placement.get('positions'), this.position) : this.placement.get('positions');
 
+      // force pos to exist
+      if (!pos && (this.position || '').length) {
+        // set pos
+        pos = [];
+
+        // set
+        dotProp.set(this.placement.get('positions'), this.position, pos);
+      }
+
       // do thing
       pos[this.way](block);
 
@@ -419,6 +428,9 @@
           return (jQuery(el).is('[data-block]') || jQuery(el).closest('[data-block]').length) && (jQuery(handle).is('.move') || jQuery(handle).closest('.move').length);
         }
       }).on('drop', (el, target, source, sibling) => {
+        // don't do anything if same placement
+        if (jQuery(target).attr('data-placement') === jQuery(source).attr('data-placement')) return;
+
         // get current placement
         let placement = jQuery(el).attr('placement');
 
@@ -465,6 +477,12 @@
       }).on('out', function (el, container) {
         // remove class
         jQuery(container).removeClass('eden-block-over');
+      });
+      
+      // on update
+      this.on('update', () => {
+        // set containers
+        this.dragula.containers = jQuery('.eden-dropzone', this.refs.placement).toArray();
       });
     }
 
