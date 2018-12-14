@@ -62,7 +62,7 @@ class CMSAdminController extends Controller {
 
     // register simple block
     BlockHelper.block('structure.container', {
-      'for'         : ['frontend'],
+      'for'         : ['frontend', 'admin'],
       'title'       : 'Container Element',
       'categories'  : ['structure'],
       'description' : 'Creates container structure'
@@ -72,13 +72,11 @@ class CMSAdminController extends Controller {
 
       // return
       return block;
-    }, async (req, block) => {
-
-    });
+    }, async (req, block) => { });
 
     // register simple block
     BlockHelper.block('structure.row', {
-      'for'         : ['frontend'],
+      'for'         : ['frontend', 'admin'],
       'title'       : 'Row Element',
       'categories'  : ['structure'],
       'description' : 'Creates row structure'
@@ -88,9 +86,21 @@ class CMSAdminController extends Controller {
 
       // return
       return block;
-    }, async (req, block) => {
+    }, async (req, block) => { });
 
-    });
+    // register simple block
+    BlockHelper.block('structure.div', {
+      'for'         : ['frontend', 'admin'],
+      'title'       : 'Div Element',
+      'categories'  : ['structure'],
+      'description' : 'Creates div structure'
+    }, async (req, block) => {
+      // set tag
+      block.tag = 'div';
+
+      // return
+      return block;
+    }, async (req, block) => { });
   }
 
   /**
