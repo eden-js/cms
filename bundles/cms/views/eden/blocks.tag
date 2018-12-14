@@ -1,22 +1,13 @@
 <eden-blocks>
   <div ref="placement" class="eden-blocks" if={ !this.placing }>
 
-    <div class="eden-dropzone">
-      <span class="eden-dropzone-label">
+    <div class={ 'eden-dropzone' : this.acl.validate('admin') } ref="placement" data-placement="" if={ !this.updating }>
+      <span class="eden-dropzone-label" if={ this.acl.validate('admin') }>
         Root
       </span>
-      <eden-add type="top" onclick={ onAddBlock } way="unshift" placement="" />
-      <div each={ el, i in this.elements } el={ el } data-is={ el.tag || 'eden-loading' } on-add-block={ onAddBlock } placement={ i } i={ i } />
-      <eden-add type="bottom" onclick={ onAddBlock } way="push" placement="" />
-    </div>
-    
-    <div each={ row, x in this.rows } data-row={ x } class="row eden-blocks-row row-eq-height">
-
-      <div each={ block, i in getBlocks(x) } if={ this.acl.validate('admin') && getBlockData(block) } class="block-dropzone { getBlockData(block).class || 'col' }">
-        <div data-block={ block.uuid } data-is="block-{ getBlockData(block).tag }" data={ getBlockData(block) } block={ block } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } />
-      </div>
-
-      <div each={ block, i in getBlocks(x) } if={ !this.acl.validate('admin') && getBlockData(block) } data-block={ block.uuid } class={ getBlockData(block).class || 'col' } data-is="block-{ getBlockData(block).tag }" data={ getBlockData(block) } block={ block } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } />
+      <eden-add type="top" onclick={ onAddBlock } way="unshift" placement="" if={ this.acl.validate('admin') } />
+      <div each={ el, i in getBlocks() } el={ el } no-reorder data-is={ getElement(el) } data-block={ el.uuid } data={ getBlock(el) } block={ el } get-block={ getBlock } on-add-block={ onAddBlock } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } placement={ i } i={ i } />
+      <eden-add type="bottom" onclick={ onAddBlock } way="push" placement="" if={ this.acl.validate('admin') } />
     </div>
   </div>
 
@@ -27,54 +18,16 @@
     this.mixin('acl');
     this.mixin('model');
 
+    // require uuid
+    const uuid = require('uuid');
+
     // set update
     this.rows      = [1, 2, 3, 4, 5, 6, 7, 8];
     this.type      = opts.type;
     this.blocks    = (opts.placement || {}).render || [];
     this.loading   = {};
-    this.updating  = {};
-    this.elements  = [];
+    this.updating  = false;
     this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});
-
-    // set elements
-    if (!this.elements.length) {
-      // set elements
-      this.elements = [{
-        'tag'      : 'eden-container',
-        'children' : [{
-          'tag'      : 'eden-row',
-          'children' : []
-        }]
-      }];
-    }
-
-    /**
-     * gets blocks
-     *
-     * @param  {Integer} i
-     *
-     * @return {*}
-     */
-    getBlocks (i) {
-      // check blocks
-      if (!this.placement.get('blocks')) return [];
-      if (!this.placement.get('placements')) return [];
-
-      // check blocks
-      let row = [];
-
-      // get placements
-      let blocks = this.placement.get('placements')[i];
-
-      // check blocks
-      if (!blocks) return [];
-
-      // return blocks
-      return blocks.map((block) => {
-        // return found
-        return this.placement.get('blocks').find((b) => b.uuid === block);
-      }).filter((item) => item);
-    }
 
     /**
      * get block data
@@ -83,7 +36,7 @@
      *
      * @return {*}
      */
-    getBlockData (block) {
+    getBlock (block) {
       // get found
       let found = this.blocks.find((b) => b.uuid === block.uuid);
 
@@ -93,7 +46,29 @@
       // return found
       return found;
     }
-    
+
+    /**
+     * get element
+     *
+     * @param  {Object} child
+     *
+     * @return {*}
+     */
+    getElement (child) {
+      // return get child
+      return (this.getBlock(child) || {}).tag ? 'block-' + (this.getBlock(child) || {}).tag : 'eden-loading';
+    }
+
+    /**
+     * get blocks
+     *
+     * @return {Array}
+     */
+    getBlocks () {
+      // return filtered blocks
+      return (this.placement.get('positions') || []).filter((child) => child);
+    }
+
     /**
      * on add block
      *
@@ -104,11 +79,11 @@
     onAddBlock (e) {
       // get target
       let target = !jQuery(e.target).is('eden-add') ? jQuery(e.target).closest('eden-add') : jQuery(e.target);
-      
+
       // way
       this.way      = target.attr('way');
       this.position = target.attr('placement');
-      
+
       // open modal
       jQuery('.add-block-modal', this.root).modal('show');
     }
@@ -119,7 +94,7 @@
      * @param  {Event}  e
      * @param  {Object} block
      */
-    async onSaveBlock (block, data, preventUpdate) {
+    async onSaveBlock (block, data, placement, preventUpdate) {
       // prevent update check
       if (!preventUpdate) {
         // set loading
@@ -154,6 +129,9 @@
         opts.placement[data] = result.result[key];
       }
 
+      // save placement
+      await this.savePlacement(this.placement);
+
       // check prevent update
       if (!preventUpdate) {
         // set loading
@@ -180,7 +158,7 @@
       // log data
       let res = await fetch('/placement/' + this.placement.get('id') + '/block/save', {
         'body' : JSON.stringify({
-          'data'   : data,
+          'data'  : data,
           'block' : block
         }),
         'method'  : 'post',
@@ -212,7 +190,10 @@
      * @param  {Event}  e
      * @param  {Object} block
      */
-    async onRemoveBlock (block, data) {
+    async onRemoveBlock (block, data, placement) {
+      // get uuid
+      const dotProp = require('dot-prop');
+
       // set loading
       block.removing = true;
 
@@ -222,7 +203,7 @@
       // log data
       let res = await fetch('/placement/' + this.placement.get('id') + '/block/remove', {
         'body' : JSON.stringify({
-          'data'   : data,
+          'data'  : data,
           'block' : block
         }),
         'method'  : 'post',
@@ -236,22 +217,31 @@
       let result = await res.json();
 
       // remove from everywhere
-      this.placement.set('blocks', this.placement.get('blocks').filter((w) => {
+      this.placement.set('elements', this.placement.get('elements').filter((w) => {
         // check found in row
         return block.uuid !== w.uuid;
       }));
 
-      // set placements
-      this.placement.set('placements', this.placement.get('placements').map((row) => {
-        // filter row
-        return row.filter((id) => id !== block.uuid);
-      }));
+      // get final part
+      placement = placement.toString().split('.');
+
+      // get index
+      let index = placement.pop();
+
+      // join with dot
+      placement = placement.join('.');
+
+      // get from position
+      let pos = (placement || '').length ? dotProp.get(this.placement.get('positions'), placement) : this.placement.get('positions');
+
+      // delete from parent
+      pos.splice(parseInt(index), 1);
+
+      // update view
+      this.update();
 
       // save placement
       await this.savePlacement(this.placement);
-
-      // set loading
-      delete block.removing;
 
       // update view
       this.update();
@@ -266,7 +256,6 @@
      */
     async onSetBlock (type) {
       // get uuid
-      const uuid    = require('uuid');
       const dotProp = require('dot-prop');
 
       // create block
@@ -274,13 +263,53 @@
         'uuid' : uuid(),
         'type' : type
       };
-      
+
       // get from position
-      let pos = dotProp.get(this.elements, this.position);
-      
+      let pos = (this.position || '').length ? dotProp.get(this.placement.get('positions'), this.position) : this.placement.get('positions');
+
       // do thing
       pos[this.way](block);
-      
+
+      // set flattened blocks
+      let flatten = (accum, block) => {
+        // standard children elements
+        let children = ['left', 'right', 'children'];
+
+        // get sanitised
+        let sanitised = JSON.parse(JSON.stringify(block));
+
+        // loop for of
+        for (let child of children) {
+          // delete child field
+          delete sanitised[child];
+        }
+
+        // check block has children
+        accum.push(sanitised);
+
+        // check children
+        for (let child of children) {
+          // check child
+          if (block[child]) {
+            // remove empty blocks
+            block[child] = block[child].filter((block) => block);
+
+            // push children to flat
+            accum.push(...block[child].reduce(flatten, []));
+          }
+        }
+
+        // return accum
+        return accum;
+      };
+
+      // set flat
+      this.placement.set('elements', (this.placement.get('positions') || []).reduce(flatten, []));
+
+      // save placement
+      await this.savePlacement(this.placement);
+      await this.onSaveBlock(block, {});
+
       // update view
       this.update();
     }
@@ -338,68 +367,6 @@
     }
 
     /**
-     * saves placements
-     *
-     * @return {Promise}
-     */
-    async savePlacements () {
-      // set placements
-      let placements = [];
-
-      // each row
-      jQuery('> .row', this.refs.placement).each((i, item) => {
-        // get row
-        let row = [];
-
-        // get each item in row
-        jQuery('[data-block]', item).each((x, block) => {
-          // push to row
-          row.push(jQuery(block).attr('data-block'));
-        });
-
-        // push row to placements
-        placements.push(row);
-      });
-
-      // set loading
-      this.placing = true;
-      this.loading.placements = true;
-
-      // update view
-      this.update();
-
-      // filter blocks
-      this.placement.set('blocks', this.placement.get('blocks').filter((block) => {
-        // check found in row
-        return placements.find((row) => {
-          // return id === block id
-          return row.find((id) => id === block.uuid);
-        })
-      }));
-
-      // set placements
-      this.placement.set('placements', placements);
-
-      // set placing
-      this.placing = false;
-
-      // update view
-      this.update();
-
-      // init dragula again
-      this.initDragula();
-
-      // save
-      await this.savePlacement(this.placement);
-
-      // set loading
-      this.loading.placements = false;
-
-      // update view
-      this.update();
-    }
-
-    /**
      * loads placement blocks
      *
      * @param  {Model} placement
@@ -444,19 +411,49 @@
     initDragula () {
       // require dragula
       const dragula = require('dragula');
+      const dotProp = require('dot-prop');
 
       // do dragula
-      this.dragula = dragula(jQuery('.row.eden-blocks-row, .eden-dropzone', this.refs.placement).toArray(), {
+      this.dragula = dragula(jQuery('.eden-dropzone', this.refs.placement).toArray(), {
         'moves' : (el, container, handle) => {
-          return jQuery(handle).closest('.eden-block-hover').length;
+          return (jQuery(el).is('[data-block]') || jQuery(el).closest('[data-block]').length) && (jQuery(handle).is('.move') || jQuery(handle).closest('.move').length);
         }
       }).on('drop', (el, target, source, sibling) => {
-        // save order
-        // this.savePlacements();
-      }).on('drag', (el, source) => {
-        // add drop zones
-        console.log('add drop zones');
+        // get current placement
+        let placement = jQuery(el).attr('placement');
 
+        // get blocks of target
+        let blocks = [];
+
+        // get positions
+        let positions = this.placement.get('positions') || [];
+
+        // loop physical blocks
+        jQuery('> [data-block]', target).each((i, block) => {
+          // get actual block
+          blocks.push(dotProp.get(positions, jQuery(block).attr('placement')));
+        });
+
+        // remove logic
+        this.updating = true;
+        this.update();
+
+        // delete placement
+        dotProp.delete(positions, placement);
+
+        // set placement
+        positions = dotProp.set(positions, jQuery(target).attr('data-placement'), blocks);
+
+        // update placement
+        this.placement.set('positions', positions);
+
+        // remove logic
+        this.updating = false;
+        this.update();
+
+        // save
+        this.savePlacement(this.placement);
+      }).on('drag', (el, source) => {
         // add is dragging
         jQuery(this.refs.placement).addClass('is-dragging');
       }).on('dragend', () => {
@@ -507,7 +504,7 @@
       this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});
 
       // check blocks
-      if ((this.placement.get('blocks') || []).length !== this.blocks.length) {
+      if ((this.placement.get('elements') || []).length !== this.blocks.length) {
         // load blocks
         this.loadBlocks(this.placement);
       }

@@ -63,6 +63,38 @@ class CMSAdminController extends Controller {
       // save block
       await blockModel.save();
     });
+
+    // register simple block
+    BlockHelper.block('structure.container', {
+      'for'         : ['frontend'],
+      'title'       : 'Container Element',
+      'categories'  : ['structure'],
+      'description' : 'Creates container structure'
+    }, async (req, block) => {
+      // set tag
+      block.tag = 'container';
+
+      // return
+      return block;
+    }, async (req, block) => {
+
+    });
+
+    // register simple block
+    BlockHelper.block('structure.row', {
+      'for'         : ['frontend'],
+      'title'       : 'Row Element',
+      'categories'  : ['structure'],
+      'description' : 'Creates row structure'
+    }, async (req, block) => {
+      // set tag
+      block.tag = 'row';
+
+      // return
+      return block;
+    }, async (req, block) => {
+
+    });
   }
 
   /**

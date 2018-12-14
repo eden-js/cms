@@ -21,6 +21,20 @@
               <p class="m-0">{ block.opts.description }</p>
             </li>
           </ul>
+          
+          <hr />
+          
+          <ul class="list-group">
+            <li each={ block, i in getBlocks('structure') || [] } class={ 'list-group-item list-group-item-action flex-column align-items-start' : true, 'active' : isActive(block) } onclick={ onBlock }>
+              <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">
+                  { block.opts.title }
+                </h5>
+              </div>
+              <p class="m-0">{ block.opts.description }</p>
+            </li>
+          </ul>
+          
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -39,12 +53,28 @@
      *
      * @return {*}
      */
-    getBlocks () {
+    getBlocks (category) {
       // return sorted blocks
-      return (opts.blocks || []).sort((a, b) => {
+      let rtn = (opts.blocks || []).sort((a, b) => {
         // Return sort
         return ('' + a.opts.title).localeCompare(b.opts.title);
       });
+      
+      // check default
+      if (category) {
+        rtn = rtn.filter((block) => {
+          // set category
+          return (block.opts.categories || []).includes(category);
+        });
+      } else {
+        rtn = rtn.filter((block) => {
+          // check categories
+          return !(block.opts.categories);
+        });
+      }
+      
+      // return rtn
+      return rtn;
     }
     
     /**
@@ -58,7 +88,7 @@
       e.stopPropagation();
       
       // activate block
-      this.type = e.item.block.type;
+      this.type = e.item.block.type || e.item.block.tag;
       
       // update view
       this.update();

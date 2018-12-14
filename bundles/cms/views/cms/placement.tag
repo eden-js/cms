@@ -1,21 +1,5 @@
 <cms-placement>
   <div class="cms-placement placement-{ opts.placement.split('.').join('-') }">
-    <div class="cms-placement-update" if={ this.acl.validate('admin') }>
-      <div class="row">
-        <div class="col-8 d-flex align-items-center">
-          <div class="w-100">
-            Placement "{ opts.placement }"
-          </div>
-        </div>
-        <div class="col-4 d-flex align-items-center">
-          <div class="w-100 text-right">
-            <button class="btn btn-sm mr-3 btn-primary" data-toggle="modal" data-target="#block-modal">
-              Add Block
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="cms-placement-blocks" data-placement={ opts.placement } data-is="eden-blocks" blocks={ this.getBlocks() } placement={ getPlacement() } on-save={ onSave } position={ opts.placement } />
   </div>
   

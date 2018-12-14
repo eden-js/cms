@@ -49,7 +49,7 @@
             <label>
               Block Class
             </label>
-            <input class="form-control" ref="class" value={ opts.data.class } onchange={ onClass } />
+            <input class="form-control" ref="class" value={ opts.block.class } onchange={ onClass } />
           </div>
           <yield from="modal" />
         </div>
@@ -76,10 +76,10 @@
       e.stopPropagation();
 
       // set class
-      opts.data.class = e.target.value.length ? e.target.value : null;
+      this.parent.opts.block.class = e.target.value.length ? e.target.value : null;
 
       // run opts
-      if (opts.onSave) await opts.onSave(opts.block, opts.data);
+      if (opts.onSave) await opts.onSave(this.parent.opts.block, this.parent.opts.data, this.parent.opts.placement);
     }
 
     /**
@@ -95,7 +95,7 @@
       this.update();
 
       // run opts
-      if (opts.onRefresh) await opts.onRefresh(opts.block, opts.data);
+      if (opts.onRefresh) await opts.onRefresh(this.parent.opts.block, this.parent.opts.data, this.parent.opts.placement);
 
       // set refreshing
       this.refreshing = false;
@@ -117,7 +117,7 @@
       this.update();
 
       // run opts
-      if (opts.onRemove) await opts.onRemove(opts.block, opts.data);
+      if (opts.onRemove) await opts.onRemove(this.parent.opts.block, this.parent.opts.data, this.parent.opts.placement);
 
       // set refreshing
       this.removing = false;

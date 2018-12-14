@@ -6,12 +6,12 @@
         <label>
           Block Color
         </label>
-        <input class="form-control" ref="color" value={ opts.data.color } onchange={ opts.onColor } />
+        <input class="form-control" ref="color" value={ opts.block.color || 'primary' } onchange={ opts.onColor } />
       </div>
     </yield>
 
     <yield to="body">
-      <div class="card mb-3 bg-{ opts.data.color || 'primary' }">
+      <div class="card mb-3 bg-{ opts.block.color || 'primary' }">
     
         <a class="card-body text-white" href={ opts.data.href }>
           <div class="row">
@@ -131,30 +131,13 @@
 
      * @param  {Event} e
      */
-    async onClass (e) {
-      // prevent default
-      e.preventDefault();
-      e.stopPropagation();
-
-      // set class
-      opts.data.class = e.target.value.length ? e.target.value : null;
-
-      // run opts
-      if (opts.onSave) await opts.onSave(opts.block, opts.data);
-    }
-
-    /**
-     * on class
-
-     * @param  {Event} e
-     */
     async onColor (e) {
       // prevent default
       e.preventDefault();
       e.stopPropagation();
 
       // set class
-      opts.data.color = e.target.value.length ? e.target.value : null;
+      opts.block.color = e.target.value.length ? e.target.value : null;
 
       // run opts
       if (opts.onSave) await opts.onSave(opts.block, opts.data);

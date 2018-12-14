@@ -92,12 +92,12 @@ class PlacementController extends Controller {
     // return JSON
     res.json({
       'state'  : 'success',
-      'result' : (await Promise.all((placement.get('blocks') || []).map(async (block) => {
+      'result' : (await Promise.all((placement.get('elements') || []).map(async (block) => {
         // get from register
         let registered = BlockHelper.blocks().find((b) => b.type === block.type);
 
         // check registered
-        if (!registered) return null;
+        if (!registered) return block;
 
         // get data
         let data = await registered.render(req, block);
@@ -134,14 +134,14 @@ class PlacementController extends Controller {
     }
 
     // get block
-    let blocks  = placement.get('blocks') || [];
+    let blocks  = placement.get('elements') || [];
     let current = blocks.find((block) => block.uuid === req.body.block.uuid);
 
     // update
     let registered = BlockHelper.blocks().find((w) => w.type === current.type);
 
     // await save
-    await registered.save(req, current);
+    if (registered) await registered.save(req, current);
 
     // get rendered
     let rendered = await registered.render(req, current);
@@ -219,11 +219,11 @@ class PlacementController extends Controller {
     }
 
     // update placement
-    placement.set('type',       req.body.type);
-    placement.set('name',       req.body.name);
-    placement.set('blocks',     req.body.blocks);
-    placement.set('position',   req.body.position);
-    placement.set('placements', req.body.placements);
+    placement.set('type',      req.body.type);
+    placement.set('name',      req.body.name);
+    placement.set('elements',  req.body.elements);
+    placement.set('position',  req.body.position);
+    placement.set('positions', req.body.positions);
 
     // save placement
     await placement.save();
