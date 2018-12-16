@@ -21,12 +21,12 @@ class PlacementController extends Controller {
   /**
    * construct user PlacementController controller
    */
-  constructor () {
+  constructor() {
     // run super
     super();
 
     // bind methods
-    this.viewAction   = this.viewAction.bind(this);
+    this.viewAction = this.viewAction.bind(this);
     this.updateAction = this.updateAction.bind(this);
   }
 
@@ -39,12 +39,12 @@ class PlacementController extends Controller {
    * @call   model.listen.placement
    * @return {Async}
    */
-  async listenAction (id, uuid, opts) {
-    /// return if no id
+  async listenAction(id, uuid, opts) {
+    // / return if no id
     if (!id) return;
 
     // join room
-    opts.socket.join('placement.' + id);
+    opts.socket.join(`placement.${id}`);
 
     // add to room
     return await ModelHelper.listen(opts.sessionID, await Placement.findById(id), uuid);
@@ -59,8 +59,8 @@ class PlacementController extends Controller {
    * @call   model.deafen.placement
    * @return {Async}
    */
-  async liveDeafenAction (id, uuid, opts) {
-    /// return if no id
+  async liveDeafenAction(id, uuid, opts) {
+    // / return if no id
     if (!id) return;
 
     // add to room
@@ -74,41 +74,36 @@ class PlacementController extends Controller {
    * @layout   admin
    * @priority 12
    */
-  async viewAction (req, res) {
+  async viewAction(req, res) {
     // set website variable
-    let create    = true;
     let placement = new Placement();
 
     // check for website model
     if (req.params.id) {
       // load by id
-      create    = false;
       placement = await Placement.findById(req.params.id);
     }
 
-    // res JSON
-    let sanitised = await placement.sanitise();
-
     // return JSON
     res.json({
-      'state'  : 'success',
-      'result' : (await Promise.all((placement.get('elements') || []).map(async (block) => {
+      state  : 'success',
+      result : (await Promise.all((placement.get('elements') || []).map(async (block) => {
         // get from register
-        let registered = BlockHelper.blocks().find((b) => b.type === block.type);
+        const registered = BlockHelper.blocks().find(b => b.type === block.type);
 
         // check registered
         if (!registered) return block;
 
         // get data
-        let data = await registered.render(req, block);
+        const data = await registered.render(req, block);
 
         // set uuid
         data.uuid = block.uuid;
 
         // return render
         return data;
-      }))).filter((b) => b),
-      'message' : 'Successfully got blocks'
+      }))).filter(b => b),
+      message : 'Successfully got blocks',
     });
   }
 
@@ -119,44 +114,42 @@ class PlacementController extends Controller {
    * @layout   admin
    * @priority 12
    */
-  async saveBlockAction (req, res) {
+  async saveBlockAction(req, res) {
     // set website variable
-    let create    = true;
     let placement = new Placement({
-      'position' : req.body.position
+      position : req.body.position,
     });
 
     // check for website model
     if (req.params.id) {
       // load by id
-      create    = false;
       placement = await Placement.findById(req.params.id);
     }
 
     // get block
-    let blocks  = placement.get('elements') || [];
-    let current = blocks.find((block) => block.uuid === req.body.block.uuid);
+    const blocks  = placement.get('elements') || [];
+    const current = blocks.find(block => block.uuid === req.body.block.uuid);
 
     // update
-    let registered = BlockHelper.blocks().find((w) => w.type === current.type);
+    const registered = BlockHelper.blocks().find(w => w.type === current.type);
 
     // await save
     if (registered) await registered.save(req, current);
 
     // get rendered
-    let rendered = await registered.render(req, current);
+    const rendered = await registered.render(req, current);
 
     // set uuid
     rendered.uuid = req.body.block.uuid;
 
     // emit
-    socket.room('placement.' + placement.get('_id').toString(), 'placement.' + placement.get('_id').toString() + '.block', rendered);
+    socket.room(`placement.${placement.get('_id').toString()}`, `placement.${placement.get('_id').toString()}.block`, rendered);
 
     // return JSON
     res.json({
-      'state'   : 'success',
-      'result'  : rendered,
-      'message' : 'Successfully saved block'
+      state   : 'success',
+      result  : rendered,
+      message : 'Successfully saved block',
     });
   }
 
@@ -167,13 +160,13 @@ class PlacementController extends Controller {
    * @layout   admin
    * @priority 12
    */
-  async removeBlockAction (req, res) {
+  async removeBlockAction(req, res) {
     // get notes block from db
-    let blockModel = await Block.findOne({
-      'uuid' : req.body.block.uuid
+    const blockModel = await Block.findOne({
+      uuid : req.body.block.uuid,
     }) || new Block({
-      'uuid' : req.body.block.uuid,
-      'type' : req.body.block.type
+      uuid : req.body.block.uuid,
+      type : req.body.block.type,
     });
 
     // remove block
@@ -181,9 +174,9 @@ class PlacementController extends Controller {
 
     // return JSON
     res.json({
-      'state'   : 'success',
-      'result'  : null,
-      'message' : 'Successfully removed block'
+      state   : 'success',
+      result  : null,
+      message : 'Successfully removed block',
     });
   }
 
@@ -193,7 +186,7 @@ class PlacementController extends Controller {
    * @route  {post} /create
    * @layout admin
    */
-  createAction () {
+  createAction() {
     // return update action
     return this.updateAction(...arguments);
   }
@@ -206,36 +199,36 @@ class PlacementController extends Controller {
    *
    * @route {post} /:id/update
    */
-  async updateAction (req, res) {
+  async updateAction(req, res) {
     // set website variable
-    let create    = true;
+    let create = true;
     let placement = new Placement();
 
     // check for website model
     if (req.params.id) {
       // load by id
-      create    = false;
+      create = false;
       placement = await Placement.findById(req.params.id);
     }
 
     // update placement
-    placement.set('type',      req.body.type);
-    placement.set('name',      req.body.name);
-    placement.set('elements',  req.body.elements);
-    placement.set('position',  req.body.position);
+    placement.set('type', req.body.type);
+    placement.set('name', req.body.name);
+    placement.set('elements', req.body.elements);
+    placement.set('position', req.body.position);
     placement.set('positions', req.body.positions);
 
     // save placement
     await placement.save();
 
     // send alert
-    req.alert('success', 'Successfully ' + (create ? 'Created' : 'Updated') + ' placement!');
+    req.alert('success', `Successfully ${create ? 'Created' : 'Updated'} placement!`);
 
     // return JSON
     res.json({
-      'state'   : 'success',
-      'result'  : await placement.sanitise(),
-      'message' : 'Successfully updated placement'
+      state   : 'success',
+      result  : await placement.sanitise(),
+      message : 'Successfully updated placement',
     });
   }
 }

@@ -9,25 +9,27 @@ $eden-admin-aside-hover-color: $white!default;
 // alter dashboard options
 .eden-blocks {
 
-  .eden-block {
-    position : relative;
+  .eden-dropzone {
+    .eden-block {
+      position : relative;
 
-    // alter hover
-    > .eden-block-hover {
-      @include transition(all 0.5s ease);
-
-      top      : 0;
-      right    : 0;
-      opacity  : 0;
-      z-index  : 20;
-      position : absolute;
-    }
-
-    &:hover {
-      outline : $border-width solid theme-color(primary);
-
+      // alter hover
       > .eden-block-hover {
-        opacity : 1;
+        @include transition(all 0.5s ease);
+
+        top      : 0;
+        right    : 0;
+        opacity  : 0;
+        z-index  : 20;
+        position : absolute;
+      }
+
+      &:hover {
+        outline : $border-width solid theme-color(primary);
+
+        > .eden-block-hover {
+          opacity : 1;
+        }
       }
     }
   }

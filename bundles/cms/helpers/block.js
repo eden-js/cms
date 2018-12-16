@@ -12,7 +12,7 @@ class BlockHelper extends Helper {
   /**
    * construct placement helper
    */
-  constructor () {
+  constructor() {
     // run super
     super();
 
@@ -26,10 +26,9 @@ class BlockHelper extends Helper {
   /**
    * builds placement helper
    */
-  build () {
+  build() {
     // build placement helper
     this.__blocks = [];
-
   }
 
   /**
@@ -42,24 +41,24 @@ class BlockHelper extends Helper {
    *
    * @return {*}
    */
-  block (type, opts, render, save) {
+  block(type, opts, render, save) {
     // check found
-    let found = this.__blocks.find((block) => block.type === type);
+    const found = this.__blocks.find(block => block.type === type);
 
     // push block
     if (!found) {
       // check found
       this.__blocks.push({
-        'type'   : type,
-        'opts'   : opts,
-        'save'   : save,
-        'render' : render
+        type,
+        opts,
+        save,
+        render,
       });
     } else {
       // set on found
-      found.type   = type;
-      found.opts   = opts;
-      found.save   = save;
+      found.type = type;
+      found.opts = opts;
+      found.save = save;
       found.render = render;
     }
   }
@@ -69,7 +68,7 @@ class BlockHelper extends Helper {
    *
    * @return {Array}
    */
-  blocks () {
+  blocks() {
     // returns blocks
     return this.__blocks;
   }
@@ -79,7 +78,7 @@ class BlockHelper extends Helper {
    *
    * @return {Array}
    */
-  renderBlocks (include) {
+  renderBlocks(include) {
     // map blocks
     return this.__blocks.filter((block) => {
       // check for
@@ -90,8 +89,8 @@ class BlockHelper extends Helper {
     }).map((block) => {
       // return block
       return {
-        'type' : block.type,
-        'opts' : block.opts
+        type : block.type,
+        opts : block.opts,
       };
     });
   }
@@ -104,15 +103,15 @@ class BlockHelper extends Helper {
    *
    * @return {Promise}
    */
-  async render (type, user) {
+  async render(type, user) {
     // return object
     return {
-      'blocks'    : this.renderBlocks(),
-      'placement' : (await Placement.findOne({
-        'type' : type
+      blocks    : this.renderBlocks(),
+      placement : (await Placement.findOne({
+        type,
       }) || new Placement({
-        'type' : type
-      })).sanitise()
+        type,
+      })).sanitise(),
     };
   }
 }

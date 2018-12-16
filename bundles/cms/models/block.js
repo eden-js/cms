@@ -9,7 +9,7 @@ class Block extends Model {
   /**
    * construct placement model
    */
-  constructor () {
+  constructor() {
     // run super
     super(...arguments);
   }
@@ -19,13 +19,13 @@ class Block extends Model {
    *
    * @return {Promise}
    */
-  async sanitise () {
+  async sanitise() {
     // return placement
     return {
-      'id'         : this.get('_id') ? this.get('_id').toString() : null,
-      'type'       : this.get('type'),
-      'blocks'     : this.get('blocks'),
-      'placements' : this.get('placements')
+      id         : this.get('_id') ? this.get('_id').toString() : null,
+      type       : this.get('type'),
+      blocks     : this.get('blocks'),
+      placements : this.get('placements'),
     };
   }
 }

@@ -1,7 +1,7 @@
 <block>
-  <div class={ 'eden-block' : true, 'eden-block-admin' : this.acl.validate('admin') } id="block-{ opts.block.uuid }">
+  <div class={ 'eden-block' : true, 'eden-block-admin' : this.acl.validate('admin') && !opts.preview } id="block-{ opts.block.uuid }">
 
-    <div class="eden-block-hover" if={ this.acl.validate('admin') }>
+    <div class="eden-block-hover" if={ this.acl.validate('admin') && !opts.preview }>
       <div class="row row-eq-height">
         <div class="col-8 d-flex align-items-center">
           <div class="w-100">
@@ -33,7 +33,7 @@
     <yield from="body" />
   </div>
 
-  <div class="modal fade" id="block-{ opts.block.uuid }-update" tabindex="-1" role="dialog" aria-labelledby="block-{ opts.block.uuid }-label" aria-hidden="true" if={ this.acl.validate('admin') }>
+  <div class="modal fade" id="block-{ opts.block.uuid }-update" tabindex="-1" role="dialog" aria-labelledby="block-{ opts.block.uuid }-label" aria-hidden="true" if={ this.acl.validate('admin') && !opts.preview }>
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">

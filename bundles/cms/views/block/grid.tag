@@ -1,5 +1,5 @@
 <block-grid>
-  <block on-refresh={ opts.onRefresh } on-save={ opts.onSave } on-remove={ opts.onRemove } on-save-grid={ onSaveGrid } block={ opts.block } data={ opts.data } on-grid-state={ onGridState } ref="block" class="block-notes">
+  <block on-refresh={ opts.onRefresh } on-save={ opts.onSave } on-remove={ opts.onRemove } on-save-grid={ onSaveGrid } block={ opts.block } data={ opts.data } preview={ opts.preview } on-grid-state={ onGridState } ref="block" class="block-notes">
 
     <yield to="buttons">
       <button class="btn btn-sm btn-secondary" onclick={ opts.onSaveGrid }>

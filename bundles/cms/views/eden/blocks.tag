@@ -1,13 +1,13 @@
 <eden-blocks>
-  <div ref="placement" class="eden-blocks" if={ !this.placing }>
+  <div ref="placement" class="eden-blocks">
 
-    <div class={ 'eden-dropzone' : this.acl.validate('admin') } ref="placement" data-placement="" if={ !this.updating }>
-      <span class="eden-dropzone-label" if={ this.acl.validate('admin') }>
+    <div class={ 'eden-dropzone' : this.acl.validate('admin') && !opts.preview } ref="placement" data-placement="" if={ !this.updating }>
+      <span class="eden-dropzone-label" if={ this.acl.validate('admin') && !opts.preview }>
         Root
       </span>
-      <eden-add type="top" onclick={ onAddBlock } way="unshift" placement="" if={ this.acl.validate('admin') } />
-      <div each={ el, i in getBlocks() } el={ el } no-reorder data-is={ getElement(el) } data-block={ el.uuid } data={ getBlock(el) } block={ el } get-block={ getBlock } on-add-block={ onAddBlock } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } placement={ i } i={ i } />
-      <eden-add type="bottom" onclick={ onAddBlock } way="push" placement="" if={ this.acl.validate('admin') } />
+      <eden-add type="top" onclick={ onAddBlock } way="unshift" placement="" if={ this.acl.validate('admin') && !opts.preview } />
+      <div each={ el, i in getBlocks() } el={ el } no-reorder data-is={ getElement(el) } preview={ opts.preview } data-block={ el.uuid } data={ getBlock(el) } block={ el } get-block={ getBlock } on-add-block={ onAddBlock } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } placement={ i } i={ i } />
+      <eden-add type="bottom" onclick={ onAddBlock } way="push" placement="" if={ this.acl.validate('admin') && !opts.preview } />
     </div>
   </div>
 
@@ -28,6 +28,39 @@
     this.loading   = {};
     this.updating  = false;
     this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});
+
+    // set flattened blocks
+    const flatten = (accum, block) => {
+      // standard children elements
+      let children = ['left', 'right', 'children'];
+
+      // get sanitised
+      let sanitised = JSON.parse(JSON.stringify(block));
+
+      // loop for of
+      for (let child of children) {
+        // delete child field
+        delete sanitised[child];
+      }
+
+      // check block has children
+      accum.push(sanitised);
+
+      // check children
+      for (let child of children) {
+        // check child
+        if (block[child]) {
+          // remove empty blocks
+          block[child] = block[child].filter((block) => block);
+
+          // push children to flat
+          accum.push(...block[child].reduce(flatten, []));
+        }
+      }
+
+      // return accum
+      return accum;
+    };
 
     /**
      * get block data
@@ -279,39 +312,6 @@
       // do thing
       pos[this.way](block);
 
-      // set flattened blocks
-      let flatten = (accum, block) => {
-        // standard children elements
-        let children = ['left', 'right', 'children'];
-
-        // get sanitised
-        let sanitised = JSON.parse(JSON.stringify(block));
-
-        // loop for of
-        for (let child of children) {
-          // delete child field
-          delete sanitised[child];
-        }
-
-        // check block has children
-        accum.push(sanitised);
-
-        // check children
-        for (let child of children) {
-          // check child
-          if (block[child]) {
-            // remove empty blocks
-            block[child] = block[child].filter((block) => block);
-
-            // push children to flat
-            accum.push(...block[child].reduce(flatten, []));
-          }
-        }
-
-        // return accum
-        return accum;
-      };
-
       // set flat
       this.placement.set('elements', (this.placement.get('positions') || []).reduce(flatten, []));
 
@@ -516,10 +516,20 @@
       if (!this.eden.frontend) return;
 
       // init dragula
-      if (!this.dragula) this.initDragula();
+      if (!this.dragula && this.acl.validate('admin')) this.initDragula();
 
       // set placement
       this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});
+        
+      // check default
+      if (opts.positions && !(this.placement.get('positions') || []).length && !this.placement.get('id')) {
+        // set default
+        this.placement.set('positions', opts.positions);
+        this.placement.set('elements', (this.placement.get('positions') || []).reduce(flatten, []));
+        
+        // save blocks
+        this.savePlacement(this.placement);
+      }
 
       // check blocks
       if ((this.placement.get('elements') || []).length !== this.blocks.length) {
