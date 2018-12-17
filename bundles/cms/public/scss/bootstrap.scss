@@ -22,16 +22,13 @@ $eden-admin-aside-hover-color: $white!default;
   &.is-dragging {
 
     .eden-dropzone {
-      outline : $border-width solid theme-color(secondary);
+      outline        : $border-width solid theme-color(secondary);
+      padding-top    : $spacer;
+      padding-bottom : $spacer;
 
       .eden-block-hover,
       .eden-dropzone-label {
         display : block;
-      }
-
-      &.empty {
-        padding-top    : $spacer;
-        padding-bottom : $spacer;
       }
 
       &.eden-block-over {

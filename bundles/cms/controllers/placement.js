@@ -212,7 +212,6 @@ class PlacementController extends Controller {
     }
 
     // update placement
-    placement.set('type', req.body.type);
     placement.set('name', req.body.name);
     placement.set('elements', req.body.elements);
     placement.set('position', req.body.position);
