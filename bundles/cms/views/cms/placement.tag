@@ -1,15 +1,6 @@
 <cms-placement>
   <div class="cms-placement placement-{ opts.placement.split('.').join('-') }">
-  
-    <div class="eden-placement-hover" if={ this.acl.validate('admin') }>
-      <div class="btn-group float-right">
-        <button class="btn btn-primary" onclick={ onToggleUpdate }>
-          <i class="fa fa-pencil" />
-        </button>
-      </div>
-    </div>
-
-    <div class="cms-placement-blocks" data-placement={ opts.placement } data-is="eden-blocks" preview={ !this.isUpdate } blocks={ this.getBlocks() } placement={ getPlacement() } on-save={ onSave } position={ opts.placement } />
+    <div class="cms-placement-blocks" data-placement={ opts.placement } data-is="eden-blocks" blocks={ this.getBlocks() } placement={ getPlacement() } on-save={ onSave } position={ opts.placement } />
   </div>
   
   <script>
