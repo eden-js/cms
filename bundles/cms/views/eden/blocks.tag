@@ -440,9 +440,6 @@
           return (jQuery(el).is('[data-block]') || jQuery(el).closest('[data-block]').length) && (jQuery(handle).is('.move') || jQuery(handle).closest('.move').length);
         }
       }).on('drop', (el, target, source, sibling) => {
-        // don't do anything if same placement
-        if (jQuery(target).attr('data-placement') === jQuery(source).attr('data-placement')) return;
-
         // get current placement
         let placement = jQuery(el).attr('placement');
 
@@ -475,7 +472,7 @@
         this.update();
 
         // delete placement
-        dotProp.delete(positions, placement);
+        if (jQuery(target).attr('data-placement') !== jQuery(source).attr('data-placement')) dotProp.delete(positions, placement);
 
         // set placement
         if (jQuery(target).attr('data-placement').length) {
