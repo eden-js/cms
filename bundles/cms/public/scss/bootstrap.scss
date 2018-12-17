@@ -16,8 +16,14 @@ $eden-admin-aside-hover-color: $white!default;
     .eden-dropzone-label {
       display : none;
     }
+  }
 
-    &:hover {
+  &:hover,
+  &.is-dragging {
+
+    .eden-dropzone {
+      outline : $border-width solid theme-color(secondary);
+
       .eden-block-hover,
       .eden-dropzone-label {
         display : block;
@@ -26,6 +32,20 @@ $eden-admin-aside-hover-color: $white!default;
       &.empty {
         padding-top    : $spacer;
         padding-bottom : $spacer;
+      }
+
+      &.eden-block-over {
+        outline : $border-width solid theme-color(primary);
+
+        &:before {
+          top        : 0;
+          left       : 0;
+          right      : 0;
+          bottom     : 0;
+          content    : '';
+          position   : absolute;
+          background : rgba(theme-color(primary), 0.1);
+        }
       }
 
       .eden-dropzone-label {
@@ -41,18 +61,23 @@ $eden-admin-aside-hover-color: $white!default;
 
         padding-left  : ($spacer / 2);
         padding-right : ($spacer / 2);
-      }
 
-      &:hover > .eden-dropzone-label {
-        color      : $white;
-        display    : block;
-        opacity    : 1;
-        background : theme-color(primary);
+        &.eden-dropzone-label-end {
+          top    : auto;
+          bottom : 0;
+        }
       }
 
       .eden-block {
         outline  : $border-width solid rgba(theme-color(secondary), 0.2);
         position : relative;
+
+        &:hover > .eden-dropzone-label {
+          color      : $white;
+          display    : block;
+          opacity    : 1;
+          background : theme-color(primary);
+        }
 
         // alter hover
         > .eden-block-hover {
@@ -71,36 +96,6 @@ $eden-admin-aside-hover-color: $white!default;
           > .eden-block-hover {
             opacity : 1;
           }
-        }
-      }
-    }
-  }
-
-  // on is dragging
-  &.is-dragging {
-    .eden-dropzone {
-      outline : $border-width solid theme-color(secondary);
-
-      .eden-dropzone-label {
-        display : block;
-      }
-
-      &.eden-block-over {
-        outline : $border-width solid theme-color(primary);
-
-        &:before {
-          top        : 0;
-          left       : 0;
-          right      : 0;
-          bottom     : 0;
-          content    : '';
-          position   : absolute;
-          background : rgba(theme-color(primary), 0.1);
-        }
-
-        .eden-dropzone-label {
-          z-index    : 100;
-          background : theme-color(primary);
         }
       }
     }

@@ -456,9 +456,21 @@
 
         // loop physical blocks
         jQuery('> [data-block]', target).each((i, block) => {
+          // set get from
+          let getFrom = jQuery(block).attr('placement');
+          let gotBlock = dotProp.get(positions, getFrom);
+
+          // clone block
+          if (getFrom === placement) {
+            gotBlock = JSON.parse(JSON.stringify(gotBlock));
+          }
+
           // get actual block
-          blocks.push(dotProp.get(positions, jQuery(block).attr('placement')));
+          blocks.push(gotBlock);
         });
+
+        // filter blocks
+        blocks = blocks.filter((block) => block);
 
         // remove logic
         this.updating = true;
@@ -468,7 +480,13 @@
         dotProp.delete(positions, placement);
 
         // set placement
-        positions = dotProp.set(positions, jQuery(target).attr('data-placement'), blocks);
+        if (jQuery(target).attr('data-placement').length) {
+          // set positions
+          positions = dotProp.set(positions, jQuery(target).attr('data-placement'), blocks);
+        } else {
+          // set positions
+          positions = blocks;
+        }
 
         // update placement
         this.placement.set('positions', positions);

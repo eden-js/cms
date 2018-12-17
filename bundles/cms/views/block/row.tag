@@ -1,16 +1,19 @@
 <block-row>
   <block on-refresh={ opts.onRefresh } chart={ this.chart } options={ this.options } placement={ opts.placement } preview={ opts.preview } on-row-class={ onRowClass } on-add-block={ opts.onAddBlock } get-blocks={ getBlocks } get-element={ getElement } get-block={ opts.getBlock } on-save={ opts.onSave } on-remove={ opts.onRemove } size={ this.size } block={ opts.block } data={ opts.data } on-color={ onColor } ref="block" class="block-row-inner">
     <yield to="body">
+      <span class="eden-dropzone-label" if={ this.acl.validate('admin') && !opts.preview }>
+        Row #{ opts.placement }
+      </span>
+      <eden-add type="top" onclick={ opts.onAddBlock } way="unshift" placement={ opts.placement + '.children' } if={ this.acl.validate('admin') && !opts.preview } />
+      
       <div class="{ opts.block.class || 'row row-eq-height' } { this.acl.validate('admin') && !opts.preview ? 'eden-dropzone' : '' } { 'empty' : !opts.getBlocks(opts.block.children).length }" data-placement={ opts.placement + '.children' }>
-        <span class="eden-dropzone-label" if={ this.acl.validate('admin') && !opts.preview }>
-          Row
-        </span>
-        <eden-add type="top" onclick={ opts.onAddBlock } way="unshift" placement={ opts.placement + '.children' } if={ this.acl.validate('admin') && !opts.preview } />
-        
         <div each={ child, a in opts.getBlocks(opts.block.children) } no-reorder class={ child.class || 'col' } data-is={ opts.getElement(child) } preview={ opts.preview } data-block={ child.uuid } data={ opts.getBlock(child) } block={ child } get-block={ opts.getBlock } on-add-block={ opts.onAddBlock } on-save={ opts.onSave } on-remove={ opts.onRemove } on-refresh={ opts.onRefresh } i={ a } placement={ opts.placement + '.children.' + a } />
-        
-        <eden-add type="bottom" onclick={ opts.onAddBlock } way="push" placement={ opts.placement + '.children' } if={ this.acl.validate('admin') && !opts.preview } />
       </div>
+      
+      <eden-add type="bottom" onclick={ opts.onAddBlock } way="push" placement={ opts.placement + '.children' } if={ this.acl.validate('admin') && !opts.preview } />
+      <span class="eden-dropzone-label eden-dropzone-label-end" if={ this.acl.validate('admin') && !opts.preview }>
+        Row #{ opts.placement } End
+      </span>
     </yield>
     
     <yield to="modal">
