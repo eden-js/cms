@@ -34,6 +34,7 @@ $eden-admin-aside-hover-color: $white!default;
         top        : 0;
         left       : 0;
         opacity    : 0;
+        z-index    : 103;
         position   : absolute;
         background : theme-color(secondary);
 
@@ -60,7 +61,7 @@ $eden-admin-aside-hover-color: $white!default;
           top      : 0;
           right    : 0;
           opacity  : 0;
-          z-index  : 100;
+          z-index  : 105;
           position : absolute;
         }
 
