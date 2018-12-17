@@ -378,11 +378,20 @@
     /**
      * loads placement blocks
      *
-     * @param  {Model} placement
+     * @param  {Object} opts
      *
      * @return {Promise}
      */
-    async loadBlocks (placement) {
+    async loadBlocks (opts) {
+      // set opts
+      if (!opts) opts = {};
+        
+      // require query string
+      const qs = require('querystring');
+      
+      // set opts
+      opts = qs.stringify(opts);
+
       // set loading
       this.loading.blocks = true;
 
@@ -390,10 +399,10 @@
       this.update();
 
       // check type
-      if (!placement.type) placement.set('type', opts.type);
+      if (!this.placement.type) this.placement.set('type', opts.type);
 
       // log data
-      let res = await fetch('/placement/' + placement.get('id') + '/view', {
+      let res = await fetch('/placement/' + this.placement.get('id') + '/view' + (opts.length ? '?' + opts : ''), {
         'method'  : 'get',
         'headers' : {
           'Content-Type' : 'application/json'
@@ -534,7 +543,7 @@
       // check blocks
       if ((this.placement.get('elements') || []).length !== this.blocks.length) {
         // load blocks
-        this.loadBlocks(this.placement);
+        this.loadBlocks();
       }
 
       // loads block
