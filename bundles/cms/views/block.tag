@@ -15,7 +15,7 @@
               <button class="btn btn-sm btn-secondary" onclick={ onRefresh }>
                 <i class={ 'fa fa-sync' : true, 'fa-spin' : this.refreshing || opts.block.refreshing } />
               </button>
-              <button class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#block-{ opts.block.uuid }-update">
+              <button class="btn btn-sm btn-secondary" onclick={ onShowModal }>
                 <i class="fa fa-pencil" />
               </button>
               <button class="btn btn-sm btn-secondary" onclick={ onRemove }>
@@ -33,7 +33,7 @@
     <yield from="body" />
   </div>
 
-  <div class="modal fade" id="block-{ opts.block.uuid }-update" tabindex="-1" role="dialog" aria-labelledby="block-{ opts.block.uuid }-label" aria-hidden="true" if={ this.acl.validate('admin') && !opts.preview }>
+  <div class="modal fade" id="block-{ opts.block.uuid }-update" tabindex="-1" role="dialog" aria-labelledby="block-{ opts.block.uuid }-label" aria-hidden="true" if={ this.showModal && this.acl.validate('admin') && !opts.preview }>
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -64,6 +64,27 @@
     // set variables
     this.loading = {};
     this.updating = {};
+    this.showModal = false;
+
+    /**
+     * on class
+
+     * @param  {Event} e
+     */
+    async onShowModal (e) {
+      // prevent default
+      e.preventDefault();
+      e.stopPropagation();
+
+      // set class
+      this.showModal = true;
+      
+      // update view
+      this.update();
+
+      // run opts
+      jQuery('#block-' + opts.block.uuid + '-update').modal('show');
+    }
 
     /**
      * on class

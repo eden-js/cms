@@ -1,7 +1,7 @@
 <block-container>
   <block on-refresh={ opts.onRefresh } chart={ this.chart } options={ this.options } placement={ opts.placement } preview={ opts.preview } on-container-class={ onContainerClass } on-add-block={ opts.onAddBlock } get-blocks={ getBlocks } get-element={ getElement } get-block={ opts.getBlock } on-save={ opts.onSave } on-remove={ opts.onRemove } size={ this.size } block={ opts.block } data={ opts.data } on-color={ onColor } ref="block" class="block-container-inner">
     <yield to="body">
-      <div class="{ opts.block.container || 'container' } { this.acl.validate('admin') && !opts.preview ? 'eden-dropzone' : '' }" data-placement={ opts.placement + '.children' }>
+      <div class="{ opts.block.container || 'container' } { this.acl.validate('admin') && !opts.preview ? 'eden-dropzone' : '' } { 'empty' : !opts.getBlocks(opts.block.children).length }" data-placement={ opts.placement + '.children' }>
         <span class="eden-dropzone-label" if={ this.acl.validate('admin') && !opts.preview }>
           Container
         </span>

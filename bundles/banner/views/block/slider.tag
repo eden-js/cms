@@ -1,5 +1,5 @@
 <block-slider>
-  <block on-refresh={ opts.onRefresh } on-save={ opts.onSave } media={ this.media } language={ this.language } on-remove={ opts.onRemove } block={ opts.block } data={ opts.data } on-update-title={ onUpdateTitle } on-complete-update-title={ onCompleteUpdateTitle } on-should-update-title={ onShouldUpdateTitle } on-update-interval={ onUpdateInterval } on-update-category={ onUpdateCategory } on-update-show={ onUpdateShow } ref="block" class="block-slider">
+  <block on-refresh={ opts.onRefresh } on-save={ opts.onSave } media={ this.media } preview={ opts.preview } language={ this.language } on-remove={ opts.onRemove } block={ opts.block } data={ opts.data } on-update-title={ onUpdateTitle } on-complete-update-title={ onCompleteUpdateTitle } on-should-update-title={ onShouldUpdateTitle } on-update-interval={ onUpdateInterval } on-update-category={ onUpdateCategory } on-update-show={ onUpdateShow } ref="block" class="block-slider">
 
     <yield to="modal">
       <div class="form-group">

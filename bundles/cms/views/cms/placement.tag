@@ -1,12 +1,24 @@
 <cms-placement>
   <div class="cms-placement placement-{ opts.placement.split('.').join('-') }">
-    <div class="cms-placement-blocks" data-placement={ opts.placement } data-is="eden-blocks" blocks={ this.getBlocks() } placement={ getPlacement() } on-save={ onSave } position={ opts.placement } />
+  
+    <div class="eden-placement-hover" if={ this.acl.validate('admin') }>
+      <div class="btn-group float-right">
+        <button class="btn btn-primary" onclick={ onToggleUpdate }>
+          <i class="fa fa-pencil" />
+        </button>
+      </div>
+    </div>
+
+    <div class="cms-placement-blocks" data-placement={ opts.placement } data-is="eden-blocks" preview={ !this.isUpdate } blocks={ this.getBlocks() } placement={ getPlacement() } on-save={ onSave } position={ opts.placement } />
   </div>
   
   <script>
     // mixin acl
     this.mixin('acl');
     this.mixin('model');
+    
+    // is update
+    this.isUpdate = false;
     
     /**
      * on save placements
@@ -22,6 +34,23 @@
       
       // set placements
       this.eden.set('placements', placements);
+    }
+
+    /**
+     * on update name
+     *
+     * @param  {Event} e
+     */
+    onToggleUpdate (e) {
+      // prevent default
+      e.preventDefault();
+      e.stopPropagation();
+
+      // set update
+      this.isUpdate = !this.isUpdate;
+
+      // update
+      this.update();
     }
     
     /**

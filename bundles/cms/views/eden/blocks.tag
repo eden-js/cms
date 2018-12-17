@@ -1,7 +1,7 @@
 <eden-blocks>
   <div ref="placement" class="eden-blocks">
 
-    <div class={ 'eden-dropzone' : this.acl.validate('admin') && !opts.preview } ref="placement" data-placement="" if={ !this.updating }>
+    <div class="{ 'eden-dropzone' : this.acl.validate('admin') && !opts.preview } { 'empty' : !getBlocks().length }" ref="placement" data-placement="" if={ !this.updating }>
       <span class="eden-dropzone-label" if={ this.acl.validate('admin') && !opts.preview }>
         Root
       </span>
@@ -297,6 +297,9 @@
         'type' : type
       };
 
+      // check positions
+      if (!this.placement.get('positions')) this.placement.set('positions', []);
+
       // get from position
       let pos = (this.position || '').length ? dotProp.get(this.placement.get('positions'), this.position) : this.placement.get('positions');
 
@@ -308,6 +311,8 @@
         // set
         dotProp.set(this.placement.get('positions'), this.position, pos);
       }
+
+      console.log(this.position, pos);
 
       // do thing
       pos[this.way](block);
@@ -385,10 +390,10 @@
     async loadBlocks (opts) {
       // set opts
       if (!opts) opts = {};
-        
+
       // require query string
       const qs = require('querystring');
-      
+
       // set opts
       opts = qs.stringify(opts);
 
@@ -487,7 +492,7 @@
         // remove class
         jQuery(container).removeClass('eden-block-over');
       });
-      
+
       // on update
       this.on('update', () => {
         // set containers
@@ -529,13 +534,13 @@
 
       // set placement
       this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});
-        
+
       // check default
       if (opts.positions && !(this.placement.get('positions') || []).length && !this.placement.get('id')) {
         // set default
         this.placement.set('positions', opts.positions);
         this.placement.set('elements', (this.placement.get('positions') || []).reduce(flatten, []));
-        
+
         // save blocks
         this.savePlacement(this.placement);
       }
