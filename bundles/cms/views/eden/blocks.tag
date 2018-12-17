@@ -6,7 +6,7 @@
         Root
       </span>
       <eden-add type="top" onclick={ onAddBlock } way="unshift" placement="" if={ this.acl.validate('admin') && !opts.preview } />
-      <div each={ el, i in getBlocks() } el={ el } no-reorder data-is={ getElement(el) } preview={ opts.preview } data-block={ el.uuid } data={ getBlock(el) } block={ el } get-block={ getBlock } on-add-block={ onAddBlock } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } placement={ i } i={ i } />
+      <div each={ el, i in getBlocks() } el={ el } no-reorder class={ el.class } data-is={ getElement(el) } preview={ opts.preview } data-block={ el.uuid } data={ getBlock(el) } block={ el } get-block={ getBlock } on-add-block={ onAddBlock } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } placement={ i } i={ i } />
       <eden-add type="bottom" onclick={ onAddBlock } way="push" placement="" if={ this.acl.validate('admin') && !opts.preview } />
     </div>
   </div>
@@ -311,8 +311,6 @@
         // set
         dotProp.set(this.placement.get('positions'), this.position, pos);
       }
-
-      console.log(this.position, pos);
 
       // do thing
       pos[this.way](block);
