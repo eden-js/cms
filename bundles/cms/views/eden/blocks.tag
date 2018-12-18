@@ -91,6 +91,9 @@
      * @return {*}
      */
     getBlock (block) {
+      // return on no block
+      if (!block) return;
+
       // get found
       let found = this.blocks.find((b) => b.uuid === block.uuid);
 
@@ -120,7 +123,7 @@
      */
     getBlocks () {
       // return filtered blocks
-      return (this.placement.get('positions') || []).filter((child) => child);
+      return (this.placement.get('positions') || []).map(fix);
     }
 
     /**
@@ -463,6 +466,9 @@
       }).on('drop', (el, target, source, sibling) => {
         // get current placement
         let placement = jQuery(el).attr('placement');
+        
+        // check target
+        if (!target) return;
 
         // get blocks of target
         let blocks = [];
@@ -475,6 +481,11 @@
           // set get from
           let getFrom = jQuery(block).attr('placement');
           let gotBlock = dotProp.get(positions, getFrom);
+          
+          console.log(getFrom, gotBlock);
+          
+          // return on no block
+          if (!gotBlock) return;
 
           // clone block
           if (getFrom === placement) {
@@ -484,9 +495,6 @@
           // get actual block
           blocks.push(gotBlock);
         });
-
-        // filter blocks
-        blocks = blocks.filter((block) => block);
 
         // remove logic
         this.updating = true;
