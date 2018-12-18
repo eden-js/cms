@@ -2,13 +2,6 @@
   <admin-header title="{ opts.item.id ? 'Update' : 'Create' } Page { this.page.get('title.' + this.language) }" on-preview={ onPreview }>
     <yield to="right">
 
-      <button class="btn btn-lg btn-success mr-3" onclick={ opts.onPreview }>
-        { this.preview ? 'Back' : 'Preview' }
-      </button>
-      <button class="btn btn-lg mr-3 btn-primary" data-toggle="modal" data-target="#block-modal">
-        Add Block
-      </button>
-
       <a href="/admin/page" class="btn btn-lg btn-primary">
         Back
       </a>
@@ -48,7 +41,7 @@
       </div>
     </div>
 
-    <div data-is={ this.preview ? 'eden-view' : 'eden-update' } placement={ this.page.get('placement') || {} } for="frontend" blocks={ opts.blocks } type={ opts.type } on-save={ onPlacement } />
+    <div class="cms-placement-blocks" data-placement={ (opts.item || {}).id || 'page' } data-is="eden-blocks" placement={ this.page.get('placement') || {} } for="frontend" blocks={ opts.blocks } on-save={ onPlacement } position={ (opts.item || {}).id || 'page' } />
 
   </div>
 
@@ -219,6 +212,9 @@
 
       // set page
       this.page = this.model('page', opts.item);
+      
+      // set to placements
+      if (this.page.id) this.eden.set('placements.' + this.page.id, this.page.get('placement'));
 
     });
   </script>
