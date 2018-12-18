@@ -113,7 +113,8 @@ class CMSController extends Controller {
     res.render('page', {
       item   : await page.sanitise(req),
       title  : page.get('title')[req.language],
-      layout : page.get('layout') || 'main',
+      blocks : BlockHelper.renderBlocks('frontend'),
+      layout : page.get('layout') || 'main'
     });
   }
 

@@ -51,12 +51,10 @@
     this.mixin('model');
 
     // set update
-    this.type       = opts.type;
-    this.page       = this.model('page', opts.item);
-    this.preview    = false;
-    this.loading    = {};
-    this.updating   = {};
-    this.showSelect = false;
+    this.type     = opts.type;
+    this.page     = this.model('page', opts.item);
+    this.loading  = {};
+    this.updating = {};
 
     // load data
     this.language  = this.i18n.lang();
@@ -89,23 +87,6 @@
     onInput (e) {
       // save page
       this.savePage(this.page);
-    }
-
-    /**
-     * on preview
-     *
-     * @param  {Event} e
-     */
-    onPreview (e) {
-      // prevent default
-      e.preventDefault();
-      e.stopPropagation();
-
-      // set logic
-      this.preview = !this.preview;
-
-      // update view
-      this.update();
     }
 
     /**
