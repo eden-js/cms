@@ -28,6 +28,27 @@
     this.loading   = {};
     this.updating  = false;
     this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});
+      
+    // set flattened blocks
+    const fix = (block) => {
+      // standard children elements
+      let children = ['left', 'right', 'children'];
+
+      // check children
+      for (let child of children) {
+        // check child
+        if (block[child]) {
+          // remove empty blocks
+          block[child] = Object.values(block[child]).filter((block) => block);
+
+          // push children to flat
+          block[child] = block[child].map(fix);
+        }
+      }
+
+      // return accum
+      return block;
+    };
 
     // set flattened blocks
     const flatten = (accum, block) => {
@@ -341,7 +362,7 @@
       this.update();
 
       // check type
-      if (!placement.type) placement.set('type', opts.type || opts.placement);
+      if (!placement.type) placement.set('type', opts.type);
 
       // log data
       let res = await fetch('/placement/' + (placement.get('id') ? placement.get('id') + '/update' : 'create'), {
@@ -447,7 +468,7 @@
         let blocks = [];
 
         // get positions
-        let positions = this.placement.get('positions') || [];
+        let positions = (this.placement.get('positions') || []).map(fix);
 
         // loop physical blocks
         jQuery('> [data-block]', target).each((i, block) => {
