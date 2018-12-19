@@ -1,6 +1,7 @@
 <block-content>
   <block on-refresh={ opts.onRefresh } on-save={ opts.onSave } on-remove={ opts.onRemove } block={ opts.block } data={ opts.data } preview={ opts.preview } on-update-content={ onUpdateContent } ref="block" class="block-content">
     <yield to="body">
+      <div if={ !opts.data.content } class="py-5 text-center">Add Content</div>
       <raw data={ { 'html' : opts.data.content } } />
     </yield>
     
@@ -22,7 +23,6 @@
      * @param  {Event} e
      */
     async onUpdateContent (content) {
-      console.log('data');
       // set name
       opts.data.content = content;
 
