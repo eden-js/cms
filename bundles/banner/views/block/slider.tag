@@ -41,6 +41,9 @@
     </yield>
 
     <yield to="body">
+      <div if={ !(opts.data.slides || []).length } class="py-5 text-center">
+        Select slider Category
+      </div>
       <div id="slider-{ opts.data.uuid }" class="carousel slide" ref="carousel">
         <ol class="carousel-indicators" if={ (opts.data.show || {}).indicators }>
           <li data-target="#slider-{ opts.data.uuid }" each={ indicator, i in opts.data.slides } data-slide-to={ i } class={ 'active' : i === 0 }></li>
