@@ -6,7 +6,8 @@
       </span>
       <eden-add type="top" onclick={ opts.onAddBlock } way="unshift" placement={ opts.placement + '.children' } if={ this.acl.validate('admin') && !opts.preview } />
       
-      <div class="{ opts.block.class || 'row row-eq-height' } { this.acl.validate('admin') && !opts.preview ? 'eden-dropzone' : '' } { 'empty' : !opts.getBlocks(opts.block.children).length }" data-placement={ opts.placement + '.children' }>
+      <div class="{ opts.block.row || 'row row-eq-height' } { this.acl.validate('admin') && !opts.preview ? 'eden-dropzone' : '' } { 'empty' : !opts.getBlocks(opts.block.children).length }" data-placement={ opts.placement + '.children' }>
+        <div if={ !opts.getBlocks(opts.block.children).length } class="col py-5 text-center">Add Elements</div>
         <div each={ child, a in opts.getBlocks(opts.block.children) } no-reorder class={ child.class || 'col' } data-is={ opts.getElement(child) } preview={ opts.preview } data-block={ child.uuid } data={ opts.getBlock(child) } block={ child } get-block={ opts.getBlock } on-add-block={ opts.onAddBlock } on-save={ opts.onSave } on-remove={ opts.onRemove } on-refresh={ opts.onRefresh } i={ a } placement={ opts.placement + '.children.' + a } />
       </div>
       
@@ -62,7 +63,7 @@
 
      * @param  {Event} e
      */
-    async onContainerClass (e) {
+    async onRowClass (e) {
       // prevent default
       e.preventDefault();
       e.stopPropagation();
