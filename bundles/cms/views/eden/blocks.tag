@@ -188,8 +188,6 @@
 
       // set flat
       this.placement.set('elements', (this.placement.get('positions') || []).reduce(flatten, []));
-      
-      console.log(this.placement.get('elements'));
 
       // save placement
       await this.savePlacement(this.placement);

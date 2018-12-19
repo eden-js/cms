@@ -101,6 +101,20 @@ class CMSAdminController extends Controller {
       // return
       return block;
     }, async (req, block) => { });
+
+    // register simple block
+    BlockHelper.block('structure.navbar', {
+      for         : ['frontend', 'admin'],
+      title       : 'Navbar Element',
+      categories  : ['structure'],
+      description : 'Creates navbar structure',
+    }, async (req, block) => {
+      // set tag
+      block.tag = 'navbar';
+
+      // return
+      return block;
+    }, async (req, block) => { });
   }
 
   /**

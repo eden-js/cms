@@ -42,8 +42,6 @@ class BannerController extends Controller {
       // set data
       const data = {};
 
-      console.log(block);
-
       // set other info
       data.tag = 'slider';
       data.slides = await Promise.all((await Banner.find({
