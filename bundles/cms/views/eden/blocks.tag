@@ -184,7 +184,12 @@
       }
       
       // set to blocks
-      this.blocks.push(data);
+      if (!this.blocks.find((b) => b.uuid === data.uuid)) this.blocks.push(data);
+
+      // set flat
+      this.placement.set('elements', (this.placement.get('positions') || []).reduce(flatten, []));
+      
+      console.log(this.placement.get('elements'));
 
       // save placement
       await this.savePlacement(this.placement);
