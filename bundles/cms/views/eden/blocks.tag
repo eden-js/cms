@@ -181,10 +181,10 @@
       for (let key in result.result) {
         // clone to placement
         data[key] = result.result[key];
-
-        // set in placement
-        opts.placement[data] = result.result[key];
       }
+      
+      // set to blocks
+      this.blocks.push(data);
 
       // save placement
       await this.savePlacement(this.placement);

@@ -1,5 +1,5 @@
 <page-admin-update-page>
-  <admin-header title="{ opts.item.id ? 'Update' : 'Create' } Page { this.page.get('title.' + this.language) }" on-preview={ onPreview }>
+  <admin-header title="{ this.page.get('id') ? 'Update' : 'Create' } Page { this.page.get('title.' + this.language) }" on-preview={ onPreview }>
     <yield to="right">
 
       <a href="/admin/page" class="btn btn-lg btn-primary">
@@ -153,6 +153,20 @@
 
       // load data
       let data = await res.json();
+      
+      // check if new page
+      if (!page.get('id') && data.result.id) {
+        // change url
+        let state = Object.assign({}, {
+          'prevent' : true
+        }, eden.router.history.location.state);
+        
+        // replace state
+        eden.router.history.replace({
+          'state'    : state,
+          'pathname' : '/admin/page/' + data.result.id + '/update'
+        });
+      }
 
       // set logic
       for (let key in data.result) {
