@@ -33,6 +33,9 @@
     const fix = (block) => {
       // standard children elements
       let children = ['left', 'right', 'children'];
+      
+      // return if moving
+      if (!block) return;
 
       // check children
       for (let child of children) {
@@ -43,6 +46,30 @@
 
           // push children to flat
           block[child] = block[child].map(fix);
+        }
+      }
+
+      // return accum
+      return block;
+    };
+      
+    // set flattened blocks
+    const place = (block) => {
+      // standard children elements
+      let children = ['left', 'right', 'children'];
+      
+      // return if moving
+      if (block.moving) return;
+
+      // check children
+      for (let child of children) {
+        // check child
+        if (block[child]) {
+          // remove empty blocks
+          block[child] = Object.values(block[child]).filter((block) => !block.moving);
+
+          // push children to flat
+          block[child] = block[child].map(place);
         }
       }
 
@@ -123,7 +150,7 @@
      */
     getBlocks () {
       // return filtered blocks
-      return (this.placement.get('positions') || []).map(fix);
+      return (this.placement.get('positions') || []).map(fix).filter((block) => block);
     }
 
     /**
@@ -471,13 +498,16 @@
         let placement = jQuery(el).attr('placement');
         
         // check target
-        if (!target) return;
+        if (!target || !source || !el) return;
 
         // get blocks of target
         let blocks = [];
 
         // get positions
-        let positions = (this.placement.get('positions') || []).map(fix);
+        let positions = (this.placement.get('positions') || []).map(fix).filter((block) => block);
+        
+        // set moving on block
+        positions = dotProp.set(positions, placement + '.moving', true);
 
         // loop physical blocks
         jQuery('> [data-block]', target).each((i, block) => {
@@ -485,14 +515,16 @@
           let getFrom = jQuery(block).attr('placement');
           let gotBlock = dotProp.get(positions, getFrom);
           
-          console.log(getFrom, gotBlock);
-          
           // return on no block
           if (!gotBlock) return;
 
           // clone block
           if (getFrom === placement) {
+            // clone block
             gotBlock = JSON.parse(JSON.stringify(gotBlock));
+            
+            // delete placing
+            if (gotBlock.moving) delete gotBlock.moving;
           }
 
           // get actual block
@@ -503,9 +535,6 @@
         this.updating = true;
         this.update();
 
-        // delete placement
-        if (jQuery(target).attr('data-placement') !== jQuery(source).attr('data-placement')) dotProp.delete(positions, placement);
-
         // set placement
         if (jQuery(target).attr('data-placement').length) {
           // set positions
@@ -514,6 +543,9 @@
           // set positions
           positions = blocks;
         }
+
+        // get positions
+        positions = (positions || []).map(place).filter((block) => block);
 
         // update placement
         this.placement.set('positions', positions);
