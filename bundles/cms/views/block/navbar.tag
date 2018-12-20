@@ -7,7 +7,7 @@
       
       <nav class={ opts.block.navbar || 'navbar navbar-expand-lg navbar-light bg-light' }>
         <div class={ opts.block.container || 'container' }>
-          <div class={ 'navbar-brand' : true, 'eden-dropzone' : this.acl.validate('admin') && !opts.preview }>
+          <div class={ 'navbar-brand' : true, 'eden-dropzone' : this.acl.validate('admin') && !opts.preview } data-placement={ opts.placement + '.left' }>
             <eden-add type="top" onclick={ opts.onAddBlock } way="unshift" placement={ opts.placement + '.left' } if={ this.acl.validate('admin') && !opts.preview } />
             
             <div if={ !opts.getBlocks(opts.block.left).length } class="text-center">Add Elements</div>
@@ -20,7 +20,7 @@
             <span class="navbar-toggler-icon"></span>
           </button>
 
-          <div class={ 'collapse navbar-collapse' : true, 'eden-dropzone' : this.acl.validate('admin') && !opts.preview } id={ opts.block.uuid }>
+          <div class={ 'collapse navbar-collapse' : true, 'eden-dropzone' : this.acl.validate('admin') && !opts.preview } id={ opts.block.uuid } data-placement={ opts.placement + '.right' }>
             <eden-add type="top" onclick={ opts.onAddBlock } way="unshift" placement={ opts.placement + '.right' } if={ this.acl.validate('admin') && !opts.preview } />
             
             <div if={ !opts.getBlocks(opts.block.right).length } class="text-center">Add Elements</div>
