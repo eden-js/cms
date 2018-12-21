@@ -1,5 +1,5 @@
 <block-row>
-  <block on-refresh={ opts.onRefresh } chart={ this.chart } options={ this.options } placement={ opts.placement } preview={ opts.preview } on-row-class={ onRowClass } on-center-vertically={ onCenterVertically } on-add-block={ opts.onAddBlock } get-blocks={ getBlocks } get-element={ getElement } get-block={ opts.getBlock } on-save={ opts.onSave } on-remove={ opts.onRemove } size={ this.size } block={ opts.block } data={ opts.data } on-color={ onColor } ref="block" class="block-row-inner">
+  <block ref="block" class="block-row-inner" on-row-class={ onRowClass } on-center-vertically={ onCenterVertically } get-blocks={ getBlocks } get-element={ getElement }>
     <yield to="body">
       <span class="eden-dropzone-label" if={ this.acl.validate('admin') && !opts.preview }>
         Row #{ opts.placement }

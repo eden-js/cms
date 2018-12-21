@@ -1,5 +1,5 @@
 <block-stat>
-  <block on-refresh={ opts.onRefresh } chart={ this.chart } options={ this.options } on-save={ opts.onSave } on-remove={ opts.onRemove } size={ this.size } block={ opts.block } data={ opts.data } preview={ opts.preview } on-color={ onColor } ref="block" class="block-stat">
+  <block ref="block" class="block-stat" chart={ this.chart } options={ this.options } size={ this.size } on-color={ onColor }>
 
     <yield to="modal">
       <div class="form-group">

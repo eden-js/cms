@@ -60,6 +60,7 @@
   <script>
     // do mixins
     this.mixin('acl');
+    this.mixin('block');
 
     // set variables
     this.loading = {};
@@ -97,10 +98,10 @@
       e.stopPropagation();
 
       // set class
-      this.parent.opts.block.class = e.target.value.length ? e.target.value : null;
+      opts.block.class = e.target.value.length ? e.target.value : null;
 
       // run opts
-      if (opts.onSave) await opts.onSave(this.parent.opts.block, this.parent.opts.data, this.parent.opts.placement);
+      if (opts.onSave) await opts.onSave(opts.block, opts.data, opts.placement);
     }
 
     /**
@@ -116,7 +117,7 @@
       this.update();
 
       // run opts
-      if (opts.onRefresh) await opts.onRefresh(this.parent.opts.block, this.parent.opts.data, this.parent.opts.placement);
+      if (opts.onRefresh) await opts.onRefresh(opts.block, opts.data, opts.placement);
 
       // set refreshing
       this.refreshing = false;
@@ -138,7 +139,7 @@
       this.update();
 
       // run opts
-      if (opts.onRemove) await opts.onRemove(this.parent.opts.block, this.parent.opts.data, this.parent.opts.placement);
+      if (opts.onRemove) await opts.onRemove(opts.block, opts.data, opts.placement);
 
       // set refreshing
       this.removing = false;

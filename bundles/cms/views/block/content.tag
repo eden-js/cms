@@ -1,5 +1,5 @@
 <block-content>
-  <block on-refresh={ opts.onRefresh } on-save={ opts.onSave } on-remove={ opts.onRemove } block={ opts.block } data={ opts.data } preview={ opts.preview } on-update-content={ onUpdateContent } ref="block" class="block-content">
+  <block ref="block" class="block-content" on-update-content={ onUpdateContent }>
     <yield to="body">
       <div if={ !opts.data.content } class="py-5 text-center">Add Content</div>
       <raw data={ { 'html' : opts.data.content } } />
