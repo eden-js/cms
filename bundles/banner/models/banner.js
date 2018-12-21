@@ -9,7 +9,7 @@ class Banner extends Model {
   /**
    * construct banner model
    */
-  constructor () {
+  constructor() {
     // run super
     super(...arguments);
   }
@@ -19,15 +19,15 @@ class Banner extends Model {
    *
    * @return {Promise}
    */
-  async sanitise () {
+  async sanitise() {
     // return banner
     return {
-      'id'       : this.get('_id') ? this.get('_id').toString() : null,
-      'title'    : this.get('title'),
-      'class'    : this.get('class'),
-      'image'    : await this.get('image') ? await (await this.get('image')).sanitise() : null,
-      'content'  : this.get('content'),
-      'category' : this.get('category')
+      id       : this.get('_id') ? this.get('_id').toString() : null,
+      title    : this.get('title'),
+      class    : this.get('class'),
+      image    : await this.get('image') ? await (await this.get('image')).sanitise() : null,
+      content  : this.get('content'),
+      category : this.get('category'),
     };
   }
 }

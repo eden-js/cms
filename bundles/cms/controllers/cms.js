@@ -114,7 +114,7 @@ class CMSController extends Controller {
       item   : await page.sanitise(req),
       title  : page.get('title')[req.language],
       blocks : BlockHelper.renderBlocks('frontend'),
-      layout : page.get('layout') || 'main'
+      layout : page.get('layout') || 'main',
     });
   }
 

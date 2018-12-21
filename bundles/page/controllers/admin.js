@@ -26,16 +26,16 @@ class PageAdminController extends Controller {
   /**
    * construct user PageAdminController controller
    */
-  constructor () {
+  constructor() {
     // run super
-    super ();
+    super();
 
     // bind methods
-    this.gridAction         = this.gridAction.bind(this);
-    this.indexAction        = this.indexAction.bind(this);
-    this.createAction       = this.createAction.bind(this);
-    this.updateAction       = this.updateAction.bind(this);
-    this.removeAction       = this.removeAction.bind(this);
+    this.gridAction = this.gridAction.bind(this);
+    this.indexAction = this.indexAction.bind(this);
+    this.createAction = this.createAction.bind(this);
+    this.updateAction = this.updateAction.bind(this);
+    this.removeAction = this.removeAction.bind(this);
     this.createSubmitAction = this.createSubmitAction.bind(this);
     this.updateSubmitAction = this.updateSubmitAction.bind(this);
     this.removeSubmitAction = this.removeSubmitAction.bind(this);
@@ -45,39 +45,39 @@ class PageAdminController extends Controller {
 
     // register simple block
     BlockHelper.block('page.cms.pages', {
-      'acl'         : ['admin.cms'],
-      'for'         : ['admin'],
-      'title'       : 'Pages Grid',
-      'description' : 'Shows grid of recent pages'
+      acl         : ['admin.cms'],
+      for         : ['admin'],
+      title       : 'Pages Grid',
+      description : 'Shows grid of recent pages',
     }, async (req, block) => {
       // get notes block from db
-      let blockModel = await Block.findOne({
-        'uuid' : block.uuid
+      const blockModel = await Block.findOne({
+        uuid : block.uuid,
       }) || new Block({
-        'uuid' : block.uuid,
-        'type' : block.type
+        uuid : block.uuid,
+        type : block.type,
       });
 
       // create new req
-      let fauxReq = {
-        'query' : blockModel.get('state') || {}
+      const fauxReq = {
+        query : blockModel.get('state') || {},
       };
 
       // return
       return {
-        'tag'   : 'grid',
-        'name'  : 'Pages',
-        'grid'  : await this._grid(req).render(fauxReq),
-        'class' : blockModel.get('class') || null,
-        'title' : blockModel.get('title') || ''
+        tag   : 'grid',
+        name  : 'Pages',
+        grid  : await this._grid(req).render(fauxReq),
+        class : blockModel.get('class') || null,
+        title : blockModel.get('title') || '',
       };
     }, async (req, block) => {
       // get notes block from db
-      let blockModel = await Block.findOne({
-        'uuid' : block.uuid
+      const blockModel = await Block.findOne({
+        uuid : block.uuid,
       }) || new Block({
-        'uuid' : block.uuid,
-        'type' : block.type
+        uuid : block.uuid,
+        type : block.type,
       });
 
       // set data
@@ -99,9 +99,9 @@ class PageAdminController extends Controller {
    * @call   model.listen.page
    * @return {Async}
    */
-  async listenAction (id, uuid, opts) {
+  async listenAction(id, uuid, opts) {
     // join room
-    opts.socket.join('page.' + id);
+    opts.socket.join(`page.${id}`);
 
     // add to room
     return await ModelHelper.listen(opts.sessionID, await Page.findById(id), uuid);
@@ -116,7 +116,7 @@ class PageAdminController extends Controller {
    * @call   model.deafen.page
    * @return {Async}
    */
-  async liveDeafenAction (id, uuid, opts) {
+  async liveDeafenAction(id, uuid, opts) {
     // add to room
     return await ModelHelper.deafen(opts.sessionID, await Page.findById(id), uuid);
   }
@@ -128,7 +128,7 @@ class PageAdminController extends Controller {
    * @layout   admin
    * @priority 12
    */
-  async viewAction (req, res) {
+  async viewAction(req, res) {
     // set website variable
     let page   = new Page();
     let create = true;
@@ -136,18 +136,18 @@ class PageAdminController extends Controller {
     // check for website model
     if (req.params.id) {
       // load by id
-      page   = await Page.findById(req.params.id);
+      page = await Page.findById(req.params.id);
       create = false;
     }
 
     // res JSON
-    let sanitised = await page.sanitise();
+    const sanitised = await page.sanitise();
 
     // return JSON
     res.json({
-      'state'   : 'success',
-      'result'  : await page.sanitise(),
-      'message' : 'Successfully got blocks'
+      state   : 'success',
+      result  : await page.sanitise(),
+      message : 'Successfully got blocks',
     });
   }
 
@@ -164,10 +164,10 @@ class PageAdminController extends Controller {
    * @parent  /admin/cms
    * @layout  admin
    */
-  async indexAction (req, res) {
+  async indexAction(req, res) {
     // render grid
     res.render('page/admin', {
-      'grid' : await this._grid(req).render(req)
+      grid : await this._grid(req).render(req),
     });
   }
 
@@ -178,7 +178,7 @@ class PageAdminController extends Controller {
    * @layout   admin
    * @priority 12
    */
-  createAction () {
+  createAction() {
     // return update action
     return this.updateAction(...arguments);
   }
@@ -192,7 +192,7 @@ class PageAdminController extends Controller {
    * @route   {get} /:id/update
    * @layout  admin
    */
-  async updateAction (req, res) {
+  async updateAction(req, res) {
     // set website variable
     let page   = new Page();
     let create = true;
@@ -200,17 +200,17 @@ class PageAdminController extends Controller {
     // check for website model
     if (req.params.id) {
       // load by id
-      page   = await Page.findById(req.params.id);
+      page = await Page.findById(req.params.id);
       create = false;
     }
 
     // Render admin page
     res.render('page/admin/update', {
-      'name'      : 'Admin Home',
-      'item'      : await page.sanitise(req),
-      'title'     : create ? 'Create page' : 'Update ' + page.get('_id').toString(),
-      'blocks'    : BlockHelper.renderBlocks('frontend'),
-      'jumbotron' : 'Update Page'
+      name      : 'Admin Home',
+      item      : await page.sanitise(req),
+      title     : create ? 'Create page' : `Update ${page.get('_id').toString()}`,
+      blocks    : BlockHelper.renderBlocks('frontend'),
+      jumbotron : 'Update Page',
     });
   }
 
@@ -220,11 +220,10 @@ class PageAdminController extends Controller {
    * @route   {post} /create
    * @layout  admin
    */
-  createSubmitAction () {
+  createSubmitAction() {
     // return update action
     return this.updateSubmitAction(...arguments);
   }
-
 
 
   /**
@@ -236,7 +235,7 @@ class PageAdminController extends Controller {
    * @route  {post} /:id/update
    * @layout admin
    */
-  async updateSubmitAction (req, res) {
+  async updateSubmitAction(req, res) {
     // set website variable
     let page   = new Page();
     let create = true;
@@ -244,15 +243,15 @@ class PageAdminController extends Controller {
     // check for website model
     if (req.params.id) {
       // load by id
-      page   = await Page.findById(req.params.id);
+      page = await Page.findById(req.params.id);
       create = false;
     }
 
     // update page
-    page.set('user',   req.user);
-    page.set('type',   req.body.type);
-    page.set('slug',   req.body.slug);
-    page.set('title',  req.body.title);
+    page.set('user', req.user);
+    page.set('type', req.body.type);
+    page.set('slug', req.body.slug);
+    page.set('title', req.body.title);
     page.set('layout', req.body.layout);
 
     // check placement
@@ -262,13 +261,13 @@ class PageAdminController extends Controller {
     await page.save();
 
     // send alert
-    req.alert('success', 'Successfully ' + (create ? 'Created' : 'Updated') + ' page!');
+    req.alert('success', `Successfully ${create ? 'Created' : 'Updated'} page!`);
 
     // return JSON
     res.json({
-      'state'   : 'success',
-      'result'  : await page.sanitise(),
-      'message' : 'Successfully updated page'
+      state   : 'success',
+      result  : await page.sanitise(),
+      message : 'Successfully updated page',
     });
   }
 
@@ -281,7 +280,7 @@ class PageAdminController extends Controller {
    * @route   {get} /:id/remove
    * @layout  admin
    */
-  async removeAction (req, res) {
+  async removeAction(req, res) {
     // set website variable
     let page = false;
 
@@ -293,8 +292,8 @@ class PageAdminController extends Controller {
 
     // render page
     res.render('page/admin/remove', {
-      'item'  : await page.sanitise(),
-      'title' : 'Remove ' + page.get('_id').toString()
+      item  : await page.sanitise(),
+      title : `Remove ${page.get('_id').toString()}`,
     });
   }
 
@@ -308,7 +307,7 @@ class PageAdminController extends Controller {
    * @title   Remove page
    * @layout  admin
    */
-  async removeSubmitAction (req, res) {
+  async removeSubmitAction(req, res) {
     // set website variable
     let page = false;
 
@@ -319,7 +318,7 @@ class PageAdminController extends Controller {
     }
 
     // alert Removed
-    req.alert('success', 'Successfully removed ' + (page.get('_id').toString()));
+    req.alert('success', `Successfully removed ${page.get('_id').toString()}`);
 
     // delete website
     await page.remove();
@@ -336,7 +335,7 @@ class PageAdminController extends Controller {
    *
    * @route {post} /grid
    */
-  gridAction (req, res) {
+  gridAction(req, res) {
     // return post grid request
     return this._grid(req).post(req, res);
   }
@@ -346,9 +345,9 @@ class PageAdminController extends Controller {
    *
    * @return {grid}
    */
-  _grid (req) {
+  _grid(req) {
     // create new grid
-    let pageGrid = new Grid();
+    const pageGrid = new Grid();
 
     // set route
     pageGrid.route('/admin/page/grid');
@@ -358,99 +357,102 @@ class PageAdminController extends Controller {
 
     // add grid columns
     pageGrid.column('_id', {
-      'title'  : 'ID',
-      'width'  : '1%',
-      'format' : async (col) => {
-        return col ? '<a href="/admin/page/' + col.toString() + '/update">' + col.toString() + '</a>' : '<i>N/A</i>';
-      }
+      title  : 'ID',
+      width  : '1%',
+      format : async (col) => {
+        return col ? `<a href="/admin/page/${col.toString()}/update">${col.toString()}</a>` : '<i>N/A</i>';
+      },
     }).column('slug', {
-      'sort'   : true,
-      'title'  : 'Slug',
-      'format' : async (col, row) => {
+      sort   : true,
+      title  : 'Slug',
+      format : async (col, row) => {
         return col ? col.toString() : '<i>N/A</i>';
-      }
+      },
     }).column('title', {
-      'sort'   : true,
-      'title'  : 'Title',
-      'format' : async (col, row) => {
+      sort   : true,
+      title  : 'Title',
+      format : async (col, row) => {
         return col ? col[req.language].toString() : '<i>N/A</i>';
-      }
+      },
     }).column('layout', {
-      'sort'   : true,
-      'title'  : 'Layout',
-      'format' : async (col, row) => {
+      sort   : true,
+      title  : 'Layout',
+      format : async (col, row) => {
         return col ? col.toString() : '<i>N/A</i>';
-      }
-    }).column('updated_at', {
-      'sort'   : true,
-      'title'  : 'Updated',
-      'format' : async (col) => {
-        return col.toLocaleDateString('en-GB', {
-          'day'   : 'numeric',
-          'month' : 'short',
-          'year'  : 'numeric'
-        });
-      }
-    }).column('created_at', {
-      'sort'   : true,
-      'title'  : 'Created',
-      'format' : async (col) => {
-        return col.toLocaleDateString('en-GB', {
-          'day'   : 'numeric',
-          'month' : 'short',
-          'year'  : 'numeric'
-        });
-      }
-    }).column('actions', {
-      'type'   : false,
-      'width'  : '1%',
-      'title'  : 'Actions',
-      'format' : async (col, row) => {
-        return [
-          '<div class="btn-group btn-group-sm" role="group">',
-            '<a href="/admin/page/' + row.get('_id').toString() + '/update" class="btn btn-primary"><i class="fa fa-pencil"></i></a>',
-            '<a href="/admin/page/' + row.get('_id').toString() + '/remove" class="btn btn-danger"><i class="fa fa-times"></i></a>',
-            '<a href="/' + row.get('slug').toString() + '" class="btn btn-info"><i class="fa fa-eye"></i></a>',
-          '</div>'
-        ].join('');
-      }
-    });
+      },
+    })
+      .column('updated_at', {
+        sort   : true,
+        title  : 'Updated',
+        format : async (col) => {
+          return col.toLocaleDateString('en-GB', {
+            day   : 'numeric',
+            month : 'short',
+            year  : 'numeric',
+          });
+        },
+      })
+      .column('created_at', {
+        sort   : true,
+        title  : 'Created',
+        format : async (col) => {
+          return col.toLocaleDateString('en-GB', {
+            day   : 'numeric',
+            month : 'short',
+            year  : 'numeric',
+          });
+        },
+      })
+      .column('actions', {
+        type   : false,
+        width  : '1%',
+        title  : 'Actions',
+        format : async (col, row) => {
+          return [
+            '<div class="btn-group btn-group-sm" role="group">',
+            `<a href="/admin/page/${row.get('_id').toString()}/update" class="btn btn-primary"><i class="fa fa-pencil"></i></a>`,
+            `<a href="/admin/page/${row.get('_id').toString()}/remove" class="btn btn-danger"><i class="fa fa-times"></i></a>`,
+            `<a href="/${row.get('slug').toString()}" class="btn btn-info"><i class="fa fa-eye"></i></a>`,
+            '</div>',
+          ].join('');
+        },
+      });
 
     // add grid filters
     pageGrid.filter('slug', {
-      'title' : 'Slug',
-      'type'  : 'text',
-      'query' : async (param) => {
+      title : 'Slug',
+      type  : 'text',
+      query : async (param) => {
         // another where
         pageGrid.where({
-          'slug' : new RegExp(param.toString().toLowerCase(), 'i')
+          slug : new RegExp(param.toString().toLowerCase(), 'i'),
         });
-      }
+      },
     }).filter('title', {
-      'title' : 'Title',
-      'type'  : 'text',
-      'query' : async (param) => {
+      title : 'Title',
+      type  : 'text',
+      query : async (param) => {
         // another where
         pageGrid.where({
-          ['title.' + req.language] : new RegExp(param.toString().toLowerCase(), 'i')
+          [`title.${req.language}`] : new RegExp(param.toString().toLowerCase(), 'i'),
         });
-      }
+      },
     }).filter('created_at', {
-      'title' : 'Created',
-      'type'  : 'date',
-      'query' : async (param) => {
+      title : 'Created',
+      type  : 'date',
+      query : async (param) => {
         // set extend
         pageGrid.gte('created_at', new Date(param.start));
         pageGrid.lte('created_at', new Date(param.end));
-      }
+      },
     }).filter('updated_at', {
-      'title' : 'Updated',
-      'type'  : 'date',
-      'query' : async (param) => {
+      title : 'Updated',
+      type  : 'date',
+      query : async (param) => {
         // set extend
         pageGrid.gte('updated_at', new Date(param.start));
         pageGrid.lte('updated_at', new Date(param.end));
-      }
+      },
     });
 
     // set default sort order

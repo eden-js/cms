@@ -3,7 +3,7 @@
  */
 
 // use strict
-'use strict';
+
 
 // require dependencies
 const controller = require('controller');
@@ -21,9 +21,9 @@ class mediaController extends controller {
   /**
    * construct media class
    */
-  constructor () {
+  constructor() {
     // run super eden
-    super ();
+    super();
 
     // pre image sanitise
     this.eden.pre('image.sanitise', async (data) => {
@@ -31,8 +31,8 @@ class mediaController extends controller {
       if (data.image.get('from') !== 'gallery') return;
 
       // do sanitised
-      data.sanitised.caption   = await data.image.get('caption');
-      data.sanitised.category  = await data.image.get('category') ? await (await data.image.get('category')).sanitise() : null;
+      data.sanitised.caption = await data.image.get('caption');
+      data.sanitised.category = await data.image.get('category') ? await (await data.image.get('category')).sanitise() : null;
       data.sanitised.published = await data.image.get('published');
     });
   }
@@ -48,15 +48,17 @@ class mediaController extends controller {
    * @upload   {single} file
    * @priority 2
    */
-  async fileAction (req, res) {
+  async fileAction(req, res) {
     // check if upload
-    if (!req.file) return res.json({
-      'error'   : true,
-      'message' : req.t('file empty')
-    });
+    if (!req.file) {
+      return res.json({
+        error   : true,
+        message : req.t('file empty'),
+      });
+    }
 
     // create avatar
-    let upload = new File();
+    const upload = new File();
 
     // load image
     await upload.fromFile(req.file.path, req.file.originalname);
@@ -69,7 +71,7 @@ class mediaController extends controller {
     await upload.save();
 
     // return image
-    let sanitised = await upload.sanitise();
+    const sanitised = await upload.sanitise();
 
     // set variables
     sanitised.user = await req.user.sanitise();
@@ -77,8 +79,8 @@ class mediaController extends controller {
 
     // return json
     res.json({
-      'error'  : false,
-      'upload' : sanitised
+      error  : false,
+      upload : sanitised,
     });
 
     // do alert
@@ -96,15 +98,17 @@ class mediaController extends controller {
    * @upload   {single} file
    * @priority 2
    */
-  async imageAction (req, res) {
+  async imageAction(req, res) {
     // check if upload
-    if (!req.file) return res.json({
-      'error'   : true,
-      'message' : req.t('file empty')
-    });
+    if (!req.file) {
+      return res.json({
+        error   : true,
+        message : req.t('file empty'),
+      });
+    }
 
     // create avatar
-    let image = new Image();
+    const image = new Image();
 
     // load image
     await image.fromFile(req.file.path, req.file.originalname);
@@ -115,19 +119,28 @@ class mediaController extends controller {
     await (await image.thumb('3x')).resize(600, 600).max().png().save();
 
     // resize image in square
-    await (await image.thumb('sm-sq')).resize(150, 150).background({r: 0, g: 0, b: 0, alpha: 0}).embed().png().save();
-    await (await image.thumb('md-sq')).resize(300, 300).background({r: 0, g: 0, b: 0, alpha: 0}).embed().png().save();
-    await (await image.thumb('lg-sq')).resize(600, 600).background({r: 0, g: 0, b: 0, alpha: 0}).embed().png().save();
+    await (await image.thumb('sm-sq')).resize(150, 150).background({
+      r     : 0, g     : 0, b     : 0, alpha : 0,
+    }).embed().png()
+      .save();
+    await (await image.thumb('md-sq')).resize(300, 300).background({
+      r     : 0, g     : 0, b     : 0, alpha : 0,
+    }).embed().png()
+      .save();
+    await (await image.thumb('lg-sq')).resize(600, 600).background({
+      r     : 0, g     : 0, b     : 0, alpha : 0,
+    }).embed().png()
+      .save();
 
     // resize image
     await (await image.thumb('1x-sq')).resize(150, 150, {
-      'fit' : 'cover'
+      fit : 'cover',
     }).png().save();
     await (await image.thumb('2x-sq')).resize(300, 300, {
-      'fit' : 'cover'
+      fit : 'cover',
     }).png().save();
     await (await image.thumb('3x-sq')).resize(600, 600, {
-      'fit' : 'cover'
+      fit : 'cover',
     }).png().save();
 
     // set user
@@ -138,7 +151,7 @@ class mediaController extends controller {
     await image.save();
 
     // return image
-    let sanitised = await image.sanitise();
+    const sanitised = await image.sanitise();
 
     // set variables
     sanitised.user = await req.user.sanitise();
@@ -146,8 +159,8 @@ class mediaController extends controller {
 
     // return json
     res.json({
-      'error'  : false,
-      'upload' : sanitised
+      error  : false,
+      upload : sanitised,
     });
 
     // do alert
