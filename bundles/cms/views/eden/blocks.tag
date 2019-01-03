@@ -59,17 +59,17 @@
       let children = ['left', 'right', 'children'];
       
       // return if moving
-      if (block.moving) return;
+      if (block.moving || block.removing) return;
 
       // check children
       for (let child of children) {
         // check child
         if (block[child]) {
           // remove empty blocks
-          block[child] = Object.values(block[child]).filter((block) => !block.moving);
+          block[child] = Object.values(block[child]);
 
           // push children to flat
-          block[child] = block[child].map(place);
+          block[child] = block[child].map(place).filter((block) => block);
         }
       }
 
@@ -89,6 +89,7 @@
       for (let child of children) {
         // delete child field
         delete sanitised[child];
+        delete sanitised.saving;
       }
 
       // check block has children
@@ -179,6 +180,9 @@
      * @param  {Object} block
      */
     async onSaveBlock (block, data, placement, preventUpdate) {
+      // clone
+      let blockClone = Object.assign({}, block);
+
       // prevent update check
       if (!preventUpdate) {
         // set loading
@@ -192,7 +196,7 @@
       let res = await fetch('/placement/' + this.placement.get('id') + '/block/save', {
         'body' : JSON.stringify({
           'data'  : data,
-          'block' : block
+          'block' : blockClone
         }),
         'method'  : 'post',
         'headers' : {
@@ -303,35 +307,18 @@
       // load data
       let result = await res.json();
 
-      // remove from everywhere
-      this.placement.set('elements', this.placement.get('elements').filter((w) => {
-        // check found in row
-        return block.uuid !== w.uuid;
-      }));
+      // get positions
+      let positions = (this.placement.get('positions') || []).map(fix).filter((block) => block);
+      
+      // set moving on block
+      positions = dotProp.set(positions, placement + '.removing', true);
 
-      // get final part
-      placement = placement.toString().split('.');
-
-      // get index
-      let index = placement.pop();
-
-      // join with dot
-      placement = placement.join('.');
-
-      // get from position
-      let pos = (placement || '').length ? dotProp.get(this.placement.get('positions'), placement) : this.placement.get('positions');
-
-      // delete from parent
-      pos.splice(parseInt(index), 1);
-
-      // update view
-      this.update();
+      // get positions
+      this.placement.set('positions', positions.map(place).filter((block) => block));
+      this.placement.set('elements', (this.placement.get('positions') || []).reduce(flatten, []));
 
       // save placement
       await this.savePlacement(this.placement);
-
-      // update view
-      this.update();
     }
 
     /**
@@ -409,6 +396,12 @@
 
       // load data
       let data = await res.json();
+      
+      // reset positions
+      placement.set('positions', []);
+
+      // update view
+      this.update();
 
       // set logic
       for (let key in data.result) {
