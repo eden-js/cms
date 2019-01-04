@@ -15,10 +15,10 @@
               <button class="btn btn-sm btn-secondary" onclick={ onRefresh }>
                 <i class={ 'fa fa-sync' : true, 'fa-spin' : this.refreshing || opts.block.refreshing } />
               </button>
-              <button class="btn btn-sm btn-secondary" onclick={ onShowModal }>
+              <button class="btn btn-sm btn-secondary" onclick={ onUpdateModal }>
                 <i class="fa fa-pencil" />
               </button>
-              <button class="btn btn-sm btn-secondary" onclick={ onRemove }>
+              <button class="btn btn-sm btn-secondary" onclick={ onRemoveModal }>
                 <i class={ 'fa fa-times' : true, 'fa-spin' : this.removing || opts.block.removing } />
               </button>
               <span class="btn btn-sm btn-secondary move">
@@ -33,7 +33,7 @@
     <yield from="body" />
   </div>
 
-  <div class="modal fade" id="block-{ opts.block.uuid }-update" tabindex="-1" role="dialog" aria-labelledby="block-{ opts.block.uuid }-label" aria-hidden="true" if={ this.showModal && this.acl.validate('admin') && !opts.preview }>
+  <div class="modal fade" id="block-{ opts.block.uuid }-update" tabindex="-1" role="dialog" aria-labelledby="block-{ opts.block.uuid }-label" aria-hidden="true" if={ this.modal.update && this.acl.validate('admin') && !opts.preview }>
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -57,34 +57,77 @@
     </div>
   </div>
 
+  <div class="modal fade" id="block-{ opts.block.uuid }-remove" tabindex="-1" role="dialog" aria-labelledby="block-{ opts.block.uuid }-label" aria-hidden="true" if={ this.modal.remove && this.acl.validate('admin') && !opts.preview }>
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">
+            Remove Block
+          </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to remove this block?
+        </div>
+        <div class="modal-footer">
+          <button class={ 'btn btn-danger float-right' : true, 'disabled' : this.removing } onclick={ onRemove } disabled={ this.removing }>
+            { this.removing ? 'Removing...' : 'Remove' }
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // do mixins
     this.mixin('acl');
     this.mixin('block');
 
     // set variables
+    this.modal = {};
     this.loading = {};
     this.updating = {};
-    this.showModal = false;
 
     /**
-     * on class
+     * on update modal
 
      * @param  {Event} e
      */
-    async onShowModal (e) {
+    onUpdateModal (e) {
       // prevent default
       e.preventDefault();
       e.stopPropagation();
 
       // set class
-      this.showModal = true;
-      
+      this.modal.update = true;
+
       // update view
       this.update();
 
       // run opts
       jQuery('#block-' + opts.block.uuid + '-update').modal('show');
+    }
+
+    /**
+     * on remove modal
+
+     * @param  {Event} e
+     */
+    onRemoveModal (e) {
+      // prevent default
+      e.preventDefault();
+      e.stopPropagation();
+
+      // set class
+      this.modal.remove = true;
+
+      // update view
+      this.update();
+
+      // run opts
+      jQuery('#block-' + opts.block.uuid + '-remove').modal('show');
     }
 
     /**
@@ -148,5 +191,13 @@
       this.update();
     }
 
+    // on unmount function
+    this.on('unmount', () => {
+      // check frontend
+      if (!this.eden.frontend) return;
+
+      // remove modal backdrops
+      jQuery('.modal-backdrop').remove();
+    });
   </script>
 </block>

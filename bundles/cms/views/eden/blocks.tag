@@ -221,7 +221,7 @@
       this.placement.set('elements', (this.placement.get('positions') || []).reduce(flatten, []));
 
       // save placement
-      await this.savePlacement(this.placement);
+      await this.savePlacement(this.placement, true);
 
       // check prevent update
       if (!preventUpdate) {
@@ -370,11 +370,12 @@
     /**
      * saves placement
      *
-     * @param  {Object}  placement
+     * @param {Object}  placement
+     * @param {Boolean} preventRefresh
      *
      * @return {Promise}
      */
-    async savePlacement (placement) {
+    async savePlacement (placement, preventRefresh) {
       // set loading
       this.loading.save = true;
 
@@ -397,11 +398,14 @@
       // load data
       let data = await res.json();
       
-      // reset positions
-      placement.set('positions', []);
+      // prevent clear
+      if (!preventRefresh) {
+        // reset positions
+        placement.set('positions', []);
 
-      // update view
-      this.update();
+        // update view
+        this.update();
+      }
 
       // set logic
       for (let key in data.result) {
