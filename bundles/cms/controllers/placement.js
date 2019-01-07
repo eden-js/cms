@@ -134,10 +134,10 @@ class PlacementController extends Controller {
     const registered = BlockHelper.blocks().find(w => w.type === current.type);
 
     // await save
-    if (registered) await registered.save(req, current);
+    if (registered) await registered.save(req, req.body.block);
 
     // get rendered
-    const rendered = await registered.render(req, current);
+    const rendered = await registered.render(req, req.body.block);
 
     // set uuid
     rendered.uuid = req.body.block.uuid;
