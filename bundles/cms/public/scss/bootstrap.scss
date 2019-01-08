@@ -8,10 +8,15 @@ $eden-admin-aside-hover-color: $white!default;
 
 .is-invalid {
 
-  &.form-group-date {
+  &.form-group-tel,
+  &.form-group-date,
+  &.form-group-text,
+  &.form-group-email,
+  &.form-group-number,
+  &.form-group-password {
     position : relative;
   }
-  
+
   .invalid-tooltip {
     display : block;
   }

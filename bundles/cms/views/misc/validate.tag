@@ -3,7 +3,12 @@
     <label if={ !['checkbox'].includes(opts.type) } for={ opts.name } class="{ opts.labelClass || '' }">
       { opts.label }
     </label>
-    <input if={ ['tel', 'text', 'email', 'number', 'password'].includes(opts.type) } id={ opts.name } name={ opts.name } onchange={ onChange } type={ opts.type } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.label } value={ opts.value } />
+    
+    <div class="input-group" if={ ['tel', 'text', 'email', 'number', 'password'].includes(opts.type) }>
+      <yield from="prepend" />
+      <input autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } type={ opts.type } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.label } value={ opts.value } />
+      <yield from="append" />
+    </div>
     
     <div if={ ['date'].includes(opts.type) } class="row">
       <input class="hidden" type="hidden" name={ opts.name } value={ this.value } ref="date" />
