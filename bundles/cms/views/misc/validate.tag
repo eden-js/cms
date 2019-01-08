@@ -1,11 +1,42 @@
 <validate>
-  <div class="{ opts.groupClass || 'form-group' }">
-    <label for={ opts.name } class="text-bold">
+  <div class="{ opts.groupClass || 'form-group' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }">
+    <label if={ !['checkbox'].includes(opts.type) } for={ opts.name } class="{ opts.labelClass || '' }">
       { opts.label }
     </label>
     <input if={ ['tel', 'text', 'email', 'number', 'password'].includes(opts.type) } id={ opts.name } name={ opts.name } onchange={ onChange } type={ opts.type } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.label } value={ opts.value } />
     
-    <div if={ isValid() === false } class="invalid-{ opts.errorType || 'tooltip' }">
+    <div if={ ['date'].includes(opts.type) } class="row">
+      <input class="hidden" type="hidden" name={ opts.name } value={ this.value } ref="date" />
+      <div class="col-4">
+        <select ref="day" class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" onchange={ onDate }>
+          <option each={ day, i in this.days } value={ day } selected={ this.value ? new Date(this.value).getDate() === day : null }>{ day }</option>
+        </select>
+        <div if={ isValid() === false } class="invalid-{ opts.errorType || 'tooltip' }">
+          { this.message }
+        </div>
+      </div>
+      <div class="col-4">
+        <select ref="month" class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" onchange={ onDate }>
+          <option each={ month, i in this.months } value={ month } selected={ this.value ? new Date(this.value).getMonth() === i : null }>{ month }</option>
+        </select>
+      </div>
+      <div class="col-4">
+        <select ref="year" class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" onchange={ onDate }>
+          <option each={ year, i in this.years } value={ year } selected={ this.value ? new Date(this.value).getFullYear() === year : null }>{ year }</option>
+        </select>
+      </div>
+    </div>
+    
+    <div if={ ['checkbox'].includes(opts.type) } class="custom-control custom-checkbox { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }">
+      <input type="checkbox" class="{ opts.inputClass || 'custom-control-input' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" name={ opts.name } value={ opts.default || 'true' } id={ opts.name } checked={ opts.checked } onchange={ onChange } />
+      <label class="custom-control-label" for={ opts.name }>{ opts.label }</label>
+  
+      <div if={ isValid() === false } class="invalid-{ opts.errorType || 'tooltip' }">
+        { this.message }
+      </div>
+    </div>
+
+    <div if={ !['date', 'checkbox'].includes(opts.type) && isValid() === false } class="invalid-{ opts.errorType || 'tooltip' }">
       { this.message }
     </div>
     
@@ -17,6 +48,23 @@
     this.value     = opts.value;
     this.message   = '';
     this.validated = false;
+    
+    // set date logic
+    this.days   = [];
+    this.years  = [];
+    this.months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    // add days
+    for (let i = 1; i <= 31; i++) {
+      // add to days
+      this.days.push(i);
+    }
+
+    // add years
+    for (let i = (new Date()).getFullYear(); i >= ((new Date()).getFullYear() - 80); i--) {
+      // add to years
+      this.years.push(i);
+    }
     
     /**
      * value
@@ -36,6 +84,15 @@
     isValid () {
       // check validated
       if (!this.validated) return null;
+      
+      // check required
+      if (opts.required && !(this.value || '').length) {
+        // set message
+        this.message = 'This field is required';
+
+        // return false
+        return false;
+      }
       
       // check length
       if (opts.minLength && (this.value || '').length < parseInt(opts.minLength)) {
@@ -92,7 +149,7 @@
      */
     onChange (e) {
       // set value
-      this.value = e.target.value;
+      this.value = ['checkbox'].includes(opts.type) ? (jQuery(e.target).is(':checked') ? jQuery(e.target).val() : null) : e.target.value;
     
       // set validated
       this.validated = true;
@@ -102,6 +159,38 @@
       
       // trigger update
       this.trigger('update');
+    }
+    
+    /**
+     * on day
+     *
+     * @param  {Event} e
+     *
+     * @return {*}
+     */
+    onDate (e) {
+      // set birthday
+      const birthday = new Date();
+
+      // set year
+      birthday.setYear(jQuery(this.refs.year).val());
+      birthday.setMonth(this.months.indexOf(jQuery(this.refs.month).val().toLowerCase()));
+      birthday.setDate(jQuery(this.refs.day).val());
+      
+      // set value
+      this.value = birthday.toISOString();
+      
+      // set target
+      let faux = Object.assign({}, e);
+        
+      // set value
+      this.refs.date.value = this.value;
+      
+      // set target
+      faux.target = this.refs.date;
+      
+      // set change
+      this.onChange(faux);
     }
     
     /**
