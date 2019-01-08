@@ -11,9 +11,6 @@
         <select ref="day" class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" onchange={ onDate }>
           <option each={ day, i in this.days } value={ day } selected={ this.value ? new Date(this.value).getDate() === day : null }>{ day }</option>
         </select>
-        <div if={ isValid() === false } class="invalid-{ opts.errorType || 'tooltip' }">
-          { this.message }
-        </div>
       </div>
       <div class="col-4">
         <select ref="month" class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" onchange={ onDate }>
@@ -36,7 +33,7 @@
       </div>
     </div>
 
-    <div if={ !['date', 'checkbox'].includes(opts.type) && isValid() === false } class="invalid-{ opts.errorType || 'tooltip' }">
+    <div if={ !['checkbox'].includes(opts.type) && isValid() === false } class="invalid-{ opts.errorType || 'tooltip' }">
       { this.message }
     </div>
     
@@ -174,8 +171,10 @@
 
       // set year
       birthday.setYear(jQuery(this.refs.year).val());
-      birthday.setMonth(this.months.indexOf(jQuery(this.refs.month).val().toLowerCase()));
+      birthday.setMonth(this.months.map((item) => item.toLowerCase()).indexOf(jQuery(this.refs.month).val().toLowerCase()));
       birthday.setDate(jQuery(this.refs.day).val());
+      
+      console.log(jQuery(this.refs.day).val(), this.months.map((item) => item.toLowerCase()).indexOf(jQuery(this.refs.month).val().toLowerCase()), jQuery(this.refs.year).val());
       
       // set value
       this.value = birthday.toISOString();

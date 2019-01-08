@@ -6,6 +6,12 @@ $eden-admin-primary: #563d7c!default;
 $eden-admin-dropzone-width: ($spacer / 4)!default;
 $eden-admin-aside-hover-color: $white!default;
 
+.is-invalid {
+  .invalid-tooltip {
+    display : block;
+  }
+}
+
 // alter dashboard options
 .eden-blocks {
 
