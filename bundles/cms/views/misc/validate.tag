@@ -1,5 +1,5 @@
 <validate>
-  <div class="{ opts.groupClass || 'form-group' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }">
+  <div class="{ opts.groupClass || 'form-group' } form-group-{ opts.type } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }">
     <label if={ !['checkbox'].includes(opts.type) } for={ opts.name } class="{ opts.labelClass || '' }">
       { opts.label }
     </label>

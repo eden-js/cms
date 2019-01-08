@@ -7,6 +7,11 @@ $eden-admin-dropzone-width: ($spacer / 4)!default;
 $eden-admin-aside-hover-color: $white!default;
 
 .is-invalid {
+
+  &.form-group-date {
+    position : relative;
+  }
+  
   .invalid-tooltip {
     display : block;
   }
