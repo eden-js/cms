@@ -30,7 +30,7 @@ class Placement extends Model {
       name   : this.get('name'),
       render : req ? (await Promise.all((this.get('elements') || []).map(async (block) => {
         // get from register
-        const registered = BlockHelper.blocks().find(b => b.type === block.type);
+        const registered = BlockHelper.blocks().find(b => b.type === block.type) || BlockHelper.blocks().find(b => b.type === 'frontend.content');
 
         // check registered
         if (!registered) return null;

@@ -26,7 +26,7 @@ class CMSAdminController extends Controller {
     super();
 
     // register simple block
-    BlockHelper.block('frotend.content', {
+    BlockHelper.block('frontend.content', {
       for         : ['frontend', 'admin'],
       title       : 'WYSIWYG Area',
       description : 'Lets you add HTML to a block',

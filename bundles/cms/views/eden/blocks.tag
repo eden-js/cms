@@ -3,7 +3,7 @@
 
     <div class="{ 'eden-dropzone' : this.acl.validate('admin') && !opts.preview } { 'empty' : !getBlocks().length }" ref="placement" data-placement="" if={ !this.updating }>
       <span class="eden-dropzone-label" if={ this.acl.validate('admin') && !opts.preview }>
-        Root
+        { this.placement.get('position') }
       </span>
       <eden-add type="top" onclick={ onAddBlock } way="unshift" placement="" if={ this.acl.validate('admin') && !opts.preview } />
       <div each={ el, i in getBlocks() } el={ el } no-reorder class={ el.class } data-is={ getElement(el) } preview={ opts.preview } data-block={ el.uuid } data={ getBlock(el) } block={ el } get-block={ getBlock } on-add-block={ onAddBlock } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } placement={ i } i={ i } />
@@ -22,8 +22,6 @@
     const uuid = require('uuid');
 
     // set update
-    this.rows      = [1, 2, 3, 4, 5, 6, 7, 8];
-    this.type      = opts.type;
     this.blocks    = (opts.placement || {}).render || [];
     this.loading   = {};
     this.updating  = false;
@@ -407,6 +405,9 @@
         this.update();
       }
 
+      // set in eden
+      window.eden.placements[placement.get('position')] = data.result;
+
       // set logic
       for (let key in data.result) {
         // clone to placement
@@ -452,11 +453,8 @@
       // update view
       this.update();
 
-      // check type
-      if (!this.placement.type) this.placement.set('type', opts.type);
-
       // log data
-      let res = await fetch('/placement/' + this.placement.get('id') + '/view' + (opts.length ? '?' + opts : ''), {
+      let res = await fetch((this.placement.get('id') ? ('/placement/' + this.placement.get('id') + '/view') : ('/placement/' + this.placement.get('position') + '/position')) + (opts.length ? '?' + opts : ''), {
         'method'  : 'get',
         'headers' : {
           'Content-Type' : 'application/json'
@@ -466,15 +464,27 @@
 
       // load data
       let data = await res.json();
+      
+      // set in eden
+      if (data.result) {
+        // set in eden
+        window.eden.placements[this.placement.get('position')] = data.result;
 
-      // set blocks
-      this.blocks = data.result;
+        // set blocks
+        for (let key in data.result) {
+          // set key
+          this.placement.set(key, data.result[key]);
+        }
 
-      // set loading
-      this.loading.blocks = false;
+        // set loading
+        this.loading.blocks = false;
+        
+        // get blocks
+        this.blocks = this.placement.get('render') || [];
 
-      // update view
-      this.update();
+        // update view
+        this.update();
+      }
     }
 
     /**
@@ -584,9 +594,8 @@
       if (!this.eden.frontend) return;
 
       // check type
-      if (opts.type !== this.type || (opts.placement || {}).id !== this.placement.get('id')) {
+      if ((opts.placement || {}).id !== this.placement.get('id')) {
         // set type
-        this.type   = opts.type;
         this.blocks = (opts.placement || {}).render || [];
 
         // trigger mount
@@ -621,6 +630,9 @@
 
       // check blocks
       if ((this.placement.get('elements') || []).length !== this.blocks.length) {
+        // load blocks
+        this.loadBlocks();
+      } else if (!(this.placement.get('elements') || []).length && !(this.eden.get('positions') || {})[this.placement.get('position')]) {
         // load blocks
         this.loadBlocks();
       }

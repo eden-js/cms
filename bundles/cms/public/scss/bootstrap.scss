@@ -27,11 +27,6 @@ $eden-admin-aside-hover-color: $white!default;
 
   .eden-dropzone {
     position : relative;
-
-    .eden-block-hover,
-    .eden-dropzone-label {
-      display : none;
-    }
   }
 
   &:hover,
@@ -66,11 +61,11 @@ $eden-admin-aside-hover-color: $white!default;
 
         top        : 0;
         left       : 0;
+        color      : $white;
         opacity    : 0;
         z-index    : 103;
         position   : absolute;
-        background : theme-color(secondary);
-
+        background : theme-color(primary);
 
         padding-left  : ($spacer / 2);
         padding-right : ($spacer / 2);
@@ -81,16 +76,13 @@ $eden-admin-aside-hover-color: $white!default;
         }
       }
 
+      &:hover > .eden-dropzone-label {
+        opacity : 1;
+      }
+
       .eden-block {
         outline  : $border-width solid rgba(theme-color(secondary), 0.2);
         position : relative;
-
-        &:hover > .eden-dropzone-label {
-          color      : $white;
-          display    : block;
-          opacity    : 1;
-          background : theme-color(primary);
-        }
 
         // alter hover
         > .eden-block-hover {

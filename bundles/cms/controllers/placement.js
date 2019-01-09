@@ -71,6 +71,7 @@ class PlacementController extends Controller {
    * add/edit action
    *
    * @route    {get} /:id/view
+   * @route    {get} /:position/position
    * @layout   admin
    * @priority 12
    */
@@ -84,25 +85,26 @@ class PlacementController extends Controller {
       placement = await Placement.findById(req.params.id);
     }
 
+    // check for website model
+    if (req.params.position) {
+      // load by id
+      placement = await Placement.findOne({
+        position : req.params.position,
+      });
+    }
+
+    // check placement
+    if (!placement) {
+      // fail state
+      return res.json({
+        state : 'fail',
+      });
+    }
+
     // return JSON
     res.json({
-      state  : 'success',
-      result : (await Promise.all((placement.get('elements') || []).map(async (block) => {
-        // get from register
-        const registered = BlockHelper.blocks().find(b => b.type === block.type);
-
-        // check registered
-        if (!registered) return block;
-
-        // get data
-        const data = await registered.render(req, block);
-
-        // set uuid
-        data.uuid = block.uuid;
-
-        // return render
-        return data;
-      }))).filter(b => b),
+      state   : 'success',
+      result  : await placement.sanitise(req),
       message : 'Successfully got blocks',
     });
   }
