@@ -29,6 +29,11 @@ $eden-admin-aside-hover-color: $white!default;
     position : relative;
   }
 
+  .eden-block-hover,
+  .eden-dropzone-label {
+    display : none;
+  }
+
   &:hover,
   &.is-dragging {
 
