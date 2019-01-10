@@ -33,7 +33,7 @@
     <yield from="body" />
   </div>
 
-  <div class="modal fade" id="block-{ opts.block.uuid }-update" tabindex="-1" role="dialog" aria-labelledby="block-{ opts.block.uuid }-label" aria-hidden="true" if={ this.modal.update && this.acl.validate('admin') && !opts.preview }>
+  <div class="modal fade" ref="update" id="block-{ opts.block.uuid }-update" tabindex="-1" role="dialog" aria-labelledby="block-{ opts.block.uuid }-label" aria-hidden="true" if={ this.modal.update && this.acl.validate('admin') && !opts.preview }>
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -57,7 +57,7 @@
     </div>
   </div>
 
-  <div class="modal fade" id="block-{ opts.block.uuid }-remove" tabindex="-1" role="dialog" aria-labelledby="block-{ opts.block.uuid }-label" aria-hidden="true" if={ this.modal.remove && this.acl.validate('admin') && !opts.preview }>
+  <div class="modal fade" ref="remove" id="block-{ opts.block.uuid }-remove" tabindex="-1" role="dialog" aria-labelledby="block-{ opts.block.uuid }-label" aria-hidden="true" if={ this.modal.remove && this.acl.validate('admin') && !opts.preview }>
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -107,7 +107,7 @@
       this.update();
 
       // run opts
-      jQuery('#block-' + opts.block.uuid + '-update').modal('show');
+      jQuery(this.refs.update).modal('show');
     }
 
     /**
@@ -127,7 +127,7 @@
       this.update();
 
       // run opts
-      jQuery('#block-' + opts.block.uuid + '-remove').modal('show');
+      jQuery(this.refs.remove).modal('show');
     }
 
     /**
