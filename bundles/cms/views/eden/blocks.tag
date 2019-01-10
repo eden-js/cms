@@ -25,6 +25,7 @@
     this.blocks    = (opts.placement || {}).render || [];
     this.loading   = {};
     this.updating  = false;
+    this.position  = opts.position;
     this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});
       
     // set flattened blocks
@@ -594,7 +595,10 @@
       if (!this.eden.frontend) return;
 
       // check type
-      if ((opts.placement || {}).id !== this.placement.get('id')) {
+      if ((opts.placement || {}).id !== this.placement.get('id') || opts.position !== this.position) {
+        // set blocks
+        this.placement.set('positions', []);
+
         // set type
         this.blocks = (opts.placement || {}).render || [];
 
@@ -626,6 +630,27 @@
 
         // save blocks
         this.savePlacement(this.placement);
+      }
+      
+      // set positions
+      if (opts.position !== this.position) {
+        // set position
+        this.position = opts.position;
+        
+        // get positions
+        let positions = this.placement.get('positions') || [];
+        
+        // reset positions
+        this.placement.set('positions', []);
+        
+        // update
+        this.update();
+        
+        // set positions again
+        this.placement.set('positions', positions);
+        
+        // update view again
+        this.update();
       }
 
       // check blocks
