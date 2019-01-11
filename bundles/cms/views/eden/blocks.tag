@@ -166,7 +166,7 @@
 
       // way
       this.way      = target.attr('way');
-      this.position = target.attr('placement');
+      this.blockPos = target.attr('placement');
 
       // open modal
       jQuery('.add-block-modal', this.root).modal('show');
@@ -341,15 +341,15 @@
       if (!this.placement.get('positions')) this.placement.set('positions', []);
 
       // get from position
-      let pos = (this.position || '').length ? dotProp.get(this.placement.get('positions'), this.position) : this.placement.get('positions');
+      let pos = (this.v || '').length ? dotProp.get(this.placement.get('positions'), this.blockPos) : this.placement.get('positions');
 
       // force pos to exist
-      if (!pos && (this.position || '').length) {
+      if (!pos && (this.blockPos || '').length) {
         // set pos
         pos = [];
 
         // set
-        dotProp.set(this.placement.get('positions'), this.position, pos);
+        dotProp.set(this.placement.get('positions'), this.blockPos, pos);
       }
 
       // do thing

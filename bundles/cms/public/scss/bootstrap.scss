@@ -139,8 +139,6 @@ $eden-admin-aside-hover-color: $white!default;
     }
 
     i {
-      @include box-shadow();
-
       transform : translateX(50%);
 
       right       : 50%;

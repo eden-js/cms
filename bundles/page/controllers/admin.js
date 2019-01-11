@@ -165,6 +165,8 @@ class PageAdminController extends Controller {
    * @layout  admin
    */
   async indexAction(req, res) {
+    console.log('INDEXXXX');
+    
     // render grid
     res.render('page/admin', {
       grid : await this._grid(req).render(req),
@@ -372,7 +374,7 @@ class PageAdminController extends Controller {
       sort   : true,
       title  : 'Title',
       format : async (col, row) => {
-        return col ? col[req.language].toString() : '<i>N/A</i>';
+        return col ? (col[req.language] || '').toString() : '<i>N/A</i>';
       },
     }).column('layout', {
       sort   : true,

@@ -132,6 +132,16 @@ class PlacementController extends Controller {
     const blocks  = placement.get('elements') || [];
     const current = blocks.find(block => block.uuid === req.body.block.uuid);
 
+    // check current
+    if (!current) {
+      // return json
+      return res.json({
+        state   : 'fail',
+        result  : {},
+        message : 'Block not found'
+      });
+    }
+
     // update
     const registered = BlockHelper.blocks().find(w => w.type === current.type);
 
