@@ -76,6 +76,42 @@
       // return accum
       return block;
     };
+      
+    // set flattened blocks
+    const replace = (b) => {
+      // return block
+      return (block) => {
+        // standard children elements
+        let children = ['left', 'right', 'children'];
+        
+        // return if moving
+        if (block.moving || block.removing) return;
+        
+        // set block info for replace
+        if (block.uuid === b.uuid) {
+          // remove
+          for (let key in b) {
+            // set key
+            block[key] = b[key];
+          }
+        }
+  
+        // check children
+        for (let child of children) {
+          // check child
+          if (block[child]) {
+            // remove empty blocks
+            block[child] = Object.values(block[child]);
+  
+            // push children to flat
+            block[child] = block[child].map(replace(b)).filter((block) => block);
+          }
+        }
+  
+        // return accum
+        return block;
+      };
+    };
 
     // set flattened blocks
     const flatten = (accum, block) => {
@@ -218,6 +254,7 @@
       if (!this.blocks.find((b) => b.uuid === data.uuid)) this.blocks.push(data);
 
       // set flat
+      this.placement.set('positions', (this.placement.get('positions') || []).map(replace(blockClone)));
       this.placement.set('elements', (this.placement.get('positions') || []).reduce(flatten, []));
 
       // save placement
