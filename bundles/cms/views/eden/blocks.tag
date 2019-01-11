@@ -6,7 +6,7 @@
         { this.placement.get('position') }
       </span>
       <eden-add type="top" onclick={ onAddBlock } way="unshift" placement="" if={ this.acl.validate('admin') && !opts.preview } />
-      <div each={ el, i in getBlocks() } el={ el } no-reorder class={ el.class } data-is={ getElement(el) } preview={ opts.preview } data-block={ el.uuid } data={ getBlock(el) } block={ el } get-block={ getBlock } on-add-block={ onAddBlock } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } placement={ i } i={ i } />
+      <div each={ el, i in getBlocks() } el={ el } no-reorder class={ el.class } data-is={ getElement(el) } preview={ this.preview } data-block={ el.uuid } data={ getBlock(el) } block={ el } get-block={ getBlock } on-add-block={ onAddBlock } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } placement={ i } i={ i } />
       <eden-add type="bottom" onclick={ onAddBlock } way="push" placement="" if={ this.acl.validate('admin') && !opts.preview } />
     </div>
   </div>
@@ -24,6 +24,7 @@
     // set update
     this.blocks    = (opts.placement || {}).render || [];
     this.loading   = {};
+    this.preview   = !!opts.preview;
     this.updating  = false;
     this.position  = opts.position;
     this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});
@@ -341,7 +342,7 @@
       if (!this.placement.get('positions')) this.placement.set('positions', []);
 
       // get from position
-      let pos = (this.v || '').length ? dotProp.get(this.placement.get('positions'), this.blockPos) : this.placement.get('positions');
+      let pos = (this.blockPos || '').length ? dotProp.get(this.placement.get('positions'), this.blockPos) : this.placement.get('positions');
 
       // force pos to exist
       if (!pos && (this.blockPos || '').length) {
@@ -499,7 +500,7 @@
       // do dragula
       this.dragula = dragula(jQuery('.eden-dropzone', this.refs.placement).toArray(), {
         'moves' : (el, container, handle) => {
-          return (jQuery(el).is('[data-block]') || jQuery(el).closest('[data-block]').length) && (jQuery(handle).is('.move') || jQuery(handle).closest('.move').length);
+          return (jQuery(el).is('[data-block]') || jQuery(el).closest('[data-block]').length) && (jQuery(handle).is('.move') || jQuery(handle).closest('.move').length) && (jQuery(handle).is('.move') ? jQuery(handle) : jQuery(handle).closest('.move')).attr('for') === jQuery(el).attr('data-block');
         }
       }).on('drop', (el, target, source, sibling) => {
         // get current placement
@@ -579,7 +580,7 @@
       });
 
       // on update
-      this.on('update', () => {
+      this.on('updated', () => {
         // set containers
         this.dragula.containers = jQuery('.eden-dropzone', this.refs.placement).toArray();
       });
@@ -595,7 +596,7 @@
       if (!this.eden.frontend) return;
 
       // check type
-      if ((opts.placement || {}).id !== this.placement.get('id') || opts.position !== this.position) {
+      if ((opts.placement || {}).id !== this.placement.get('id') || opts.position !== this.position || !!opts.preview !== !!this.preview) {
         // set blocks
         this.placement.set('positions', []);
 
@@ -633,8 +634,9 @@
       }
       
       // set positions
-      if (opts.position !== this.position) {
+      if (opts.position !== this.position || !!this.preview !== !!opts.preview) {
         // set position
+        this.preview  = !!opts.preview;
         this.position = opts.position;
         
         // get positions

@@ -1,5 +1,5 @@
 <block>
-  <div class={ 'eden-block' : true, 'eden-block-admin' : this.acl.validate('admin') && !opts.preview } id="block-{ opts.block.uuid }">
+  <div class={ 'eden-block' : true, 'eden-block-admin' : this.acl.validate('admin') && !opts.preview } data-block={ opts.block.uuid } id="block-{ opts.block.uuid }">
 
     <div class="eden-block-hover" if={ this.acl.validate('admin') && !opts.preview }>
       <div class="row row-eq-height">
@@ -21,7 +21,7 @@
               <button class="btn btn-sm btn-secondary" onclick={ onRemoveModal }>
                 <i class={ 'fa fa-times' : true, 'fa-spin' : this.removing || opts.block.removing } />
               </button>
-              <span class="btn btn-sm btn-secondary move">
+              <span class="btn btn-sm btn-secondary move" for={ opts.block.uuid }>
                 <i class="fa fa-arrows" />
               </span>
             </div>
