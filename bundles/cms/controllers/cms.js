@@ -20,7 +20,7 @@ class CMSController extends Controller {
   /**
    * construct Block controller
    */
-  constructor () {
+  constructor() {
     // run super
     super();
 
@@ -37,7 +37,7 @@ class CMSController extends Controller {
   /**
    * build Block controller
    */
-  build () {
+  build() {
     // on render
     this.eden.router.use(this._middleware);
 
@@ -47,15 +47,18 @@ class CMSController extends Controller {
       render.placements = {};
 
       // move menus
-      if (render.state.placements) await Promise.all(render.state.placements.map(async (position) => {
+      if (render.state.placements) {
+        // await promise
+        await Promise.all(render.state.placements.map(async (position) => {
         // get Block
-        let placement = await Placement.findOne({
-          'position' : position
-        });
+          const placement = await Placement.findOne({
+            position,
+          });
 
-        // set null or Block
-        render.placements[position] = placement ? await placement.sanitise(render.req) : null;
-      }));
+          // set null or Block
+          render.placements[position] = placement ? await placement.sanitise(render.req) : null;
+        }));
+      }
 
       // check blocks
       if (!render.blocks) {
@@ -76,7 +79,7 @@ class CMSController extends Controller {
    * @menu     {MAIN} Home
    * @priority 2
    */
-  async indexAction (req, res) {
+  async indexAction(req, res) {
     // set placements
     req.placement('home');
 
@@ -94,13 +97,13 @@ class CMSController extends Controller {
    * @route     {get} /:page
    * @priority  100
    */
-  async pageAction (req, res, next) {
+  async pageAction(req, res, next) {
     // load Page
     if (!req.params.page || !req.params.page.length) return next();
 
     // load Page
-    let page = await Page.findOne({
-      'slug' : req.params.page
+    const page = await Page.findOne({
+      slug : req.params.page,
     });
 
     // check Page
@@ -108,9 +111,10 @@ class CMSController extends Controller {
 
     // render Page
     res.render('page', {
-      'item'   : await page.sanitise(req),
-      'title'  : page.get('title')[req.language],
-      'layout' : page.get('layout') || 'main'
+      item   : await page.sanitise(req),
+      title  : page.get('title')[req.language],
+      blocks : BlockHelper.renderBlocks('frontend'),
+      layout : page.get('layout') || 'main',
     });
   }
 
@@ -121,7 +125,7 @@ class CMSController extends Controller {
    * @param  {Response}  res
    * @param  {Function}  next
    */
-  _middleware (req, res, next) {
+  _middleware(req, res, next) {
     // set Block
     res.locals.placements = [];
 

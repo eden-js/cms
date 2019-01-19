@@ -3,7 +3,7 @@
  */
 
 // use strict
-'use strict';
+
 
 // require dependencies
 const Grid       = require('grid');
@@ -30,16 +30,16 @@ class BannerAdminController extends Controller {
   /**
    * construct user bannerAdminController controller
    */
-  constructor () {
+  constructor() {
     // run super
     super();
 
     // bind methods
-    this.gridAction         = this.gridAction.bind(this);
-    this.indexAction        = this.indexAction.bind(this);
-    this.createAction       = this.createAction.bind(this);
-    this.updateAction       = this.updateAction.bind(this);
-    this.removeAction       = this.removeAction.bind(this);
+    this.gridAction = this.gridAction.bind(this);
+    this.indexAction = this.indexAction.bind(this);
+    this.createAction = this.createAction.bind(this);
+    this.updateAction = this.updateAction.bind(this);
+    this.removeAction = this.removeAction.bind(this);
     this.createSubmitAction = this.createSubmitAction.bind(this);
     this.updateSubmitAction = this.updateSubmitAction.bind(this);
     this.removeSubmitAction = this.removeSubmitAction.bind(this);
@@ -49,38 +49,38 @@ class BannerAdminController extends Controller {
 
     // register simple block
     BlockHelper.block('dashboard.cms.banners', {
-      'acl'         : ['admin.cms'],
-      'for'         : ['admin'],
-      'title'       : 'Banners Grid',
-      'description' : 'Shows grid of banners'
+      acl         : ['admin.cms'],
+      for         : ['admin'],
+      title       : 'Banners Grid',
+      description : 'Shows grid of banners',
     }, async (req, block) => {
       // get notes block from db
-      let blockModel = await Block.findOne({
-        'uuid' : block.uuid
+      const blockModel = await Block.findOne({
+        uuid : block.uuid,
       }) || new Block({
-        'uuid' : block.uuid,
-        'type' : block.type
+        uuid : block.uuid,
+        type : block.type,
       });
 
       // create new req
-      let fauxReq = {
-        'query' : blockModel.get('state') || {}
+      const fauxReq = {
+        query : blockModel.get('state') || {},
       };
 
       // return
       return {
-        'tag'   : 'grid',
-        'name'  : 'Banners',
-        'grid'  : await this._grid(req).render(fauxReq),
-        'title' : blockModel.get('title') || ''
+        tag   : 'grid',
+        name  : 'Banners',
+        grid  : await this._grid(req).render(fauxReq),
+        title : blockModel.get('title') || '',
       };
     }, async (req, block) => {
       // get notes block from db
-      let blockModel = await Block.findOne({
-        'uuid' : block.uuid
+      const blockModel = await Block.findOne({
+        uuid : block.uuid,
       }) || new Block({
-        'uuid' : block.uuid,
-        'type' : block.type
+        uuid : block.uuid,
+        type : block.type,
       });
 
       // set data
@@ -105,10 +105,10 @@ class BannerAdminController extends Controller {
    * @parent  /admin/cms
    * @layout  admin
    */
-  async indexAction (req, res) {
+  async indexAction(req, res) {
     // render grid
     res.render('banner/admin', {
-      'grid' : await this._grid(req).render(req)
+      grid : await this._grid(req).render(req),
     });
   }
 
@@ -119,7 +119,7 @@ class BannerAdminController extends Controller {
    * @layout   admin
    * @priority 12
    */
-  createAction () {
+  createAction() {
     // return update action
     return this.updateAction(...arguments);
   }
@@ -133,7 +133,7 @@ class BannerAdminController extends Controller {
    * @route   {get} /:id/update
    * @layout  admin
    */
-  async updateAction (req, res) {
+  async updateAction(req, res) {
     // set website variable
     let create = true;
     let banner = new Banner();
@@ -147,8 +147,8 @@ class BannerAdminController extends Controller {
 
     // render page
     res.render('banner/admin/update', {
-      'item'  : await banner.sanitise(),
-      'title' : create ? 'Create banner' : 'Update ' + banner.get('_id').toString()
+      item  : await banner.sanitise(),
+      title : create ? 'Create banner' : `Update ${banner.get('_id').toString()}`,
     });
   }
 
@@ -159,7 +159,7 @@ class BannerAdminController extends Controller {
    * @layout  admin
    * @upload  {single} image
    */
-  createSubmitAction () {
+  createSubmitAction() {
     // return update action
     return this.updateSubmitAction(...arguments);
   }
@@ -174,7 +174,7 @@ class BannerAdminController extends Controller {
    * @layout  admin
    * @upload  {any}
    */
-  async updateSubmitAction (req, res) {
+  async updateSubmitAction(req, res) {
     // set website variable
     let banner = new Banner();
     let create = true;
@@ -187,13 +187,13 @@ class BannerAdminController extends Controller {
     }
 
     // let image
-    let image = req.body.image ? await Image.findById(req.body.image) : await banner.get('image');
+    const image = req.body.image ? await Image.findById(req.body.image) : await banner.get('image');
 
     // update banner
-    banner.set('image',    image);
-    banner.set('class',    req.body.class);
-    banner.set('title',    req.body.title);
-    banner.set('content',  req.body.content);
+    banner.set('image', image);
+    banner.set('class', req.body.class);
+    banner.set('title', req.body.title);
+    banner.set('content', req.body.content);
     banner.set('category', req.body.category);
 
     // save banner
@@ -209,12 +209,12 @@ class BannerAdminController extends Controller {
     }
 
     // send alert
-    req.alert('success', 'Successfully ' + (create ? 'Created' : 'Updated') + ' banner!');
+    req.alert('success', `Successfully ${create ? 'Created' : 'Updated'} banner!`);
 
     // render page
     res.render('banner/admin/update', {
-      'item'  : await banner.sanitise(),
-      'title' : create ? 'Create banner' : 'Update ' + banner.get('_id').toString()
+      item  : await banner.sanitise(),
+      title : create ? 'Create banner' : `Update ${banner.get('_id').toString()}`,
     });
   }
 
@@ -227,7 +227,7 @@ class BannerAdminController extends Controller {
    * @route   {get} /:id/remove
    * @layout  admin
    */
-  async removeAction (req, res) {
+  async removeAction(req, res) {
     // set website variable
     let banner = false;
 
@@ -239,8 +239,8 @@ class BannerAdminController extends Controller {
 
     // render page
     res.render('banner/admin/remove', {
-      'item'  : await banner.sanitise(),
-      'title' : 'Remove ' + banner.get('_id').toString()
+      item  : await banner.sanitise(),
+      title : `Remove ${banner.get('_id').toString()}`,
     });
   }
 
@@ -254,7 +254,7 @@ class BannerAdminController extends Controller {
    * @title   Remove banner
    * @layout  admin
    */
-  async removeSubmitAction (req, res) {
+  async removeSubmitAction(req, res) {
     // set website variable
     let banner = false;
 
@@ -265,7 +265,7 @@ class BannerAdminController extends Controller {
     }
 
     // alert Removed
-    req.alert('success', 'Successfully removed ' + (banner.get('_id').toString()));
+    req.alert('success', `Successfully removed ${banner.get('_id').toString()}`);
 
     // delete website
     await banner.remove();
@@ -282,7 +282,7 @@ class BannerAdminController extends Controller {
    *
    * @route {post} /grid
    */
-  gridAction (req, res) {
+  gridAction(req, res) {
     // return post grid request
     return this._grid(req).post(req, res);
   }
@@ -292,9 +292,9 @@ class BannerAdminController extends Controller {
    *
    * @return {grid}
    */
-  _grid (req) {
+  _grid(req) {
     // create new grid
-    let bannerGrid = new Grid();
+    const bannerGrid = new Grid();
 
     // set route
     bannerGrid.route('/admin/banner/grid');
@@ -304,24 +304,24 @@ class BannerAdminController extends Controller {
 
     // add grid columns
     bannerGrid.column('_id', {
-      'title'  : 'ID',
-      'width'  : '1%',
-      'format' : async (col) => {
-        return col ? '<a href="/admin/banner/' + col.toString() + '/update">' + col.toString() + '</a>' : '<i>N/A</i>';
-      }
+      title  : 'ID',
+      width  : '1%',
+      format : async (col) => {
+        return col ? `<a href="/admin/banner/${col.toString()}/update">${col.toString()}</a>` : '<i>N/A</i>';
+      },
     }).column('title', {
-      'sort'   : true,
-      'title'  : 'Title',
-      'format' : async (col, row) => {
+      sort   : true,
+      title  : 'Title',
+      format : async (col, row) => {
         return col ? ((col || {})[req.language] || '').toString() : '<i>N/A</i>';
-      }
+      },
     }).column('category', {
-      'sort'   : true,
-      'title'  : 'Category',
-      'format' : async (col, row) => {
+      sort   : true,
+      title  : 'Category',
+      format : async (col, row) => {
         return col ? col.toString() : '<i>N/A</i>';
       },
-      'update' : async (row, value) => {
+      update : async (row, value) => {
         // Set value
         await row.lock();
 
@@ -333,14 +333,14 @@ class BannerAdminController extends Controller {
 
         // Unlock
         row.unlock();
-      }
+      },
     }).column('class', {
-      'sort'   : true,
-      'title'  : 'Class',
-      'format' : async (col, row) => {
+      sort   : true,
+      title  : 'Class',
+      format : async (col, row) => {
         return col ? col.toString() : '<i>N/A</i>';
       },
-      'update' : async (row, value) => {
+      update : async (row, value) => {
         // Set value
         await row.lock();
 
@@ -352,51 +352,54 @@ class BannerAdminController extends Controller {
 
         // Unlock
         row.unlock();
-      }
-    }).column('updated_at', {
-      'sort'   : true,
-      'title'  : 'Updated',
-      'format' : async (col) => {
-        return col.toLocaleDateString('en-GB', {
-          'day'   : 'numeric',
-          'month' : 'short',
-          'year'  : 'numeric'
-        });
-      }
-    }).column('created_at', {
-      'sort'   : true,
-      'title'  : 'Created',
-      'format' : async (col) => {
-        return col.toLocaleDateString('en-GB', {
-          'day'   : 'numeric',
-          'month' : 'short',
-          'year'  : 'numeric'
-        });
-      }
-    }).column('actions', {
-      'type'   : false,
-      'width'  : '1%',
-      'title'  : 'Actions',
-      'format' : async (col, row) => {
-        return [
-          '<div class="btn-group btn-group-sm" role="group">',
-            '<a href="/admin/banner/' + row.get('_id').toString() + '/update" class="btn btn-primary"><i class="fa fa-pencil"></i></a>',
-            '<a href="/admin/banner/' + row.get('_id').toString() + '/remove" class="btn btn-danger"><i class="fa fa-times"></i></a>',
-          '</div>'
-        ].join ('');
-      }
-    });
+      },
+    })
+      .column('updated_at', {
+        sort   : true,
+        title  : 'Updated',
+        format : async (col) => {
+          return col.toLocaleDateString('en-GB', {
+            day   : 'numeric',
+            month : 'short',
+            year  : 'numeric',
+          });
+        },
+      })
+      .column('created_at', {
+        sort   : true,
+        title  : 'Created',
+        format : async (col) => {
+          return col.toLocaleDateString('en-GB', {
+            day   : 'numeric',
+            month : 'short',
+            year  : 'numeric',
+          });
+        },
+      })
+      .column('actions', {
+        type   : false,
+        width  : '1%',
+        title  : 'Actions',
+        format : async (col, row) => {
+          return [
+            '<div class="btn-group btn-group-sm" role="group">',
+            `<a href="/admin/banner/${row.get('_id').toString()}/update" class="btn btn-primary"><i class="fa fa-pencil"></i></a>`,
+            `<a href="/admin/banner/${row.get('_id').toString()}/remove" class="btn btn-danger"><i class="fa fa-times"></i></a>`,
+            '</div>',
+          ].join('');
+        },
+      });
 
     // add grid filters
     bannerGrid.filter('title', {
-      'title' : 'Title',
-      'type'  : 'text',
-      'query' : async (param) => {
+      title : 'Title',
+      type  : 'text',
+      query : async (param) => {
         // another where
-        bannerGrid.where ({
-          ['title.' + req.language] : new RegExp(param.toString().toLowerCase(), 'i')
+        bannerGrid.where({
+          [`title.${req.language}`] : new RegExp(param.toString().toLowerCase(), 'i'),
         });
-      }
+      },
     });
 
     // set default sort order

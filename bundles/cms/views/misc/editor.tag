@@ -149,13 +149,7 @@
             }
 
             // do update
-            if (opts.onChange) opts.onChange(jQuery(this.refs.editor).summernote('code'));
-
-            // set html
-            jQuery(this.refs.editor).val(jQuery(this.refs.editor).summernote('code'));
-
-            // set value
-            this.value = jQuery(this.refs.editor).summernote('code');
+            this.trigger('change');
           }
         },
         'dataType'    : 'json',

@@ -8,6 +8,9 @@
     this.mixin('acl');
     this.mixin('model');
     
+    // is update
+    this.isUpdate = false;
+    
     /**
      * on save placements
      *
@@ -22,6 +25,23 @@
       
       // set placements
       this.eden.set('placements', placements);
+    }
+
+    /**
+     * on update name
+     *
+     * @param  {Event} e
+     */
+    onToggleUpdate (e) {
+      // prevent default
+      e.preventDefault();
+      e.stopPropagation();
+
+      // set update
+      this.isUpdate = !this.isUpdate;
+
+      // update
+      this.update();
     }
     
     /**

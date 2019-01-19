@@ -1,13 +1,6 @@
 <page-admin-update-page>
-  <admin-header title="{ opts.item.id ? 'Update' : 'Create' } Page { this.page.get('title.' + this.language) }" on-preview={ onPreview }>
+  <admin-header title="{ this.page.get('id') ? 'Update' : 'Create' } Page { this.page.get('title.' + this.language) }" on-preview={ onPreview }>
     <yield to="right">
-
-      <button class="btn btn-lg btn-success mr-3" onclick={ opts.onPreview }>
-        { this.preview ? 'Back' : 'Preview' }
-      </button>
-      <button class="btn btn-lg mr-3 btn-primary" data-toggle="modal" data-target="#block-modal">
-        Add Block
-      </button>
 
       <a href="/admin/page" class="btn btn-lg btn-primary">
         Back
@@ -48,7 +41,7 @@
       </div>
     </div>
 
-    <div data-is={ this.preview ? 'eden-view' : 'eden-update' } placement={ this.page.get('placement') || {} } for="frontend" blocks={ opts.blocks } type={ opts.type } on-save={ onPlacement } />
+    <div class="cms-placement-blocks" data-placement={ (opts.item || {}).id || 'page' } data-is="eden-blocks" placement={ this.page.get('placement') || {} } for="frontend" blocks={ opts.blocks } on-save={ onPlacement } position={ (opts.item || {}).id || 'page' } />
 
   </div>
 
@@ -58,12 +51,10 @@
     this.mixin('model');
 
     // set update
-    this.type       = opts.type;
-    this.page       = this.model('page', opts.item);
-    this.preview    = false;
-    this.loading    = {};
-    this.updating   = {};
-    this.showSelect = false;
+    this.type     = opts.type;
+    this.page     = this.model('page', opts.item);
+    this.loading  = {};
+    this.updating = {};
 
     // load data
     this.language  = this.i18n.lang();
@@ -96,23 +87,6 @@
     onInput (e) {
       // save page
       this.savePage(this.page);
-    }
-
-    /**
-     * on preview
-     *
-     * @param  {Event} e
-     */
-    onPreview (e) {
-      // prevent default
-      e.preventDefault();
-      e.stopPropagation();
-
-      // set logic
-      this.preview = !this.preview;
-
-      // update view
-      this.update();
     }
 
     /**
@@ -179,6 +153,20 @@
 
       // load data
       let data = await res.json();
+      
+      // check if new page
+      if (!page.get('id') && data.result.id) {
+        // change url
+        let state = Object.assign({}, {
+          'prevent' : true
+        }, eden.router.history.location.state);
+        
+        // replace state
+        eden.router.history.replace({
+          'state'    : state,
+          'pathname' : '/admin/page/' + data.result.id + '/update'
+        });
+      }
 
       // set logic
       for (let key in data.result) {
@@ -219,6 +207,9 @@
 
       // set page
       this.page = this.model('page', opts.item);
+      
+      // set to placements
+      if (this.page.id) this.eden.set('placements.' + this.page.id, this.page.get('placement'));
 
     });
   </script>
