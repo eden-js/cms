@@ -320,7 +320,7 @@
      */
     async onRemoveBlock (block, data, placement) {
       // get uuid
-      const dotProp = require('dot-prop');
+      const dotProp = require('dot-prop-immutable');
 
       // set loading
       block.removing = true;
@@ -367,7 +367,7 @@
      */
     async onSetBlock (type) {
       // get uuid
-      const dotProp = require('dot-prop');
+      const dotProp = require('dot-prop-immutable');
 
       // create block
       let block = {
@@ -532,7 +532,7 @@
     initDragula () {
       // require dragula
       const dragula = require('dragula');
-      const dotProp = require('dot-prop');
+      const dotProp = require('dot-prop-immutable');
 
       // do dragula
       this.dragula = dragula(jQuery('.eden-dropzone', this.refs.placement).toArray(), {
