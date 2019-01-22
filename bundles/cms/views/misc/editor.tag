@@ -34,9 +34,10 @@
         fr.onload = () => {
           // require uuid
           const uuid = require('uuid');
-          
+
           // let uuid
-          let id = uuid();
+          let id   = uuid();
+          let type = 'image';
 
           // let value
           let value = {
@@ -51,20 +52,35 @@
             'selection' : this.selection,
           };
 
-          // create figure
-          let imageHTML   = jQuery('<img src="' + value.src + '" data-id="' + value.temp + '" class="img-resize img-fluid img-grayscale" />');
-          let figureHTML  = jQuery('<figure class="embed figure-image" style="display:table" />');
-          let captionHTML = jQuery('<figcaption class="img-caption" />');
+          // set files
+          let files = ['pdf', 'docx', 'txt'];
 
-          // append/prepend elements
-          imageHTML.prependTo(figureHTML);
-          captionHTML.appendTo(figureHTML);
+          // check type
+          if (value.name.includes('.pdf')) {
+            // set type
+            type = 'file';
 
-          // insert image
-          let insert = jQuery(this.refs.editor).summernote('insertNode', figureHTML[0]);
+            // insert html
+            let fileHTML = jQuery('<a target="_BLANK" href="' + value.src + '" data-id="' + value.temp + '">' + value.name + '</a>');
+
+            // insert image
+            let insert = jQuery(this.refs.editor).summernote('insertNode', fileHTML[0]);
+          } else {
+            // create figure
+            let imageHTML   = jQuery('<img src="' + value.src + '" data-id="' + value.temp + '" class="img-resize img-fluid img-grayscale" />');
+            let figureHTML  = jQuery('<figure class="embed figure-image" style="display:table" />');
+            let captionHTML = jQuery('<figcaption class="img-caption" />');
+
+            // append/prepend elements
+            imageHTML.prependTo(figureHTML);
+            captionHTML.appendTo(figureHTML);
+
+            // insert image
+            let insert = jQuery(this.refs.editor).summernote('insertNode', figureHTML[0]);
+          }
 
           // do upload
-          this._ajaxUpload(value);
+          this._ajaxUpload(value, type);
         };
 
         // read file
@@ -82,7 +98,7 @@
     _ajaxUpload (value, type) {
       // require uuid
       const uuid = require('uuid');
-      
+
       // let change
       this.change = uuid();
 
@@ -166,7 +182,7 @@
     onFile (e) {
       // check files
       if (!e.target.files.length) return;
-      
+
       // require uuid
       const uuid = require('uuid');
 
@@ -299,7 +315,7 @@
           ],
         }
       });
-      
+
       // trigger change on keyup
       jQuery('.note-codable', this.root).on('keyup', () => {
         // trigger change on keyup
@@ -325,7 +341,7 @@
       // init summernote
       this._summernote();
     });
-    
+
     /**
      * on change function
      *
@@ -334,10 +350,10 @@
     this.on('change', () => {
       // check if frontend
       if (!this.eden.frontend) return;
-      
+
       // set value
       this.value = jQuery('.note-codable', this.root).is(':visible') ? jQuery('.note-codable', this.root).val() : jQuery(this.refs.editor).summernote('code');
-      
+
       // on update
       if (opts.onUpdate) {
         // set content

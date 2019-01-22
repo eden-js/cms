@@ -143,7 +143,7 @@ class PlacementController extends Controller {
     }
 
     // update
-    const registered = BlockHelper.blocks().find(w => w.type === current.type);
+    const registered = BlockHelper.blocks().find(w => w.type === current.type) || BlockHelper.blocks().find(w => w.type === 'frontend.content');
 
     // await save
     if (registered) await registered.save(req, req.body.block);

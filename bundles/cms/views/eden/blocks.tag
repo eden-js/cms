@@ -28,12 +28,12 @@
     this.updating  = false;
     this.position  = opts.position;
     this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});
-      
+
     // set flattened blocks
     const fix = (block) => {
       // standard children elements
       let children = ['left', 'right', 'children'];
-      
+
       // return if moving
       if (!block) return;
 
@@ -52,12 +52,12 @@
       // return accum
       return block;
     };
-      
+
     // set flattened blocks
     const place = (block) => {
       // standard children elements
       let children = ['left', 'right', 'children'];
-      
+
       // return if moving
       if (block.moving || block.removing) return;
 
@@ -76,17 +76,17 @@
       // return accum
       return block;
     };
-      
+
     // set flattened blocks
     const replace = (b) => {
       // return block
       return (block) => {
         // standard children elements
         let children = ['left', 'right', 'children'];
-        
+
         // return if moving
         if (block.moving || block.removing) return;
-        
+
         // set block info for replace
         if (block.uuid === b.uuid) {
           // remove
@@ -95,19 +95,19 @@
             block[key] = b[key];
           }
         }
-  
+
         // check children
         for (let child of children) {
           // check child
           if (block[child]) {
             // remove empty blocks
             block[child] = Object.values(block[child]);
-  
+
             // push children to flat
             block[child] = block[child].map(replace(b)).filter((block) => block);
           }
         }
-  
+
         // return accum
         return block;
       };
@@ -249,7 +249,7 @@
         // clone to placement
         data[key] = result.result[key];
       }
-      
+
       // set to blocks
       if (!this.blocks.find((b) => b.uuid === data.uuid)) this.blocks.push(data);
 
@@ -346,7 +346,7 @@
 
       // get positions
       let positions = (this.placement.get('positions') || []).map(fix).filter((block) => block);
-      
+
       // set moving on block
       positions = dotProp.set(positions, placement + '.removing', true);
 
@@ -434,7 +434,7 @@
 
       // load data
       let data = await res.json();
-      
+
       // prevent clear
       if (!preventRefresh) {
         // reset positions
@@ -503,7 +503,7 @@
 
       // load data
       let data = await res.json();
-      
+
       // set in eden
       if (data.result) {
         // set in eden
@@ -517,7 +517,7 @@
 
         // set loading
         this.loading.blocks = false;
-        
+
         // get blocks
         this.blocks = this.placement.get('render') || [];
 
@@ -542,7 +542,7 @@
       }).on('drop', (el, target, source, sibling) => {
         // get current placement
         let placement = jQuery(el).attr('placement');
-        
+
         // check target
         if (!target || !source || !el) return;
 
@@ -551,7 +551,7 @@
 
         // get positions
         let positions = (this.placement.get('positions') || []).map(fix).filter((block) => block);
-        
+
         // set moving on block
         positions = dotProp.set(positions, placement + '.moving', true);
 
@@ -560,7 +560,7 @@
           // set get from
           let getFrom = jQuery(block).attr('placement');
           let gotBlock = dotProp.get(positions, getFrom);
-          
+
           // return on no block
           if (!gotBlock) return;
 
@@ -568,7 +568,7 @@
           if (getFrom === placement) {
             // clone block
             gotBlock = JSON.parse(JSON.stringify(gotBlock));
-            
+
             // delete placing
             if (gotBlock.moving) delete gotBlock.moving;
           }
@@ -669,25 +669,25 @@
         // save blocks
         this.savePlacement(this.placement);
       }
-      
+
       // set positions
       if (opts.position !== this.position || !!this.preview !== !!opts.preview) {
         // set position
         this.preview  = !!opts.preview;
         this.position = opts.position;
-        
+
         // get positions
         let positions = this.placement.get('positions') || [];
-        
+
         // reset positions
         this.placement.set('positions', []);
-        
+
         // update
         this.update();
-        
+
         // set positions again
         this.placement.set('positions', positions);
-        
+
         // update view again
         this.update();
       }
