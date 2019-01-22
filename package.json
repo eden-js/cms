@@ -1,6 +1,6 @@
 {
   "name": "@edenjs/cms",
-  "version": "1.1.28",
+  "version": "1.1.29",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,7 @@
   "homepage": "https://github.com/eden-js/cms#readme",
   "dependencies": {
     "chart.js": "^2.7.3",
-    "dot-prop-immutable": "^1.5.0",
+    "dot-prop": "^4.2.0",
     "slug": "^0.9.3",
     "summernote": "^0.8.11"
   },
