@@ -1,16 +1,16 @@
 <cms-placement>
   <div class="cms-placement placement-{ opts.placement.split('.').join('-') }">
-    <div class="cms-placement-blocks" data-placement={ opts.placement } data-is="eden-blocks" blocks={ this.getBlocks() } placement={ getPlacement() } on-save={ onSave } position={ opts.placement } />
+    <div class="cms-placement-blocks" data-placement={ opts.placement } ref="blocks" data-is="eden-blocks" blocks={ this.getBlocks() } placement={ getPlacement() } on-save={ onSave } position={ opts.placement } />
   </div>
-  
+
   <script>
     // mixin acl
     this.mixin('acl');
     this.mixin('model');
-    
+
     // is update
     this.isUpdate = false;
-    
+
     /**
      * on save placements
      *
@@ -19,10 +19,10 @@
     onSave (placement) {
       // get placements
       let placements = this.eden.get('placements') || {};
-        
+
       // set placement
       placements[opts.placement] = placement.get();
-      
+
       // set placements
       this.eden.set('placements', placements);
     }
@@ -43,7 +43,17 @@
       // update
       this.update();
     }
-    
+
+    /**
+     * add load blocks function
+     *
+     * @return {*}
+     */
+    loadBlocks () {
+      // return internal proxied
+      return this.refs.blocks.loadBlocks(...arguments);
+    }
+
     /**
      * gets blocks
      *
@@ -53,7 +63,7 @@
       // check for blocks
       return this.eden.get('blocks') || [];
     }
-    
+
     /**
      * returns placement
      *
@@ -65,6 +75,6 @@
         'position' : opts.placement
       };
     }
-    
+
   </script>
 </cms-placement>
