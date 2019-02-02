@@ -509,6 +509,12 @@
         // set in eden
         window.eden.placements[this.placement.get('position')] = data.result;
 
+        // set key
+        this.placement.set('positions', []);
+
+        // udpate view
+        this.update();
+
         // set blocks
         for (let key in data.result) {
           // set key
