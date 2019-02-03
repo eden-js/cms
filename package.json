@@ -1,7 +1,16 @@
 {
   "name": "@edenjs/cms",
-  "version": "1.1.31",
   "description": "",
+  "version": "1.1.31",
+  "dependencies": {
+    "chart.js": "^2.7.3",
+    "dot-prop": "^4.2.0",
+    "slug": "^0.9.3",
+    "summernote": "^0.8.11"
+  },
+  "engines": {
+    "node": ">= 8.0.0"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -19,18 +28,12 @@
     "registry": "https://registry.npmjs.org/"
   },
   "homepage": "https://github.com/eden-js/cms#readme",
-  "dependencies": {
-    "chart.js": "^2.7.3",
-    "dot-prop": "^4.2.0",
-    "slug": "^0.9.3",
-    "summernote": "^0.8.11"
-  },
   "devDependencies": {
     "@edenjs/eslint-config-eden": "^2.0.14",
-    "eslint": "^5.12.1",
+    "eslint": "^5.13.0",
     "eslint-config-airbnb": "^17.1.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-jsx-a11y": "^6.2.0",
     "eslint-plugin-react": "^7.12.4"
   }
 }
