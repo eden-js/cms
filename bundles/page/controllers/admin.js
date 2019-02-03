@@ -166,7 +166,7 @@ class PageAdminController extends Controller {
    */
   async indexAction(req, res) {
     console.log('INDEXXXX');
-    
+
     // render grid
     res.render('page/admin', {
       grid : await this._grid(req).render(req),

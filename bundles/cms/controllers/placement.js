@@ -138,7 +138,7 @@ class PlacementController extends Controller {
       return res.json({
         state   : 'fail',
         result  : {},
-        message : 'Block not found'
+        message : 'Block not found',
       });
     }
 
