@@ -114,32 +114,32 @@ class mediaController extends controller {
     await image.fromFile(req.file.path, req.file.originalname);
 
     // resize image
-    await (await image.thumb('1x')).resize(150, 150).max().png().save();
-    await (await image.thumb('2x')).resize(300, 300).max().png().save();
-    await (await image.thumb('3x')).resize(600, 600).max().png().save();
+    await (await image.thumb('1x')).resize(400, 400).max().png().save();
+    await (await image.thumb('2x')).resize(800, 800).max().png().save();
+    await (await image.thumb('3x')).resize(1200, 1200).max().png().save();
 
     // resize image in square
-    await (await image.thumb('sm-sq')).resize(150, 150).background({
+    await (await image.thumb('sm-sq')).resize(400, 400).background({
       r     : 0, g     : 0, b     : 0, alpha : 0,
     }).embed().png()
       .save();
-    await (await image.thumb('md-sq')).resize(300, 300).background({
+    await (await image.thumb('md-sq')).resize(800, 800).background({
       r     : 0, g     : 0, b     : 0, alpha : 0,
     }).embed().png()
       .save();
-    await (await image.thumb('lg-sq')).resize(600, 600).background({
+    await (await image.thumb('lg-sq')).resize(1200, 1200).background({
       r     : 0, g     : 0, b     : 0, alpha : 0,
     }).embed().png()
       .save();
 
     // resize image
-    await (await image.thumb('1x-sq')).resize(150, 150, {
+    await (await image.thumb('1x-sq')).resize(400, 400, {
       fit : 'cover',
     }).png().save();
-    await (await image.thumb('2x-sq')).resize(300, 300, {
+    await (await image.thumb('2x-sq')).resize(800, 800, {
       fit : 'cover',
     }).png().save();
-    await (await image.thumb('3x-sq')).resize(600, 600, {
+    await (await image.thumb('3x-sq')).resize(1200, 1200, {
       fit : 'cover',
     }).png().save();
 

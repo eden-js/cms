@@ -61,7 +61,7 @@
             type = 'file';
 
             // insert html
-            let fileHTML = jQuery('<a target="_BLANK" href="' + value.src + '" data-id="' + value.temp + '">' + value.name + '</a>');
+            let fileHTML = jQuery('<a target="_BLANK" href="#uploading" data-id="' + value.temp + '">' + value.name + '</a>');
 
             // insert image
             let insert = jQuery(this.refs.editor).summernote('insertNode', fileHTML[0]);
