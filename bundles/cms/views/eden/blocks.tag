@@ -17,6 +17,7 @@
     // do mixins
     this.mixin('acl');
     this.mixin('model');
+    this.mixin('blocks');
 
     // require uuid
     const uuid = require('uuid');
@@ -27,125 +28,9 @@
     this.preview   = !!opts.preview;
     this.updating  = false;
     this.position  = opts.position;
-    this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});
-
-    // set flattened blocks
-    const fix = (block) => {
-      // standard children elements
-      let children = ['left', 'right', 'children'];
-
-      // return if moving
-      if (!block) return;
-
-      // check children
-      for (let child of children) {
-        // check child
-        if (block[child]) {
-          // remove empty blocks
-          block[child] = Object.values(block[child]).filter((block) => block);
-
-          // push children to flat
-          block[child] = block[child].map(fix);
-        }
-      }
-
-      // return accum
-      return block;
-    };
-
-    // set flattened blocks
-    const place = (block) => {
-      // standard children elements
-      let children = ['left', 'right', 'children'];
-
-      // return if moving
-      if (block.moving || block.removing) return;
-
-      // check children
-      for (let child of children) {
-        // check child
-        if (block[child]) {
-          // remove empty blocks
-          block[child] = Object.values(block[child]);
-
-          // push children to flat
-          block[child] = block[child].map(place).filter((block) => block);
-        }
-      }
-
-      // return accum
-      return block;
-    };
-
-    // set flattened blocks
-    const replace = (b) => {
-      // return block
-      return (block) => {
-        // standard children elements
-        let children = ['left', 'right', 'children'];
-
-        // return if moving
-        if (block.moving || block.removing) return;
-
-        // set block info for replace
-        if (block.uuid === b.uuid) {
-          // remove
-          for (let key in b) {
-            // set key
-            block[key] = b[key];
-          }
-        }
-
-        // check children
-        for (let child of children) {
-          // check child
-          if (block[child]) {
-            // remove empty blocks
-            block[child] = Object.values(block[child]);
-
-            // push children to flat
-            block[child] = block[child].map(replace(b)).filter((block) => block);
-          }
-        }
-
-        // return accum
-        return block;
-      };
-    };
-
-    // set flattened blocks
-    const flatten = (accum, block) => {
-      // standard children elements
-      let children = ['left', 'right', 'children'];
-
-      // get sanitised
-      let sanitised = JSON.parse(JSON.stringify(block));
-
-      // loop for of
-      for (let child of children) {
-        // delete child field
-        delete sanitised[child];
-        delete sanitised.saving;
-      }
-
-      // check block has children
-      accum.push(sanitised);
-
-      // check children
-      for (let child of children) {
-        // check child
-        if (block[child]) {
-          // remove empty blocks
-          block[child] = block[child].filter((block) => block);
-
-          // push children to flat
-          accum.push(...block[child].reduce(flatten, []));
-        }
-      }
-
-      // return accum
-      return accum;
-    };
+    this.placement = opts.placement ? (opts.model ? this.parent.placement : this.model('placement', opts.placement)) : this.model('placement', {
+      'position' : opts.position
+    });
 
     /**
      * get block data
@@ -187,7 +72,7 @@
      */
     getBlocks () {
       // return filtered blocks
-      return (this.placement.get('positions') || []).map(fix).filter((block) => block);
+      return (this.placement.get('positions') || []).map(this.filter.fix).filter((block) => block);
     }
 
     /**
@@ -254,11 +139,11 @@
       if (!this.blocks.find((b) => b.uuid === data.uuid)) this.blocks.push(data);
 
       // set flat
-      this.placement.set('positions', (this.placement.get('positions') || []).map(replace(blockClone)));
-      this.placement.set('elements', (this.placement.get('positions') || []).reduce(flatten, []));
+      this.placement.set('positions', (this.placement.get('positions') || []).map(this.filter.replace(blockClone)));
+      this.placement.set('elements', (this.placement.get('positions') || []).reduce(this.filter.flatten, []));
 
       // save placement
-      await this.savePlacement(this.placement, true);
+      await this.savePlacement();
 
       // check prevent update
       if (!preventUpdate) {
@@ -345,17 +230,17 @@
       let result = await res.json();
 
       // get positions
-      let positions = (this.placement.get('positions') || []).map(fix).filter((block) => block);
+      let positions = (this.placement.get('positions') || []).map(this.filter.fix).filter((block) => block);
 
       // set moving on block
       positions = dotProp.set(positions, placement + '.removing', true);
 
       // get positions
-      this.placement.set('positions', positions.map(place).filter((block) => block));
-      this.placement.set('elements', (this.placement.get('positions') || []).reduce(flatten, []));
+      this.placement.set('positions', positions.map(this.filter.place).filter((block) => block));
+      this.placement.set('elements', (this.placement.get('positions') || []).reduce(this.filter.flatten, []));
 
       // save placement
-      await this.savePlacement(this.placement);
+      await this.savePlacement();
     }
 
     /**
@@ -394,10 +279,9 @@
       pos[this.way](block);
 
       // set flat
-      this.placement.set('elements', (this.placement.get('positions') || []).reduce(flatten, []));
+      this.placement.set('elements', (this.placement.get('positions') || []).reduce(this.filter.flatten, []));
 
       // save placement
-      await this.savePlacement(this.placement);
       await this.onSaveBlock(block, {});
 
       // update view
@@ -412,7 +296,7 @@
      *
      * @return {Promise}
      */
-    async savePlacement (placement, preventRefresh) {
+    async savePlacement () {
       // set loading
       this.loading.save = true;
 
@@ -420,11 +304,11 @@
       this.update();
 
       // check type
-      if (!placement.type) placement.set('type', opts.type);
+      if (!this.placement.type) this.placement.set('position', opts.position);
 
       // log data
-      let res = await fetch('/placement/' + (placement.get('id') ? placement.get('id') + '/update' : 'create'), {
-        'body'    : JSON.stringify(placement.get()),
+      let res = await fetch('/placement/' + (this.placement.get('id') ? this.placement.get('id') + '/update' : 'create'), {
+        'body'    : JSON.stringify(this.placement.get()),
         'method'  : 'post',
         'headers' : {
           'Content-Type' : 'application/json'
@@ -435,38 +319,29 @@
       // load data
       let data = await res.json();
 
-      // prevent clear
-      if (!preventRefresh) {
-        // reset positions
-        placement.set('positions', []);
-
-        // update view
-        this.update();
-      }
-
-      // set in eden
-      window.eden.placements[placement.get('position')] = data.result;
-
       // set logic
       for (let key in data.result) {
         // clone to placement
-        placement.set(key, data.result[key]);
+        this.placement.set(key, data.result[key]);
 
         // set in opts
-        if (data.result[key]) opts.placement[key] = data.result[key];
+        if (data.result[key] && !opts.model) opts.placement[key] = data.result[key];
       }
+      
+      // set blocks
+      this.blocks = this.placement.get('render') || [];
 
-      // set placement
-      this.placement = placement;
+      // set in eden
+      window.eden.placements[this.placement.get('id')] = data.result;
 
       // on save
-      if (opts.onSave) opts.onSave(placement);
+      if (opts.onSave) opts.onSave(this.placement);
 
       // set loading
       this.loading.save = false;
 
       // update view
-      this.update();
+      this.helper.update();
     }
 
     /**
@@ -509,12 +384,6 @@
         // set in eden
         window.eden.placements[this.placement.get('position')] = data.result;
 
-        // set key
-        this.placement.set('positions', []);
-
-        // udpate view
-        this.update();
-
         // set blocks
         for (let key in data.result) {
           // set key
@@ -528,7 +397,7 @@
         this.blocks = this.placement.get('render') || [];
 
         // update view
-        this.update();
+        this.helper.update();
       }
     }
 
@@ -556,7 +425,7 @@
         let blocks = [];
 
         // get positions
-        let positions = (this.placement.get('positions') || []).map(fix).filter((block) => block);
+        let positions = (this.placement.get('positions') || []).map(this.filter.fix).filter((block) => block);
 
         // set moving on block
         positions = dotProp.set(positions, placement + '.moving', true);
@@ -597,7 +466,7 @@
         }
 
         // get positions
-        positions = (positions || []).map(place).filter((block) => block);
+        positions = (positions || []).map(this.filter.place).filter((block) => block);
 
         // update placement
         this.placement.set('positions', positions);
@@ -607,7 +476,7 @@
         this.update();
 
         // save
-        this.savePlacement(this.placement);
+        this.savePlacement();
       }).on('drag', (el, source) => {
         // add is dragging
         jQuery(this.refs.placement).addClass('is-dragging');
@@ -639,13 +508,7 @@
       if (!this.eden.frontend) return;
 
       // check type
-      if ((opts.placement || {}).id !== this.placement.get('id') || opts.position !== this.position || !!opts.preview !== !!this.preview) {
-        // set blocks
-        this.placement.set('positions', []);
-
-        // set type
-        this.blocks = (opts.placement || {}).render || [];
-
+      if (this.helper.hasChange()) {
         // trigger mount
         this.trigger('mount');
       }
@@ -660,76 +523,39 @@
       // check frontend
       if (!this.eden.frontend) return;
 
+      // set placement
+      this.placement = opts.placement ? (opts.model ? this.parent.placement : this.model('placement', opts.placement)) : this.model('placement', {
+        'position' : opts.position
+      });
+
       // init dragula
       if (!this.dragula && this.acl.validate('admin')) this.initDragula();
 
-      // set placement
-      this.placement = opts.placement ? this.model('placement', opts.placement) : this.model('placement', {});
-
-      // check default
-      if (opts.positions && !(this.placement.get('positions') || []).length && !this.placement.get('id')) {
+      // set default placements
+      if (opts.placements && !(this.placement.get('placements') || []).length && !this.placement.get('id')) {
         // set default
-        this.placement.set('positions', opts.positions);
-        this.placement.set('elements', (this.placement.get('positions') || []).reduce(flatten, []));
+        this.placement.set('placements', opts.placements);
+        this.placement.set('fields', (this.placement.get('placements') || []).reduce(this.filter.this.filter.flatten, []));
 
-        // save blocks
-        this.savePlacement(this.placement);
+        // save fields
+        this.savePlacement();
       }
 
-      // set positions
-      if (opts.position !== this.position || !!this.preview !== !!opts.preview) {
-        // set position
+      // set placements
+      if (this.helper.hasChange()) {
+        // set placement
         this.preview  = !!opts.preview;
         this.position = opts.position;
 
-        // get positions
-        let positions = this.placement.get('positions') || [];
-
-        // reset positions
-        this.placement.set('positions', []);
-
-        // update
-        this.update();
-
-        // set positions again
-        this.placement.set('positions', positions);
-
-        // update view again
-        this.update();
+        // force update
+        this.helper.update();
       }
 
-      // check blocks
-      if ((this.placement.get('elements') || []).length !== this.blocks.length) {
-        // load blocks
-        this.loadBlocks();
-      } else if (!(this.placement.get('elements') || []).length && !(this.eden.get('positions') || {})[this.placement.get('position')]) {
-        // load blocks
+      // check fields
+      if (this.helper.shouldLoad()) {
+        // load fields
         this.loadBlocks();
       }
-
-      // loads block
-      socket.on('placement.' + this.placement.get('id') + '.block', (block) => {
-        // get found
-        let found = this.blocks.find((b) => b.uuid === block.uuid);
-
-        // check found
-        if (!found) {
-          // push
-          this.blocks.push(block);
-
-          // return update
-          return this.update();
-        }
-
-        // set values
-        for (let key in block) {
-          // set value
-          found[key] = block[key];
-        }
-
-        // update
-        this.update();
-      });
     });
   </script>
 </eden-blocks>

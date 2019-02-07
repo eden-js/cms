@@ -1,5 +1,5 @@
 <block-modal>
-  <div class="modal fade add-block-modal" id="block-modal" tabindex="-1" role="dialog" aria-labelledby="block-modal-label" aria-hidden="true">
+  <div class="modal fade add-block-modal" ref="modal" id="block-modal" tabindex="-1" role="dialog" aria-labelledby="block-modal-label" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -121,7 +121,7 @@
       this.update();
       
       // close modal
-      jQuery('#block-modal').modal('hide');
+      jQuery(this.refs.modal).modal('hide');
     }
     
     /**

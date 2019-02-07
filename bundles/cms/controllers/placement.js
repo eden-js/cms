@@ -1,6 +1,5 @@
 
 // require dependencies
-const Grid       = require('grid');
 const socket     = require('socket');
 const Controller = require('controller');
 
@@ -59,7 +58,7 @@ class PlacementController extends Controller {
    * @call   model.deafen.placement
    * @return {Async}
    */
-  async liveDeafenAction(id, uuid, opts) {
+  async deafenAction(id, uuid, opts) {
     // / return if no id
     if (!id) return;
 
@@ -122,11 +121,14 @@ class PlacementController extends Controller {
       position : req.body.position,
     });
 
-    // check for website model
-    if (req.params.id) {
-      // load by id
-      placement = await Placement.findById(req.params.id);
-    }
+    // run try/catch
+    try {
+      // check for website model
+      if (req.params.id && req.params.id !== 'undefined' && req.params.id !== 'null') {
+        // load by id
+        placement = await Placement.findById(req.params.id);
+      }
+    } catch (e) {}
 
     // get block
     const blocks  = placement.get('elements') || [];
@@ -238,7 +240,7 @@ class PlacementController extends Controller {
     // return JSON
     res.json({
       state   : 'success',
-      result  : await placement.sanitise(),
+      result  : await placement.sanitise(req),
       message : 'Successfully updated placement',
     });
   }
