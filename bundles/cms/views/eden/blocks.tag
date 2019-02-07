@@ -143,7 +143,7 @@
       this.placement.set('elements', (this.placement.get('positions') || []).reduce(this.filter.flatten, []));
 
       // save placement
-      await this.savePlacement();
+      await this.savePlacement(true);
 
       // check prevent update
       if (!preventUpdate) {
@@ -291,12 +291,11 @@
     /**
      * saves placement
      *
-     * @param {Object}  placement
      * @param {Boolean} preventRefresh
      *
      * @return {Promise}
      */
-    async savePlacement () {
+    async savePlacement (preventRefresh) {
       // set loading
       this.loading.save = true;
 
@@ -341,7 +340,13 @@
       this.loading.save = false;
 
       // update view
-      this.helper.update();
+      if (!preventRefresh) {
+        // full update
+        this.helper.update();
+      } else {
+        // update normally
+        this.update();
+      }
     }
 
     /**
