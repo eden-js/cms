@@ -143,7 +143,7 @@
       this.placement.set('elements', (this.placement.get('positions') || []).reduce(this.filter.flatten, []));
 
       // save placement
-      await this.savePlacement(true);
+      await this.savePlacement(preventUpdate);
 
       // check prevent update
       if (!preventUpdate) {

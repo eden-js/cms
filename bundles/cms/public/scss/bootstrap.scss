@@ -36,7 +36,6 @@ $eden-admin-aside-hover-color: $white!default;
 
   &:hover,
   &.is-dragging {
-
     .eden-dropzone {
       outline        : $border-width solid theme-color(secondary);
       padding-top    : $spacer;
@@ -62,8 +61,6 @@ $eden-admin-aside-hover-color: $white!default;
       }
 
       .eden-dropzone-label {
-        @include transition(all, 0.5s ease);
-
         top        : 0;
         left       : 0;
         color      : $white;
@@ -79,10 +76,6 @@ $eden-admin-aside-hover-color: $white!default;
           top    : auto;
           bottom : 0;
         }
-      }
-
-      &:hover > .eden-dropzone-label {
-        opacity : 1;
       }
 
       .eden-block {
@@ -104,6 +97,9 @@ $eden-admin-aside-hover-color: $white!default;
           outline : $border-width solid theme-color(primary);
 
           > .eden-block-hover {
+            opacity : 1;
+          }
+          > .eden-dropzone-label {
             opacity : 1;
           }
         }

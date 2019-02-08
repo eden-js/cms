@@ -27,7 +27,7 @@
       opts.data.content = content;
 
       // do update
-      await opts.onSave(opts.block, opts.data);
+      await opts.onSave(opts.block, opts.data, opts.placement, true);
     }
 
     /**
