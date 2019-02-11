@@ -39,10 +39,11 @@
     this.mixin('media');
 
     // set value
-    this.name    = opts.name  || 'image';
+    this.name    = opts.name || 'image';
     this.multi   = opts.multi;
     this.value   = opts.image ? (Array.isArray(opts.image) ? opts.image : [opts.image]) : [];
     this.change  = false;
+    this.loading = [];
     this.removed = [];
 
     /**
@@ -259,57 +260,65 @@
       data.append('temp', value.temp);
 
       // submit ajax form
-    	jQuery.ajax({
-        'url' : '/media/image',
-        'xhr' : () => {
-          // get the native XmlHttpRequest object
-          var xhr = jQuery.ajaxSettings.xhr();
-
-          // set the onprogress event handler
-          xhr.upload.onprogress = (evt) => {
-            // log progress
-            let progress = (evt.loaded / evt.total) * 100;
-
-            // set progress
-            value.uploaded = progress;
-
-            // update
-            this._update(value);
-          };
-
-          // return the customized object
-          return xhr;
-        },
-        'data'  : data,
-        'type'  : 'post',
-        'cache' : false,
-        'error' : () => {
-          // do error
-          eden.alert.alert('error', 'Error uploading image');
-
-          // remove from array
-          this._remove(value);
-        },
-        'success' : (data) => {
-          // empty file upload
-          if (change === this.change) {
-            // reset file
-            if (this.refs.file) this.refs.file.value = null;
-          }
-
-          // check if error
-          if (data.error) {
-            // do message
-            return eden.alert.alert('error', data.message);
-          }
-
-          // check if image
-          if (data.upload) this._update(data.upload);
-        },
-        'dataType'    : 'json',
-        'contentType' : false,
-        'processData' : false
-      });
+      this.loading.push(new Promise((resolve, reject) => {
+        jQuery.ajax({
+          'url' : '/media/image',
+          'xhr' : () => {
+            // get the native XmlHttpRequest object
+            var xhr = jQuery.ajaxSettings.xhr();
+  
+            // set the onprogress event handler
+            xhr.upload.onprogress = (evt) => {
+              // log progress
+              let progress = (evt.loaded / evt.total) * 100;
+  
+              // set progress
+              value.uploaded = progress;
+  
+              // update
+              this._update(value);
+            };
+  
+            // return the customized object
+            return xhr;
+          },
+          'data'  : data,
+          'type'  : 'post',
+          'cache' : false,
+          'error' : () => {
+            // do error
+            eden.alert.alert('error', 'Error uploading image');
+  
+            // remove from array
+            this._remove(value);
+          },
+          'success' : (data) => {
+            // empty file upload
+            if (change === this.change) {
+              // reset file
+              if (this.refs.file) this.refs.file.value = null;
+            }
+  
+            // check if error
+            if (data.error) {
+              // error
+              reject(data.message);
+              
+              // do message
+              return eden.alert.alert('error', data.message);
+            }
+  
+            // check if image
+            if (data.upload) this._update(data.upload);
+            
+            // resolve
+            resolve(data.upload);
+          },
+          'dataType'    : 'json',
+          'contentType' : false,
+          'processData' : false
+        });
+      }));
     }
 
     /**
