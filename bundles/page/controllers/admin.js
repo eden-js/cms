@@ -86,7 +86,7 @@ class PageAdminController extends Controller {
       blockModel.set('title', req.body.data.title);
 
       // save block
-      await blockModel.save();
+      await blockModel.save(req.user);
     });
   }
 
@@ -260,7 +260,7 @@ class PageAdminController extends Controller {
     if (req.body.placement) page.set('placement', await Placement.findById(req.body.placement.id));
 
     // save page
-    await page.save();
+    await page.save(req.user);
 
     // send alert
     req.alert('success', `Successfully ${create ? 'Created' : 'Updated'} page!`);
@@ -323,7 +323,7 @@ class PageAdminController extends Controller {
     req.alert('success', `Successfully removed ${page.get('_id').toString()}`);
 
     // delete website
-    await page.remove();
+    await page.remove(req.user);
 
     // render index
     return this.indexAction(req, res);

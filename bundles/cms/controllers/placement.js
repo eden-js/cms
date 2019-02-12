@@ -184,7 +184,7 @@ class PlacementController extends Controller {
     });
 
     // remove block
-    if (blockModel.get('_id')) await blockModel.remove();
+    if (blockModel.get('_id')) await blockModel.remove(req.user);
 
     // return JSON
     res.json({
@@ -232,7 +232,7 @@ class PlacementController extends Controller {
     placement.set('positions', req.body.positions);
 
     // save placement
-    await placement.save();
+    await placement.save(req.user);
 
     // send alert
     req.alert('success', `Successfully ${create ? 'Created' : 'Updated'} placement!`);

@@ -57,7 +57,7 @@ class CMSAdminController extends Controller {
       blockModel.set('content', req.body.data.content);
 
       // save block
-      await blockModel.save();
+      await blockModel.save(req.user);
     });
 
     // register simple block

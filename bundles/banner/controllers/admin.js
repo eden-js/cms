@@ -88,7 +88,7 @@ class BannerAdminController extends Controller {
       blockModel.set('title', req.body.data.title);
 
       // save block
-      await blockModel.save();
+      await blockModel.save(req.user);
     });
   }
 
@@ -197,7 +197,7 @@ class BannerAdminController extends Controller {
     banner.set('category', req.body.category);
 
     // save banner
-    await banner.save();
+    await banner.save(req.user);
 
     // check image
     if (image) {
@@ -205,7 +205,7 @@ class BannerAdminController extends Controller {
       image.set('banner', banner);
 
       // save image
-      await image.save();
+      await image.save(req.user);
     }
 
     // send alert
@@ -268,7 +268,7 @@ class BannerAdminController extends Controller {
     req.alert('success', `Successfully removed ${banner.get('_id').toString()}`);
 
     // delete website
-    await banner.remove();
+    await banner.remove(req.user);
 
     // render index
     return this.indexAction(req, res);
@@ -294,7 +294,7 @@ class BannerAdminController extends Controller {
    */
   _grid(req) {
     // create new grid
-    const bannerGrid = new Grid();
+    const bannerGrid = new Grid(req);
 
     // set route
     bannerGrid.route('/admin/banner/grid');
@@ -329,7 +329,7 @@ class BannerAdminController extends Controller {
         row.set('category', value);
 
         // Save
-        await row.save();
+        await row.save(req.user);
 
         // Unlock
         row.unlock();
@@ -348,7 +348,7 @@ class BannerAdminController extends Controller {
         row.set('class', value);
 
         // Save
-        await row.save();
+        await row.save(req.user);
 
         // Unlock
         row.unlock();
