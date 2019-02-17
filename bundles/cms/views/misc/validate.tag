@@ -109,9 +109,9 @@
       }
 
       // check length
-      if (opts.maxLength && (this.value || '').length < parseInt(opts.maxLength)) {
+      if (opts.maxLength && (this.value || '').length > parseInt(opts.maxLength)) {
         // set message
-        this.message = 'Please make sure you use at least ' + opts.maxLength + ' characters';
+        this.message = 'Please make sure you use less than ' + opts.maxLength + ' characters';
 
         // return false
         return false;
