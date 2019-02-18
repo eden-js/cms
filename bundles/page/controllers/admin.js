@@ -1,9 +1,6 @@
 
 // bind dependencies
 const Grid       = require('grid');
-const slug       = require('slug');
-const alert      = require('alert');
-const config     = require('config');
 const Controller = require('controller');
 
 // require models
@@ -12,8 +9,8 @@ const Block     = model('block');
 const Placement = model('placement');
 
 // bind helpers
-const BlockHelper = helper('cms/block');
-const ModelHelper = helper('model');
+const blockHelper = helper('cms/block');
+const modelHelper = helper('model');
 
 /**
  * build user PageAdminController controller
@@ -44,7 +41,7 @@ class PageAdminController extends Controller {
     this._grid = this._grid.bind(this);
 
     // register simple block
-    BlockHelper.block('page.cms.pages', {
+    blockHelper.block('page.cms.pages', {
       acl         : ['admin.cms'],
       for         : ['admin'],
       title       : 'Pages Grid',
@@ -104,7 +101,7 @@ class PageAdminController extends Controller {
     opts.socket.join(`page.${id}`);
 
     // add to room
-    return await ModelHelper.listen(opts.sessionID, await Page.findById(id), uuid);
+    return await modelHelper.listen(opts.sessionID, await Page.findById(id), uuid);
   }
 
   /**
@@ -118,7 +115,7 @@ class PageAdminController extends Controller {
    */
   async liveDeafenAction(id, uuid, opts) {
     // add to room
-    return await ModelHelper.deafen(opts.sessionID, await Page.findById(id), uuid);
+    return await modelHelper.deafen(opts.sessionID, await Page.findById(id), uuid);
   }
 
   /**
@@ -211,7 +208,7 @@ class PageAdminController extends Controller {
       name      : 'Admin Home',
       item      : await page.sanitise(req),
       title     : create ? 'Create page' : `Update ${page.get('_id').toString()}`,
-      blocks    : BlockHelper.renderBlocks('frontend'),
+      blocks    : blockHelper.renderBlocks('frontend'),
       jumbotron : 'Update Page',
     });
   }

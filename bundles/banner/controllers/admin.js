@@ -294,7 +294,7 @@ class BannerAdminController extends Controller {
    */
   _grid(req) {
     // create new grid
-    const bannerGrid = new Grid(req);
+    const bannerGrid = new Grid();
 
     // set route
     bannerGrid.route('/admin/banner/grid');

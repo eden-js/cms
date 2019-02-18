@@ -61,7 +61,7 @@
      */
     getBlocks () {
       // check for blocks
-      return this.eden.get('blocks') || [];
+      return opts.blocks || this.eden.get('blocks') || [];
     }
 
     /**

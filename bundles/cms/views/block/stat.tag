@@ -12,7 +12,7 @@
 
     <yield to="body">
       <div class="card mb-3 bg-{ opts.block.color || 'primary' }">
-    
+
         <a class="card-body text-white" href={ opts.data.href }>
           <div class="row">
             <div class="col-6">
@@ -28,11 +28,11 @@
               { opts.data.titles.today }
             </div>
           </div>
-    
+
           <div class="chart-wrapper" ref="chart">
             <chart type="line" class="d-block" data={ opts.chart.line } options={ opts.options.line } size={ opts.size } if={ this.eden.frontend && opts.size.width } style={ opts.size } />
           </div>
-    
+
         </a>
       </div>
     </yield>
@@ -77,16 +77,18 @@
     };
 
     // create days
+    let end   = opts.end ? new Date(opts.data.end) : new Date();
     let days  = [];
-    let start = new Date ();
+    let start = opts.start ? new Date(opts.data.start) : new Date();
         start.setHours(24,0,0,0);
-        start.setDate(start.getDate() - 14);
+        
+    if (!opts.data.start) start.setDate(start.getDate() - 14);
 
     // set current
     let current = new Date(start);
 
     // loop for deposits
-    while (current <= new Date()) {
+    while (current <= end) {
       // set next
       let next = new Date(current);
           next.setDate(next.getDate() + 1);
@@ -141,50 +143,6 @@
 
       // run opts
       if (opts.onSave) await opts.onSave(opts.block, opts.data);
-    }
-
-    /**
-     * on refresh
-     *
-     * @param  {Event} e
-     */
-    async onRefresh (e) {
-      // set refreshing
-      this.refreshing = true;
-
-      // update view
-      this.update();
-
-      // run opts
-      if (opts.onRefresh) await opts.onRefresh(opts.block, opts.data);
-
-      // set refreshing
-      this.refreshing = false;
-
-      // update view
-      this.update();
-    }
-
-    /**
-     * on refresh
-     *
-     * @param  {Event} e
-     */
-    async onRemove (e) {
-      // set refreshing
-      this.removing = true;
-
-      // update view
-      this.update();
-
-      // run opts
-      if (opts.onRemove) await opts.onRemove(opts.block, opts.data);
-
-      // set refreshing
-      this.removing = false;
-
-      // update view
-      this.update();
     }
 
     /**

@@ -8,8 +8,8 @@ const Block     = model('block');
 const Placement = model('placement');
 
 // require helpers
-const ModelHelper = helper('model');
-const BlockHelper = helper('cms/block');
+const modelHelper = helper('model');
+const blockHelper = helper('cms/block');
 
 /**
  * build placement controller
@@ -46,7 +46,7 @@ class PlacementController extends Controller {
     opts.socket.join(`placement.${id}`);
 
     // add to room
-    return await ModelHelper.listen(opts.sessionID, await Placement.findById(id), uuid);
+    return await modelHelper.listen(opts.sessionID, await Placement.findById(id), uuid);
   }
 
   /**
@@ -63,7 +63,7 @@ class PlacementController extends Controller {
     if (!id) return;
 
     // add to room
-    return await ModelHelper.deafen(opts.sessionID, await Placement.findById(id), uuid);
+    return await modelHelper.deafen(opts.sessionID, await Placement.findById(id), uuid);
   }
 
   /**
@@ -145,7 +145,7 @@ class PlacementController extends Controller {
     }
 
     // update
-    const registered = BlockHelper.blocks().find(w => w.type === current.type) || BlockHelper.blocks().find(w => w.type === 'frontend.content');
+    const registered = blockHelper.blocks().find(w => w.type === current.type) || blockHelper.blocks().find(w => w.type === 'frontend.content');
 
     // await save
     if (registered) await registered.save(req, req.body.block);

@@ -6,7 +6,7 @@
 
     <div class="input-group" if={ ['tel', 'text', 'email', 'number', 'password'].includes(opts.type) }>
       <yield from="prepend" />
-      <input autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } type={ opts.type } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.label } value={ opts.value } />
+      <input autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } type={ opts.type } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.label } value={ this.value } />
       <yield from="append" />
     </div>
 
@@ -47,9 +47,9 @@
 
   <script>
     // set value
-    this.value     = opts.value;
+    this.value     = opts.value || opts.dataValue;
     this.message   = '';
-    this.validated = false;
+    this.validated = opts.validated || this.value || false;
 
     // set date logic
     this.days   = [];

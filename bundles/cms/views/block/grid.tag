@@ -21,7 +21,7 @@
      *
      * @param  {Object} state
      */
-    async onGridState (state) {
+    async onGridState(state) {
       // set name
       this.currentState = state;
     }
@@ -33,7 +33,7 @@
      *
      * @return {Promise}
      */
-    async onSaveGrid (e) {
+    async onSaveGrid(e) {
       // prevent default
       e.preventDefault();
       e.stopPropagation();
