@@ -5,8 +5,18 @@
     </label>
 
     <div class="input-group" if={ ['tel', 'text', 'email', 'number', 'password'].includes(opts.type) }>
+      <div if={ opts.prepend } data-is={ opts.prepend } class="input-group-prepend" />
       <yield from="prepend" />
       <input autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } type={ opts.type } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.label } value={ this.value } />
+      <div if={ opts.append } data-is={ opts.append } class="input-group-append" />
+      <yield from="append" />
+    </div>
+    
+    <div class="input-group" if={ ['textarea'].includes(opts.type) }>
+      <div if={ opts.prepend } data-is={ opts.prepend } class="input-group-prepend" />
+      <yield from="prepend" />
+      <textarea autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.label }>{ this.value }</textarea>
+      <div if={ opts.append } data-is={ opts.append } class="input-group-append" />
       <yield from="append" />
     </div>
 
@@ -27,6 +37,17 @@
           <option each={ year, i in this.years } value={ year } selected={ this.value ? new Date(this.value).getFullYear() === year : null }>{ year }</option>
         </select>
       </div>
+    </div>
+
+    <div class="input-group" if={ ['boolean'].includes(opts.type) }>
+      <div if={ opts.prepend } data-is={ opts.prepend } class="input-group-prepend" />
+      <yield from="prepend" />
+      <select autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.label }>
+        <option value="true" selected={ this.value }>Yes</option>
+        <option value="true" selected={ !this.value }>No</option>
+      </select>
+      <div if={ opts.append } data-is={ opts.append } class="input-group-append" />
+      <yield from="append" />
     </div>
 
     <div if={ ['checkbox'].includes(opts.type) } class="custom-control custom-checkbox { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }">
