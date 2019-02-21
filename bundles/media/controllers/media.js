@@ -120,15 +120,24 @@ class mediaController extends controller {
 
     // resize image in square
     await (await image.thumb('sm-sq')).resize(400, 400).background({
-      r     : 0, g     : 0, b     : 0, alpha : 0,
+      r     : 0,
+      g     : 0,
+      b     : 0,
+      alpha : 0,
     }).embed().png()
       .save();
     await (await image.thumb('md-sq')).resize(800, 800).background({
-      r     : 0, g     : 0, b     : 0, alpha : 0,
+      r     : 0,
+      g     : 0,
+      b     : 0,
+      alpha : 0,
     }).embed().png()
       .save();
     await (await image.thumb('lg-sq')).resize(1200, 1200).background({
-      r     : 0, g     : 0, b     : 0, alpha : 0,
+      r     : 0,
+      g     : 0,
+      b     : 0,
+      alpha : 0,
     }).embed().png()
       .save();
 
