@@ -7,7 +7,7 @@
     <div class="input-group" if={ ['tel', 'text', 'email', 'number', 'password'].includes(opts.type) }>
       <div if={ opts.prepend } data-is={ opts.prepend } class="input-group-prepend" />
       <yield from="prepend" />
-      <input autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } type={ opts.type } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.label } value={ this.value } />
+      <input autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } onkeyup={ onKeyup } type={ opts.type } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.label } value={ this.value } />
       <div if={ opts.append } data-is={ opts.append } class="input-group-append" />
       <yield from="append" />
     </div>
@@ -15,7 +15,7 @@
     <div class="input-group" if={ ['textarea'].includes(opts.type) }>
       <div if={ opts.prepend } data-is={ opts.prepend } class="input-group-prepend" />
       <yield from="prepend" />
-      <textarea autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.label }>{ this.value }</textarea>
+      <textarea autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } onkeyup={ onKeyup } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.label }>{ this.value }</textarea>
       <div if={ opts.append } data-is={ opts.append } class="input-group-append" />
       <yield from="append" />
     </div>
@@ -182,6 +182,24 @@
 
       // proxy change function
       if (opts.onChange) opts.onChange(e);
+
+      // trigger update
+      this.trigger('update');
+    }
+
+    /**
+     * on change
+     *
+     * @param  {Event} e
+     *
+     * @return {*}
+     */
+    onKeyup (e) {
+      // set value
+      this.value = e.target.value;
+
+      // proxy change function
+      if (opts.onKeyup) opts.onKeyup(e);
 
       // trigger update
       this.trigger('update');
