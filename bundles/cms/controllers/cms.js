@@ -61,10 +61,13 @@ class CMSController extends Controller {
       }
 
       // check blocks
-      if (!render.blocks) {
+      if (!render.blocks && !render.isJSON) {
         // render blocks
         render.blocks = BlockHelper.renderBlocks('frontend');
       }
+
+      // delete extra stuff
+      delete render.state.placements;
     });
   }
 
