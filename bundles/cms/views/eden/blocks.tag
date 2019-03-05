@@ -23,7 +23,7 @@
     const uuid = require('uuid');
 
     // set update
-    this.blocks    = (opts.placement || {}).render || [];
+    this.render    = (opts.placement || {}).render || [];
     this.loading   = {};
     this.preview   = !!opts.preview;
     this.updating  = false;
@@ -44,7 +44,7 @@
       if (!block) return;
 
       // get found
-      let found = this.blocks.find((b) => b.uuid === block.uuid);
+      let found = this.render.find((b) => b.uuid === block.uuid);
 
       // gets data for block
       if (!found) return null;
@@ -136,7 +136,7 @@
       }
 
       // set to blocks
-      if (!this.blocks.find((b) => b.uuid === data.uuid)) this.blocks.push(data);
+      if (!this.render.find((b) => b.uuid === data.uuid)) this.render.push(data);
 
       // set flat
       this.placement.set('positions', (this.placement.get('positions') || []).map(this.filter.replace(blockClone)));
@@ -328,7 +328,7 @@
       }
       
       // set blocks
-      this.blocks = this.placement.get('render') || [];
+      this.render = this.placement.get('render') || [];
 
       // set in eden
       window.eden.placements[this.placement.get('id')] = data.result;
@@ -399,7 +399,7 @@
         this.loading.blocks = false;
 
         // get blocks
-        this.blocks = this.placement.get('render') || [];
+        this.render = this.placement.get('render') || [];
 
         // update view
         this.helper.update();

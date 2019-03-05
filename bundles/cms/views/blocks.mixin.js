@@ -48,7 +48,7 @@ class BlocksMixin {
     }
 
     // check matched model
-    if ((!this.element.opts.model && (this.element.opts.placement || {}).id !== this.element.placement.get('id'))) {
+    if ((!this.element.opts.model && (this.element.opts.placement || {}).id && (this.element.opts.placement || {}).id !== this.element.placement.get('id'))) {
       // placement id does not match
       return true;
     }
