@@ -184,7 +184,7 @@
       if (opts.onChange) opts.onChange(e);
 
       // trigger update
-      this.trigger('update');
+      this.update();
     }
 
     /**
@@ -202,7 +202,13 @@
       if (opts.onKeyup) opts.onKeyup(e);
 
       // trigger update
-      this.trigger('update');
+      if (['msie', 'trident/'].find(key => (navigator.userAgent || '').toLowerCase().includes(key))) {
+        // on change for ie
+        this.onChange(e);
+      } else {
+        // trigger update
+        this.trigger('update');
+      }
     }
 
     /**
