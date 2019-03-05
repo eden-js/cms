@@ -390,7 +390,7 @@
       // set in eden
       if (data.result) {
         // set in eden
-        window.eden.placements[this.placement.get('position')] = data.result;
+        if (data.result.position) window.eden.placements[data.result.position] = data.result;
 
         // set key
         this.placement = this.model('placement', data.result);
