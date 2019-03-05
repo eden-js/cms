@@ -12,6 +12,7 @@ class BlocksMixin {
     // set variables
     this.eden = t.eden;
     this.element = t;
+    this.placementID = (this.element.opts.placement || {}).id || null;
 
     // bind methods
     this.update = this.update.bind(this);
@@ -48,7 +49,10 @@ class BlocksMixin {
     }
 
     // check matched model
-    if ((!this.element.opts.model && (this.element.opts.placement || {}).id && (this.element.opts.placement || {}).id !== this.element.placement.get('id'))) {
+    if (!this.element.opts.model && this.placementID !== this.element.placement.get('id')) {
+      // set placement id
+      this.placementID = (this.element.opts.placement || {}).id || this.element.placement.get('id');
+
       // placement id does not match
       return true;
     }
