@@ -391,18 +391,9 @@
       if (data.result) {
         // set in eden
         window.eden.placements[this.placement.get('position')] = data.result;
-        
-        // set placement
-        if (!this.placement.get('id')) {
-          // set blocks
-          for (let key in data.result) {
-            // set key
-            this.placement.set(key, data.result[key]);
-          }
-        } else {
-          // set key
-          this.placement = this.model('placement', data.result);
-        }
+
+        // set key
+        this.placement = this.model('placement', data.result);
 
         // set loading
         this.loading.blocks = false;
