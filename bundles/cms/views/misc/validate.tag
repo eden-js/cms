@@ -257,47 +257,12 @@
     }
 
     /**
-     * on submit
-     *
-     * @param  {Event} e
-     *
-     * @return {*}
-     */
-    onSubmit (e) {
-      // set validated
-      this.validated = true;
-
-      // update view
-      this.update();
-
-      // return is mounted
-      if (!this.isMounted) return;
-
-      // check is valid
-      if (this.isValid() === false) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        // return false
-        return false;
-      }
-
-      // return true
-      return true;
-    }
-
-    /**
      * on mount
      */
     this.on('mount', () => {
       // check parent
       if (!this.eden.frontend) return;
-
-      // on form submit
-      if (jQuery(this.root).closest('form').length) {
-        // on submit
-        jQuery(this.root).closest('form').on('submit', this.onSubmit);
-      }
+      
     });
 
     /**
@@ -306,12 +271,7 @@
     this.on('unmount', () => {
       // check parent
       if (!this.eden.frontend) return;
-
-      // on form submit
-      if (jQuery(this.root).closest('form').length) {
-        // on submit
-        jQuery(this.root).closest('form').off('submit', this.onSubmit);
-      }
+      
     });
 
   </script>
