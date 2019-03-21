@@ -19,7 +19,7 @@
         </div>
       </div>
     </div>
-    <div class="col-6 col-md-4 col-xl-3 mb-2" if={ this.multi || !this.value.length }>
+    <div class="{ opts.col || 'col-6 col-md-4 col-xl-3' } mb-2" if={ this.multi || !this.value.length }>
       <label class="card card-outline-success card-upload" for={ this.name }>
         <input type="file" ref="file" id={ this.name } name={ this.name } class="file-input" multiple={ this.multi } onchange={ onUpload }>
         <div class="d-flex align-items-center">
