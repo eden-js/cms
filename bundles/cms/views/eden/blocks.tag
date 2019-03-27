@@ -360,49 +360,55 @@
       // return on already loading
       if (this.loading.blocks) return;
 
-      // set opts
-      if (!opts) opts = {};
+      // try/catch
+      try {
+        // set opts
+        if (!opts) opts = {};
 
-      // require query string
-      const qs = require('querystring');
+        // require query string
+        const qs = require('querystring');
 
-      // set opts
-      opts = qs.stringify(opts);
-
-      // set loading
-      this.loading.blocks = true;
-
-      // update view
-      this.update();
-
-      // log data
-      let res = await fetch((this.placement.get('id') ? ('/placement/' + this.placement.get('id') + '/view') : ('/placement/' + this.placement.get('position') + '/position')) + (opts.length ? '?' + opts : ''), {
-        'method'  : 'get',
-        'headers' : {
-          'Content-Type' : 'application/json'
-        },
-        'credentials' : 'same-origin'
-      });
-
-      // load data
-      let data = await res.json();
-
-      // set in eden
-      if (data.result) {
-        // set in eden
-        if (data.result.position) window.eden.placements[data.result.position] = data.result;
-
-        // set key
-        this.placement = this.model('placement', data.result);
+        // set opts
+        opts = qs.stringify(opts);
 
         // set loading
-        this.loading.blocks = false;
-
-        // get blocks
-        this.render = this.placement.get('render') || [];
+        this.loading.blocks = true;
 
         // update view
-        this.helper.update();
+        this.update();
+
+        // log data
+        let res = await fetch((this.placement.get('id') ? ('/placement/' + this.placement.get('id') + '/view') : ('/placement/' + this.placement.get('position') + '/position')) + (opts.length ? '?' + opts : ''), {
+          'method'  : 'get',
+          'headers' : {
+            'Content-Type' : 'application/json'
+          },
+          'credentials' : 'same-origin'
+        });
+
+        // load data
+        let data = await res.json();
+
+        // set in eden
+        if (data.result) {
+          // set in eden
+          if (data.result.position) window.eden.placements[data.result.position] = data.result;
+
+          // set key
+          this.placement = this.model('placement', data.result);
+
+          // set loading
+          this.loading.blocks = false;
+
+          // get blocks
+          this.render = this.placement.get('render') || [];
+
+          // update view
+          this.helper.update();
+        }
+      } catch (e) {
+        // set loading
+        this.loading.blocks = false;
       }
     }
 
@@ -551,6 +557,9 @@
         // set placement
         this.preview  = !!opts.preview;
         this.position = opts.position;
+        
+        // reset loading
+        this.loading.blocks = false;
 
         // force update
         this.helper.update();
