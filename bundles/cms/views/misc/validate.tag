@@ -43,8 +43,8 @@
       <div if={ opts.prepend } data-is={ opts.prepend } class="input-group-prepend" />
       <yield from="prepend" />
       <select autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.label }>
-        <option value="true" selected={ this.value }>Yes</option>
-        <option value="true" selected={ !this.value }>No</option>
+        <option value="true" selected={ this.value || this.value === 'true' }>Yes</option>
+        <option value="false" selected={ !this.value || this.value === 'false' }>No</option>
       </select>
       <div if={ opts.append } data-is={ opts.append } class="input-group-append" />
       <yield from="append" />
@@ -186,6 +186,9 @@
      */
     onChange (e) {
       // set value
+      this.value = jQuery(e.target).val();
+      
+      // set value
       this.value = ['checkbox'].includes(opts.type) ? (jQuery(e.target).is(':checked') ? jQuery(e.target).val() : null) : e.target.value;
 
       // set validated
@@ -207,7 +210,7 @@
      */
     onKeyup (e) {
       // set value
-      this.value = e.target.value;
+      this.value = jQuery(e.target).val();
 
       // proxy change function
       if (opts.onKeyup) opts.onKeyup(e);
