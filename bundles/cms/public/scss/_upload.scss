@@ -74,4 +74,13 @@
       }
     }
   }
+
+  .name {
+    left       : $spacer;
+    right      : $spacer;
+    bottom     : $spacer;
+    display    : block;
+    position   : absolute;
+    text-align : center;
+  }
 }

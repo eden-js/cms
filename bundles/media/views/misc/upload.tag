@@ -1,7 +1,7 @@
 <upload>
   <div class="row row-eq-height upload upload-images">
     <div each={ file, i in this.value } class="{ opts.col || 'col-6 col-md-4 col-xl-3' } form-group-image mb-2">
-      <div class="card card-outline-primary" style="background-image: url({ thumb(file) })">
+      <div class="card card-outline-primary" style={ opts.type === 'image' ? 'background-image: url(' + thumb(file) + ')' : '' }>
         <span class="btn-group p-0" if={ this.multi }>
           <button onclick={ onPrev } class="btn btn-primary">
             <i class="fa fa-chevron-left" />
@@ -17,6 +17,8 @@
         <div class="progress" if={ typeof file.uploaded !== 'undefined' }>
           <div class="progress-bar bg-success" role="progressbar" style="width : { file.uploaded }%;" aria-valuenow={ file.uploaded } aria-valuemin="0" aria-valuemax="100"></div>
         </div>
+        
+        <a href={ this.media.url(file) } class="name" target="_blank">{ file.name }</a>
       </div>
     </div>
     <div class="{ opts.col || 'col-6 col-md-4 col-xl-3' } mb-2" if={ this.multi || !this.value.length }>
@@ -26,7 +28,7 @@
           <div>
             <i class="fa fa-plus" />
             <div class="upload-label" class="mt-2">
-              Upload Image
+              Upload { opts.type || 'Image' }
             </div>
           </div>
         </div>
@@ -254,6 +256,8 @@
 
       // create form data
     	let data = new FormData();
+      
+      console.log(`/media/${opts.type || 'image'}`);
 
       // append image
     	data.append('file', value.file);
@@ -262,7 +266,7 @@
       // submit ajax form
       this.loading.push(new Promise((resolve, reject) => {
         jQuery.ajax({
-          'url' : '/media/image',
+          'url' : `/media/${opts.type || 'image'}`,
           'xhr' : () => {
             // get the native XmlHttpRequest object
             var xhr = jQuery.ajaxSettings.xhr();
