@@ -78,6 +78,17 @@ $eden-admin-aside-hover-color: $white!default;
         }
       }
 
+      &:hover {
+        outline : $border-width solid theme-color(primary);
+
+        > .eden-block-hover {
+          opacity : 1;
+        }
+        > .eden-dropzone-label {
+          opacity : 1;
+        }
+      }
+
       .eden-block {
         outline  : $border-width solid rgba(theme-color(secondary), 0.2);
         position : relative;
