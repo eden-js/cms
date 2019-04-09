@@ -7,7 +7,7 @@
     <div class="input-group" if={ ['tel', 'text', 'email', 'number', 'password'].includes(opts.type) }>
       <div if={ opts.prepend } data-is={ opts.prepend } class="input-group-prepend" />
       <yield from="prepend" />
-      <input autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } onkeyup={ onKeyup } type={ opts.type } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.label } value={ this.value } />
+      <input autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } onkeyup={ onKeyup } type={ opts.type } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.placeholder || opts.label } value={ this.value } />
       <div if={ opts.append } data-is={ opts.append } class="input-group-append" />
       <yield from="append" />
     </div>
@@ -15,7 +15,7 @@
     <div class="input-group" if={ ['textarea'].includes(opts.type) }>
       <div if={ opts.prepend } data-is={ opts.prepend } class="input-group-prepend" />
       <yield from="prepend" />
-      <textarea autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } onkeyup={ onKeyup } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.label }>{ this.value }</textarea>
+      <textarea autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } onkeyup={ onKeyup } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.placeholder || opts.label }>{ this.value }</textarea>
       <div if={ opts.append } data-is={ opts.append } class="input-group-append" />
       <yield from="append" />
     </div>
@@ -42,7 +42,7 @@
     <div class="input-group" if={ ['boolean'].includes(opts.type) }>
       <div if={ opts.prepend } data-is={ opts.prepend } class="input-group-prepend" />
       <yield from="prepend" />
-      <select autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.label }>
+      <select autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.placeholder || opts.label }>
         <option value="true" selected={ this.value || this.value === 'true' }>Yes</option>
         <option value="false" selected={ !this.value || this.value === 'false' }>No</option>
       </select>
@@ -53,7 +53,7 @@
     <div class="input-group" if={ ['select'].includes(opts.type) }>
       <div if={ opts.prepend } data-is={ opts.prepend } class="input-group-prepend" />
       <yield from="prepend" />
-      <select autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.label }>
+      <select autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.placeholder || opts.label }>
         <option value="" if={ opts.label }>Select { opts.label }</option>
         <option each={ option, i in opts.options } value={ option.value } selected={ this.value === option.value }>{ option.label }</option>
       </select>
