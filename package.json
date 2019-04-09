@@ -1,7 +1,7 @@
 {
   "name": "@edenjs/cms",
   "description": "",
-  "version": "1.2.11",
+  "version": "1.2.12",
   "dependencies": {
     "chart.js": "^2.7.3",
     "dot-prop": "^4.2.0",
