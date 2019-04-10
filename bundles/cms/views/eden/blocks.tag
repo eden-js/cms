@@ -3,7 +3,7 @@
 
     <div class="{ 'eden-dropzone' : this.acl.validate('admin') && !opts.preview } { 'empty' : !getBlocks().length }" ref="placement" data-placement="" if={ !this.updating }>
       <span class="eden-dropzone-label" if={ this.acl.validate('admin') && !opts.preview }>
-        { this.placement.get('position') }
+        { this.position }
       </span>
       <eden-add type="top" onclick={ onAddBlock } way="unshift" placement="" if={ this.acl.validate('admin') && !opts.preview } />
       <div each={ el, i in getBlocks() } el={ el } no-reorder class={ el.class } data-is={ getElement(el) } preview={ this.preview } data-block={ el.uuid } data={ getBlock(el) } block={ el } get-block={ getBlock } on-add-block={ onAddBlock } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } placement={ i } i={ i } />
@@ -560,6 +560,12 @@
         
         // reset loading
         this.loading.blocks = false;
+        
+        // check position
+        if (this.placement.get('position') !== this.position) {
+          // set position
+          this.placement.set('position', this.position);
+        }
 
         // force update
         this.helper.update();
