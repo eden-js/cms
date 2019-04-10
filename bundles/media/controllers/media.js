@@ -61,7 +61,13 @@ class mediaController extends controller {
     const upload = new File();
 
     // load image
-    await upload.fromFile(req.file.path, req.file.originalname);
+    if (req.file.path) {
+      // from file
+      await upload.fromFile(req.file.path, req.file.originalname);
+    } else {
+      // from buffer
+      await upload.fromBuffer(req.file.buffer, req.file.originalname);
+    }
 
     // set user
     upload.set('temp', req.body.temp);
@@ -111,7 +117,13 @@ class mediaController extends controller {
     const image = new Image();
 
     // load image
-    await image.fromFile(req.file.path, req.file.originalname);
+    if (req.file.path) {
+      // from file
+      await image.fromFile(req.file.path, req.file.originalname);
+    } else {
+      // from buffer
+      await image.fromBuffer(req.file.buffer, req.file.originalname);
+    }
 
     // resize image
     await (await image.thumb('1x')).resize(400, 400).max().png().save();
