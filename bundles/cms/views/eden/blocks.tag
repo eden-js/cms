@@ -564,7 +564,9 @@
         // check position
         if (this.placement.get('position') !== this.position) {
           // set position
-          this.placement.set('position', this.position);
+          this.placement = this.model('placement', {
+            'position' : opts.position
+          });
         }
 
         // force update
