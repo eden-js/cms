@@ -16,7 +16,7 @@
      *
      * @return {Model}
      */
-    onSave (placement) {
+    onSave(placement) {
       // get placements
       let placements = this.eden.get('placements') || {};
 
@@ -32,7 +32,7 @@
      *
      * @param  {Event} e
      */
-    onToggleUpdate (e) {
+    onToggleUpdate(e) {
       // prevent default
       e.preventDefault();
       e.stopPropagation();
@@ -49,7 +49,7 @@
      *
      * @return {*}
      */
-    loadBlocks () {
+    loadBlocks() {
       // return internal proxied
       return this.refs.blocks.loadBlocks(...arguments);
     }
@@ -59,7 +59,7 @@
      *
      * @return {Array}
      */
-    getBlocks () {
+    getBlocks() {
       // check for blocks
       return opts.blocks || this.eden.get('blocks') || [];
     }
@@ -69,7 +69,7 @@
      *
      * @return {Object}
      */
-    getPlacement () {
+    getPlacement() {
       // return placement
       return (this.eden.get('placements') || {})[opts.placement] ? this.eden.get('placements')[opts.placement] : {
         'position' : opts.placement

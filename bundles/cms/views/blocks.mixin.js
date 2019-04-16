@@ -65,13 +65,13 @@ class BlocksMixin {
    */
   shouldLoad() {
     // check matched blocks length
-    if ((this.element.placement.get('blocks') || []).length !== this.element.blocks.length) {
+    if ((this.element.placement.get('render') || []).length !== this.element.render.length) {
       // field lengths do not match
       return true;
     }
 
     // check if empty placement
-    if (!(this.element.placement.get('blocks') || []).length && !(this.eden.get('positions') || {})[this.element.placement.get('id')]) {
+    if (!(this.element.placement.get('render') || []).length && !(this.eden.get('positions') || {})[this.element.placement.get('id')]) {
       // field lengths do not match
       return true;
     }
@@ -256,6 +256,6 @@ riot.mixin('blocks', {
    */
   init() {
     // create blocks mixin
-    this.blocks = new BlocksMixin(this);
+    this.helper = new BlocksMixin(this);
   },
 });

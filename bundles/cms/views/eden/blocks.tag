@@ -575,6 +575,7 @@
 
       // check fields
       if (this.helper.shouldLoad()) {
+        console.log('should load');
         // load fields
         this.loadBlocks();
       }

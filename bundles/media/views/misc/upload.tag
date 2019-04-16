@@ -263,6 +263,8 @@
 
       // submit ajax form
       this.loading.push(new Promise((resolve, reject) => {
+        
+        // ajax request
         jQuery.ajax({
           'url' : `/media/${opts.type || 'image'}`,
           'xhr' : () => {
