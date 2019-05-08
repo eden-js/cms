@@ -102,12 +102,21 @@
 
       // set class
       this.modal.update = true;
+      opts.block.editing = true;
+      
+      console.log(opts);
+      
+      // set editing
+      opts.onEditing(opts.block);
 
       // update view
       this.update();
 
       // run opts
-      jQuery(this.refs.update).modal('show');
+      jQuery(this.refs.update).modal('show').on('hide.bs.modal', () => {
+        // delete editing
+        opts.onEditing(false);
+      });
     }
 
     /**
@@ -198,6 +207,24 @@
 
       // remove modal backdrops
       jQuery('.modal-backdrop').remove();
+    });
+
+    // on unmount function
+    this.on('mount', () => {
+      // check frontend
+      if (!this.eden.frontend || opts.preview) return;
+
+      // remove modal backdrops
+      if (opts.editing === opts.block.uuid) {
+        // set update
+        this.modal.update = true;
+  
+        // update view
+        this.update();
+        
+        // show modal immediately
+        jQuery(this.refs.update).removeClass('fade').modal('show').addClass('fade');
+      }
     });
   </script>
 </block>

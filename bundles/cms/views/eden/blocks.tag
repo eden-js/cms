@@ -6,7 +6,7 @@
         { this.position }
       </span>
       <eden-add type="top" onclick={ onAddBlock } way="unshift" placement="" if={ this.acl.validate('admin') && !opts.preview } />
-      <div each={ el, i in getBlocks() } el={ el } no-reorder class={ el.class } data-is={ getElement(el) } preview={ this.preview } data-block={ el.uuid } data={ getBlock(el) } block={ el } get-block={ getBlock } on-add-block={ onAddBlock } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } placement={ i } i={ i } />
+      <div each={ el, i in getBlocks() } el={ el } no-reorder class={ el.class } data-is={ getElement(el) } editing={ this.editing } preview={ this.preview } data-block={ el.uuid } data={ getBlock(el) } block={ el } get-block={ getBlock } on-editing={ onSetEditing } on-add-block={ onAddBlock } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } placement={ i } i={ i } />
       <eden-add type="bottom" onclick={ onAddBlock } way="push" placement="" if={ this.acl.validate('admin') && !opts.preview } />
     </div>
   </div>
@@ -24,6 +24,7 @@
 
     // set update
     this.render    = (opts.placement || {}).render || [];
+    this.editing   = null;
     this.loading   = {};
     this.preview   = !!opts.preview;
     this.updating  = false;
@@ -102,7 +103,10 @@
      */
     async onSaveBlock (block, data, placement, preventUpdate) {
       // clone
-      let blockClone = Object.assign({}, block);
+      const blockClone = Object.assign({}, block);
+        
+      // reset modal
+      jQuery('body').removeAttr('style').removeClass('modal-open');
 
       // prevent update check
       if (!preventUpdate) {
@@ -112,9 +116,13 @@
         // update view
         this.update();
       }
+      
+      // delete editing
+      delete block.saving;
+      delete blockClone.saving;
 
       // log data
-      let res = await fetch('/placement/' + this.placement.get('id') + '/block/save', {
+      const res = await fetch('/placement/' + this.placement.get('id') + '/block/save', {
         'body' : JSON.stringify({
           'data'  : data,
           'block' : blockClone
@@ -127,7 +135,7 @@
       });
 
       // load data
-      let result = await res.json();
+      const result = await res.json();
 
       // set logic
       for (let key in result.result) {
@@ -148,7 +156,7 @@
       // check prevent update
       if (!preventUpdate) {
         // set loading
-        delete block.saving;
+        delete blockClone.saving;
 
         // update view
         this.update();
@@ -286,6 +294,16 @@
 
       // update view
       this.update();
+    }
+    
+    /**
+     * set editing
+     *
+     * @param  {Object} block
+     */
+    onSetEditing(block) {
+      // set editing
+      this.editing = block ? block.uuid : null;
     }
 
     /**

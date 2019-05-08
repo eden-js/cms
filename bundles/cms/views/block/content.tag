@@ -1,8 +1,13 @@
 <block-content>
   <block ref="block" class="block-content" on-update-content={ onUpdateContent } get-content={ getContent }>
     <yield to="body">
-      <div if={ !opts.data.content } class="py-5 text-center">Add Content</div>
-      <raw data={ { 'html' : opts.getContent() } } />
+      <div if={ opts.preview }>
+        <div if={ !opts.data.content } class="py-5 text-center">Add Content</div>
+        <raw data={ { 'html' : opts.getContent() } } />
+      </div>
+      <div if={ !opts.preview }>
+        <editor content={ opts.data.content } on-update={ opts.onUpdateContent } air-mode={ true } />
+      </div>
     </yield>
 
     <yield to="modal">
