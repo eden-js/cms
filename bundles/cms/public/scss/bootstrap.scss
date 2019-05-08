@@ -68,7 +68,7 @@ $eden-admin-aside-hover-color: $white!default;
         opacity    : 0;
         z-index    : 103;
         position   : absolute;
-        background : theme-color(primary);
+        background : rgba(theme-color(info), 0.5);
 
         padding-left  : ($spacer / 2);
         padding-right : ($spacer / 2);
