@@ -62,8 +62,8 @@
     </div>
 
     <div if={ ['checkbox'].includes(opts.type) } class="custom-control custom-checkbox { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }">
-      <input type="checkbox" class="{ opts.inputClass || 'custom-control-input' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" name={ opts.name } value={ opts.default || 'true' } id={ opts.name } checked={ opts.checked } onchange={ onChange } />
-      <label class="custom-control-label" for={ opts.name }>{ opts.label }</label>
+      <input type="checkbox" class="{ opts.inputClass || 'custom-control-input' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" name={ opts.name } value={ opts.dataValue || 'true' } id={ this.uuid } checked={ opts.checked } onchange={ onChange } />
+      <label class="custom-control-label" for={ this.uuid }>{ opts.label }</label>
 
       <div if={ isValid() === false } class="invalid-{ opts.errorType || 'tooltip' }">
         { this.message }
@@ -78,7 +78,11 @@
   </div>
 
   <script>
+    // uuid
+    const uuid = require('uuid');
+    
     // set value
+    this.uuid      = uuid();
     this.value     = opts.value || opts.dataValue;
     this.message   = '';
     this.validated = opts.validated || this.value || false;
