@@ -1,5 +1,5 @@
 <block-navbar>
-  <block ref="block" class="block-navbar-inner" on-navbar-class={ onNavbarClass } on-navbar-container-class={ onNavbarContainerClass } get-blocks={ getBlocks } get-element={ getElement }>
+  <block ref="block" class="block-navbar-inner" is-container={ true } on-navbar-class={ onNavbarClass } on-navbar-container-class={ onNavbarContainerClass } get-blocks={ getBlocks } get-element={ getElement }>
     <yield to="body">
       <span class="eden-dropzone-label" if={ this.acl.validate('admin') && !opts.preview }>
         Navbar #{ opts.placement }

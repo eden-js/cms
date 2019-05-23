@@ -39,48 +39,42 @@ $eden-admin-aside-hover-color: $white!default;
   &:hover,
   &.is-dragging {
     .eden-dropzone {
-      background  : rgba(theme-color(info), 0.1);
-      padding-top : ($spacer * 1.5);
-
       .eden-block-hover,
       .eden-dropzone-label {
         display : block;
       }
 
-      &.eden-block-over {
-        background : rgba(theme-color(info), 0.1);
-
-        &:before {
-          top        : 0;
-          left       : 0;
-          right      : 0;
-          bottom     : 0;
-          content    : '';
-          position   : absolute;
-          background : rgba(theme-color(primary), 0.1);
-        }
-      }
-
       .eden-dropzone-label {
-        top        : 0;
-        left       : 0;
+        @include border-radius();
+
+        top        : -($spacer / 2);
+        left       : -($spacer / 2);
         color      : $white;
         opacity    : 0;
         z-index    : 103;
         position   : absolute;
-        background : rgba(theme-color(info), 0.5);
+        background : rgba(theme-color(info), 0.8);
 
         padding-left  : ($spacer / 2);
         padding-right : ($spacer / 2);
 
         &.eden-dropzone-label-end {
           top    : auto;
-          bottom : 0;
+          bottom : -($spacer / 2);
         }
       }
 
       &:hover {
-        background : rgba(theme-color(info), 0.1);
+
+        &:before {
+          top        : -($spacer / 2);
+          left       : -($spacer / 2);
+          right      : -($spacer / 2);
+          bottom     : -($spacer / 2);
+          content    : '';
+          position   : absolute;
+          background : rgba(theme-color(info), 0.1);
+        }
 
         > .eden-block-hover {
           opacity : 1;
@@ -91,14 +85,11 @@ $eden-admin-aside-hover-color: $white!default;
       }
 
       .eden-block {
-        margin   : -($spacer / 2);
-        padding  : ($spacer / 2);
         position : relative;
-
-        margin-top : -$spacer;
 
         // alter hover
         > .eden-block-hover {
+          @include border-radius();
           @include transition(all 0.5s ease);
 
           top      : 0;
@@ -106,15 +97,34 @@ $eden-admin-aside-hover-color: $white!default;
           opacity  : 0;
           z-index  : 105;
           position : absolute;
+
+          &.eden-block-hover-dropzone {
+            top   : -($spacer / 2);
+            right : -($spacer / 2);
+          }
+
+          &:hover {
+            z-index : 110;
+          }
         }
 
         &:hover {
-          background : rgba(theme-color(info), 0.2);
+
+          &:before {
+            top        : -($spacer / 2);
+            left       : -($spacer / 2);
+            right      : -($spacer / 2);
+            bottom     : -($spacer / 2);
+            content    : '';
+            position   : absolute;
+            background : rgba(theme-color(info), 0.2);
+          }
 
           > .eden-block-hover {
             opacity : 1;
           }
-          > .eden-dropzone-label {
+          > .eden-dropzone-label,
+          > div > .eden-dropzone-label {
             opacity : 1;
           }
         }
@@ -125,11 +135,11 @@ $eden-admin-aside-hover-color: $white!default;
   .eden-add {
     @include transition(all 0.5s ease);
 
-    top      : 0;
-    left     : 0;
-    right    : 0;
+    top      : -($spacer / 2);
+    left     : -($spacer / 2);
+    right    : -($spacer / 2);
     cursor   : pointer;
-    bottom   : 0;
+    bottom   : -($spacer / 2);
     height   : $spacer * 1.5;
     opacity  : 0;
     z-index  : 102;
@@ -146,7 +156,7 @@ $eden-admin-aside-hover-color: $white!default;
       height     : ($spacer / 4);
       content    : '';
       position   : absolute;
-      background : theme-color(primary);
+      background : theme-color(info);
     }
 
     i {
@@ -160,7 +170,7 @@ $eden-admin-aside-hover-color: $white!default;
       text-align  : center;
       line-height : ($spacer * 1.5);
 
-      background    : theme-color(primary);
+      background    : theme-color(info);
       border-radius : 50%;
 
       border-top-left-radius  : 0;

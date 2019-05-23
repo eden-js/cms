@@ -1,5 +1,5 @@
 <block-div>
-  <block ref="block" class="block-div-inner" on-div-class={ onDivClass } get-blocks={ getBlocks } get-element={ getElement }>
+  <block ref="block" class="block-div-inner" is-container={ true } on-div-class={ onDivClass } get-blocks={ getBlocks } get-element={ getElement }>
     <yield to="body">
       <span class="eden-dropzone-label" if={ this.acl.validate('admin') && !opts.preview }>
         Div #{ opts.placement }

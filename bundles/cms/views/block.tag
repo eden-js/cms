@@ -1,7 +1,7 @@
 <block>
   <div class={ 'eden-block' : true, 'eden-block-admin' : this.acl.validate('admin') && !opts.preview } data-block={ opts.block.uuid } id="block-{ opts.block.uuid }">
 
-    <div class="eden-block-hover" if={ this.acl.validate('admin') && !opts.preview }>
+    <div class="eden-block-hover{ opts.isContainer ? ' eden-block-hover-dropzone' : '' }" if={ this.acl.validate('admin') && !opts.preview }>
       <div class="row row-eq-height">
         <div class="col-8 d-flex align-items-center">
           <div class="w-100">
@@ -12,9 +12,6 @@
           <div class="w-100">
             <div class="btn-group float-right">
               <yield from="buttons" />
-              <button class="btn btn-sm btn-secondary" onclick={ onRefresh }>
-                <i class={ 'fa fa-sync' : true, 'fa-spin' : this.refreshing || opts.block.refreshing } />
-              </button>
               <button class="btn btn-sm btn-secondary" onclick={ onUpdateModal }>
                 <i class="fa fa-pencil" />
               </button>
@@ -154,28 +151,6 @@
 
       // run opts
       if (opts.onSave) await opts.onSave(opts.block, opts.data, opts.placement);
-    }
-
-    /**
-     * on refresh
-     *
-     * @param  {Event} e
-     */
-    async onRefresh (e) {
-      // set refreshing
-      this.refreshing = true;
-
-      // update view
-      this.update();
-
-      // run opts
-      if (opts.onRefresh) await opts.onRefresh(opts.block, opts.data, opts.placement);
-
-      // set refreshing
-      this.refreshing = false;
-
-      // update view
-      this.update();
     }
 
     /**

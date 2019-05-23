@@ -1,5 +1,5 @@
 <block-row>
-  <block ref="block" class="block-row-inner" on-row-class={ onRowClass } on-center-vertically={ onCenterVertically } get-blocks={ getBlocks } get-element={ getElement }>
+  <block ref="block" class="block-row-inner" is-container={ true } on-row-class={ onRowClass } on-center-vertically={ onCenterVertically } get-blocks={ getBlocks } get-element={ getElement }>
     <yield to="body">
       <span class="eden-dropzone-label" if={ this.acl.validate('admin') && !opts.preview }>
         Row #{ opts.placement }
