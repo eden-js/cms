@@ -67,6 +67,8 @@ $eden-admin-aside-hover-color: $white!default;
       &:hover {
 
         &:before {
+          @include border-radius($card-border-radius);
+
           top        : -($spacer / 2);
           left       : -($spacer / 2);
           right      : -($spacer / 2);
@@ -89,8 +91,8 @@ $eden-admin-aside-hover-color: $white!default;
 
         // alter hover
         > .eden-block-hover {
-          @include border-radius();
           @include transition(all 0.5s ease);
+          @include border-radius($card-border-radius);
 
           top      : 0;
           right    : 0;

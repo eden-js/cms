@@ -53,7 +53,7 @@
     <div class="input-group" if={ ['select'].includes(opts.type) }>
       <div if={ opts.prepend } data-is={ opts.prepend } class="input-group-prepend" />
       <yield from="prepend" />
-      <select autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.placeholder || opts.label }>
+      <select autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" multiple={ opts.multiple } required={ opts.required } placeholder={ opts.placeholder || opts.label }>
         <option value="" if={ opts.label }>Select { opts.label }</option>
         <option each={ option, i in opts.options } value={ option.value } selected={ this.value === option.value }>{ option.label }</option>
       </select>
