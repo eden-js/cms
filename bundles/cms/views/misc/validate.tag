@@ -55,7 +55,7 @@
       <yield from="prepend" />
       <select autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" multiple={ opts.multiple } required={ opts.required } placeholder={ opts.placeholder || opts.label }>
         <option value="" if={ opts.label }>Select { opts.label }</option>
-        <option each={ option, i in opts.options } value={ option.value } selected={ this.value === option.value }>{ option.label }</option>
+        <option each={ option, i in opts.options } value={ option.value } selected={ (this.value || []).includes(option.value) }>{ option.label }</option>
       </select>
       <div if={ opts.append } data-is={ opts.append } class="input-group-append" />
       <yield from="append" />
@@ -99,7 +99,7 @@
     }
 
     // add years
-    for (let i = (new Date()).getFullYear(); i >= ((new Date()).getFullYear() - 80); i--) {
+    for (let i = (opts.startYear || (new Date()).getFullYear()); i >= (opts.endYear || ((new Date()).getFullYear() - 80)); i--) {
       // add to years
       this.years.push(i);
     }
@@ -244,8 +244,6 @@
       birthday.setYear(jQuery(this.refs.year).val());
       birthday.setMonth(this.months.map((item) => item.toLowerCase()).indexOf(jQuery(this.refs.month).val().toLowerCase()));
       birthday.setDate(jQuery(this.refs.day).val());
-
-      console.log(jQuery(this.refs.day).val(), this.months.map((item) => item.toLowerCase()).indexOf(jQuery(this.refs.month).val().toLowerCase()), jQuery(this.refs.year).val());
 
       // set value
       this.value = birthday.toISOString();
