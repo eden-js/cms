@@ -1,6 +1,6 @@
 <cms-placement>
   <div class="cms-placement placement-{ opts.placement.split('.').join('-') }">
-    <div class="cms-placement-blocks" data-placement={ opts.placement } ref="blocks" data-is="eden-blocks" blocks={ this.getBlocks() } placement={ getPlacement() } on-save={ onSave } position={ opts.placement } preview={ opts.preview } />
+    <div class="cms-placement-blocks" data-placement={ opts.placement } ref="blocks" data-is="eden-blocks" blocks={ this.getBlocks() } placement={ getPlacement() } on-save={ onSave } position={ opts.placement } preview={ typeof opts.preview !== 'undefined' ? opts.preview : !this.acl.validate('admin') } />
   </div>
 
   <script>
