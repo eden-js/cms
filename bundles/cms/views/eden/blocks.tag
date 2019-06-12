@@ -11,7 +11,7 @@
     </div>
   </div>
 
-  <block-modal blocks={ opts.blocks } add-block={ onSetBlock } />
+  <block-sidebar ref="sidebar" blocks={ opts.blocks } add-block={ onSetBlock } />
 
   <script>
     // do mixins
@@ -84,15 +84,19 @@
      * @return {*}
      */
     onAddBlock (e) {
+      // prevent
+      e.preventDefault();
+      e.stopPropagation();
+
       // get target
       let target = !jQuery(e.target).is('eden-add') ? jQuery(e.target).closest('eden-add') : jQuery(e.target);
 
       // way
       this.way      = target.attr('way');
       this.blockPos = target.attr('placement');
-
+      
       // open modal
-      jQuery('.add-block-modal', this.root).modal('show');
+      this.refs.sidebar.show();
     }
 
     /**
