@@ -135,7 +135,8 @@ $eden-admin-aside-hover-color: $white!default;
           }
 
           // on hover
-          > eden-add > .eden-add {
+          > eden-add > .eden-add,
+          > div > eden-add > .eden-add {
             opacity : 1;
             z-index : 94;
           }
@@ -154,10 +155,10 @@ $eden-admin-aside-hover-color: $white!default;
   .eden-add {
     @include transition(all 0.5s ease);
 
-    top    : $spacer * 5;
-    left   : $spacer * 5;
-    right  : $spacer * 5;
-    bottom : $spacer * 5;
+    top    : 0;
+    left   : 0;
+    right  : 0;
+    bottom : 0;
 
     // set size
     width  : ($spacer * 3);
@@ -204,12 +205,12 @@ $eden-admin-aside-hover-color: $white!default;
 
     &.eden-add-top,
     &.eden-add-bottom {
-      left : ($spacer * 5);
+      left : -($spacer / 2);
     }
 
     &.eden-add-left,
     &.eden-add-right {
-      bottom : ($spacer * 3);
+      bottom : -($spacer / 2);
     }
   }
 }
