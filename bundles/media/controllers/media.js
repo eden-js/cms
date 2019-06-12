@@ -90,7 +90,7 @@ class mediaController extends controller {
     });
 
     // do alert
-    req.alert('success', req.t('Successfully uploaded file'));
+    return req.alert('success', req.t('Successfully uploaded file'));
   }
 
   /**
@@ -185,7 +185,7 @@ class mediaController extends controller {
     });
 
     // do alert
-    req.alert('success', req.t('Successfully uploaded image'));
+    return req.alert('success', req.t('Successfully uploaded image'));
   }
 }
 

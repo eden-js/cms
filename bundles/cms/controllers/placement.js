@@ -40,7 +40,7 @@ class PlacementController extends Controller {
    */
   async listenAction(id, uuid, opts) {
     // / return if no id
-    if (!id) return;
+    if (!id) return null;
 
     // join room
     opts.socket.join(`placement.${id}`);
@@ -60,7 +60,7 @@ class PlacementController extends Controller {
    */
   async deafenAction(id, uuid, opts) {
     // / return if no id
-    if (!id) return;
+    if (!id) return null;
 
     // add to room
     return await modelHelper.deafen(opts.sessionID, await Placement.findById(id), uuid);
@@ -101,7 +101,7 @@ class PlacementController extends Controller {
     }
 
     // return JSON
-    res.json({
+    return res.json({
       state   : 'success',
       result  : await placement.sanitise(req),
       message : 'Successfully got blocks',
@@ -160,7 +160,7 @@ class PlacementController extends Controller {
     socket.room(`placement.${placement.get('_id').toString()}`, `placement.${placement.get('_id').toString()}.block`, rendered);
 
     // return JSON
-    res.json({
+    return res.json({
       state   : 'success',
       result  : rendered,
       message : 'Successfully saved block',
