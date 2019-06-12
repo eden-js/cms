@@ -26,7 +26,7 @@
     this.render    = (opts.placement || {}).render || [];
     this.editing   = null;
     this.loading   = {};
-    this.preview   = this.acl.validate('admin') && !!opts.preview;
+    this.preview   = this.acl.validate('admin') && opts.preview;
     this.updating  = false;
     this.position  = opts.position;
     this.placement = opts.placement ? (opts.model ? this.parent.placement : this.model('placement', opts.placement)) : this.model('placement', {
@@ -577,7 +577,7 @@
       // set placements
       if (this.helper.hasChange()) {
         // set placement
-        this.preview  = !!opts.preview;
+        this.preview  = this.acl.validate('admin') && opts.preview;
         this.position = opts.position;
         
         // reset loading
