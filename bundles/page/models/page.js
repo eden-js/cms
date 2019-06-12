@@ -1,11 +1,4 @@
 
-/**
- * Created by Awesome on 2/6/2016.
- */
-
-// use strict
-
-
 // import local dependencies
 const Model = require('model');
 
