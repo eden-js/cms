@@ -6,7 +6,7 @@
         { this.position }
       </span>
       <eden-add type="top" onclick={ onAddBlock } way="unshift" placement="" if={ this.preview } />
-      <div each={ el, i in getBlocks() } el={ el } no-reorder class={ el.class } data-is={ getElement(el) } editing={ this.editing } preview={ this.preview } data-block={ el.uuid } data={ getBlock(el) } block={ el } get-block={ getBlock } on-editing={ onSetEditing } on-add-block={ onAddBlock } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } placement={ i } i={ i } />
+      <div each={ el, i in getBlocks() } editing={ getThis().editing } preview={ getThis().preview } el={ el } no-reorder class={ el.class } data-is={ getElement(el) } data-block={ el.uuid } data={ getBlock(el) } block={ el } get-block={ getBlock } on-editing={ onSetEditing } on-add-block={ onAddBlock } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } placement={ i } i={ i } />
       <eden-add type="bottom" onclick={ onAddBlock } way="push" placement="" if={ this.preview } />
     </div>
   </div>
@@ -52,6 +52,18 @@
 
       // return found
       return found;
+    }
+
+    /**
+     * get block data
+     *
+     * @param  {Object} block
+     *
+     * @return {*}
+     */
+    getThis () {
+      // get this
+      return this;
     }
 
     /**
