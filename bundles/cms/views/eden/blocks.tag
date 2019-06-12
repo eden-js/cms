@@ -1,13 +1,13 @@
 <eden-blocks>
   <div ref="placement" class="eden-blocks">
 
-    <div class="{ 'eden-dropzone' : this.preview } { 'empty' : !getBlocks().length }" ref="placement" data-placement="" if={ !this.updating }>
-      <span class="eden-dropzone-label" if={ this.preview }>
+    <div class="{ 'eden-dropzone' : !this.preview } { 'empty' : !getBlocks().length }" ref="placement" data-placement="" if={ !this.updating }>
+      <span class="eden-dropzone-label" if={ !this.preview }>
         { this.position }
       </span>
-      <eden-add type="top" onclick={ onAddBlock } way="unshift" placement="" if={ this.preview } />
+      <eden-add type="top" onclick={ onAddBlock } way="unshift" placement="" if={ !this.preview } />
       <div each={ el, i in getBlocks() } editing={ getThis().editing } preview={ getThis().preview } el={ el } no-reorder class={ el.class } data-is={ getElement(el) } data-block={ el.uuid } data={ getBlock(el) } block={ el } get-block={ getBlock } on-editing={ onSetEditing } on-add-block={ onAddBlock } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } placement={ i } i={ i } />
-      <eden-add type="bottom" onclick={ onAddBlock } way="push" placement="" if={ this.preview } />
+      <eden-add type="bottom" onclick={ onAddBlock } way="push" placement="" if={ !this.preview } />
     </div>
   </div>
 
@@ -26,7 +26,7 @@
     this.render    = (opts.placement || {}).render || [];
     this.editing   = null;
     this.loading   = {};
-    this.preview   = this.acl.validate('admin') && opts.preview;
+    this.preview   = !!(!this.acl.validate('admin') || opts.preview);
     this.updating  = false;
     this.position  = opts.position;
     this.placement = opts.placement ? (opts.model ? this.parent.placement : this.model('placement', opts.placement)) : this.model('placement', {
@@ -589,7 +589,7 @@
       // set placements
       if (this.helper.hasChange()) {
         // set placement
-        this.preview  = this.acl.validate('admin') && opts.preview;
+        this.preview  = !!(!this.acl.validate('admin') || opts.preview);
         this.position = opts.position;
         
         // reset loading
