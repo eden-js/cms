@@ -220,16 +220,17 @@ $eden-admin-aside-hover-color: $white!default;
 .eden-blocks-sidebar {
   @include transition(all 0.5s ease);
 
-  top       : 0;
-  right     : 0;
-  width     : ($spacer * 30);
-  z-index   : 1001;
-  position  : fixed;
-  transform : translateX(100%);
+  top      : 0;
+  left     : 100%;
+  width    : ($spacer * 30);
+  z-index  : 1001;
+  opacity  : 0;
+  position : fixed;
 
   &.eden-blocks-sidebar-show {
     // move into view
-    transform : translateX(0);
+    opacity   : 1;
+    transform : translateX(-100%);
   }
 
   > .card {
