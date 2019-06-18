@@ -126,32 +126,44 @@ class mediaController extends controller {
     }
 
     // resize image
-    await (await image.thumb('1x')).resize(400, 400).max().png().save();
-    await (await image.thumb('2x')).resize(800, 800).max().png().save();
-    await (await image.thumb('3x')).resize(1200, 1200).max().png().save();
+    await (await image.thumb('1x')).resize(400, 400, {
+      fit : 'contain',
+    }).png().save();
+    await (await image.thumb('2x')).resize(800, 800, {
+      fit : 'contain',
+    }).png().save();
+    await (await image.thumb('3x')).resize(1200, 1200, {
+      fit : 'contain',
+    }).png().save();
 
     // resize image in square
-    await (await image.thumb('sm-sq')).resize(400, 400).background({
-      r     : 0,
-      g     : 0,
-      b     : 0,
-      alpha : 0,
-    }).embed().png()
-      .save();
-    await (await image.thumb('md-sq')).resize(800, 800).background({
-      r     : 0,
-      g     : 0,
-      b     : 0,
-      alpha : 0,
-    }).embed().png()
-      .save();
-    await (await image.thumb('lg-sq')).resize(1200, 1200).background({
-      r     : 0,
-      g     : 0,
-      b     : 0,
-      alpha : 0,
-    }).embed().png()
-      .save();
+    await (await image.thumb('sm-sq')).resize(400, 400, {
+      fit        : 'contain',
+      background : {
+        r     : 0,
+        g     : 0,
+        b     : 0,
+        alpha : 0,
+      },
+    }).png().save();
+    await (await image.thumb('md-sq')).resize(800, 800, {
+      fit        : 'contain',
+      background : {
+        r     : 0,
+        g     : 0,
+        b     : 0,
+        alpha : 0,
+      },
+    }).png().save();
+    await (await image.thumb('lg-sq')).resize(1200, 1200, {
+      fit        : 'contain',
+      background : {
+        r     : 0,
+        g     : 0,
+        b     : 0,
+        alpha : 0,
+      },
+    }).png().save();
 
     // resize image
     await (await image.thumb('1x-sq')).resize(400, 400, {
