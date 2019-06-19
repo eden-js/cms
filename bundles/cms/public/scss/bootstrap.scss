@@ -223,7 +223,7 @@ $eden-admin-aside-hover-color: $white!default;
   top      : 0;
   left     : 100%;
   width    : ($spacer * 30);
-  z-index  : 1001;
+  z-index  : 1032;
   opacity  : 0;
   position : fixed;
 
@@ -250,7 +250,7 @@ $eden-admin-aside-hover-color: $white!default;
   left       : 0;
   right      : 0;
   bottom     : 0;
-  z-index    : 1000;
+  z-index    : 1031;
   position   : fixed;
   background : rgba(theme-color(secondary), 0.5);
 }
