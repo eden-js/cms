@@ -30,7 +30,7 @@
   "homepage": "https://github.com/eden-js/cms#readme",
   "devDependencies": {
     "@edenjs/eslint-config-eden": "^2.0.14",
-    "eslint": "^6.0.1",
+    "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.18.0",
     "eslint-plugin-jsx-a11y": "^6.2.1",
