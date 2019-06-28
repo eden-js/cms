@@ -1,12 +1,12 @@
 {
   "name": "@edenjs/cms",
   "description": "",
-  "version": "1.2.19",
+  "version": "1.3.13",
   "dependencies": {
-    "chart.js": "^2.7.3",
-    "dot-prop": "^5.0.0",
-    "slug": "^1.0.0",
-    "summernote": "^0.8.11"
+    "chart.js": "^2.8.0",
+    "dot-prop": "^5.1.0",
+    "slug": "^1.1.0",
+    "summernote": "^0.8.12"
   },
   "engines": {
     "node": ">= 8.0.0"
@@ -30,10 +30,10 @@
   "homepage": "https://github.com/eden-js/cms#readme",
   "devDependencies": {
     "@edenjs/eslint-config-eden": "^2.0.14",
-    "eslint": "^5.13.0",
+    "eslint": "^6.0.1",
     "eslint-config-airbnb": "^17.1.0",
-    "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-jsx-a11y": "^6.2.0",
-    "eslint-plugin-react": "^7.12.4"
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-react": "^7.14.2"
   }
 }

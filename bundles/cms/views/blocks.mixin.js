@@ -43,7 +43,7 @@ class BlocksMixin {
     }
 
     // check matched preview
-    if (!!this.element.preview !== !!this.element.opts.preview) {
+    if (!!this.element.preview !== !!(!this.element.acl.validate('admin') || this.element.opts.preview)) {
       // preview does not match
       return true;
     }

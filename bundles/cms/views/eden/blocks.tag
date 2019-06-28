@@ -1,17 +1,17 @@
 <eden-blocks>
   <div ref="placement" class="eden-blocks">
 
-    <div class="{ 'eden-dropzone' : this.acl.validate('admin') && !opts.preview } { 'empty' : !getBlocks().length }" ref="placement" data-placement="" if={ !this.updating }>
-      <span class="eden-dropzone-label" if={ this.acl.validate('admin') && !opts.preview }>
+    <div class="{ 'eden-dropzone' : !this.preview } { 'empty' : !getBlocks().length }" ref="placement" data-placement="" if={ !this.updating }>
+      <span class="eden-dropzone-label" if={ !this.preview }>
         { this.position }
       </span>
-      <eden-add type="top" onclick={ onAddBlock } way="unshift" placement="" if={ this.acl.validate('admin') && !opts.preview } />
-      <div each={ el, i in getBlocks() } el={ el } no-reorder class={ el.class } data-is={ getElement(el) } preview={ this.preview } data-block={ el.uuid } data={ getBlock(el) } block={ el } get-block={ getBlock } on-add-block={ onAddBlock } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } placement={ i } i={ i } />
-      <eden-add type="bottom" onclick={ onAddBlock } way="push" placement="" if={ this.acl.validate('admin') && !opts.preview } />
+      <eden-add type="top" onclick={ onAddBlock } way="unshift" placement="" if={ !this.preview } />
+      <div each={ el, i in getBlocks() } editing={ getThis().editing } preview={ getThis().preview } el={ el } no-reorder class={ el.class } data-is={ getElement(el) } data-block={ el.uuid } data={ getBlock(el) } block={ el } get-block={ getBlock } on-editing={ onSetEditing } on-add-block={ onAddBlock } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } placement={ i } i={ i } />
+      <eden-add type="bottom" onclick={ onAddBlock } way="push" placement="" if={ !this.preview } />
     </div>
   </div>
 
-  <block-modal blocks={ opts.blocks } add-block={ onSetBlock } />
+  <block-sidebar ref="sidebar" blocks={ opts.blocks } add-block={ onSetBlock } />
 
   <script>
     // do mixins
@@ -24,8 +24,9 @@
 
     // set update
     this.render    = (opts.placement || {}).render || [];
+    this.editing   = null;
     this.loading   = {};
-    this.preview   = !!opts.preview;
+    this.preview   = !!(!this.acl.validate('admin') || opts.preview);
     this.updating  = false;
     this.position  = opts.position;
     this.placement = opts.placement ? (opts.model ? this.parent.placement : this.model('placement', opts.placement)) : this.model('placement', {
@@ -51,6 +52,18 @@
 
       // return found
       return found;
+    }
+
+    /**
+     * get block data
+     *
+     * @param  {Object} block
+     *
+     * @return {*}
+     */
+    getThis () {
+      // get this
+      return this;
     }
 
     /**
@@ -83,15 +96,19 @@
      * @return {*}
      */
     onAddBlock (e) {
+      // prevent
+      e.preventDefault();
+      e.stopPropagation();
+
       // get target
       let target = !jQuery(e.target).is('eden-add') ? jQuery(e.target).closest('eden-add') : jQuery(e.target);
 
       // way
       this.way      = target.attr('way');
       this.blockPos = target.attr('placement');
-
+      
       // open modal
-      jQuery('.add-block-modal', this.root).modal('show');
+      this.refs.sidebar.show();
     }
 
     /**
@@ -102,7 +119,10 @@
      */
     async onSaveBlock (block, data, placement, preventUpdate) {
       // clone
-      let blockClone = Object.assign({}, block);
+      const blockClone = Object.assign({}, block);
+        
+      // reset modal
+      jQuery('body').removeAttr('style').removeClass('modal-open');
 
       // prevent update check
       if (!preventUpdate) {
@@ -112,9 +132,13 @@
         // update view
         this.update();
       }
+      
+      // delete editing
+      delete block.saving;
+      delete blockClone.saving;
 
       // log data
-      let res = await fetch('/placement/' + this.placement.get('id') + '/block/save', {
+      const res = await fetch('/placement/' + this.placement.get('id') + '/block/save', {
         'body' : JSON.stringify({
           'data'  : data,
           'block' : blockClone
@@ -127,7 +151,7 @@
       });
 
       // load data
-      let result = await res.json();
+      const result = await res.json();
 
       // set logic
       for (let key in result.result) {
@@ -148,7 +172,7 @@
       // check prevent update
       if (!preventUpdate) {
         // set loading
-        delete block.saving;
+        delete blockClone.saving;
 
         // update view
         this.update();
@@ -286,6 +310,16 @@
 
       // update view
       this.update();
+    }
+    
+    /**
+     * set editing
+     *
+     * @param  {Object} block
+     */
+    onSetEditing(block) {
+      // set editing
+      this.editing = block ? block.uuid : null;
     }
 
     /**
@@ -555,7 +589,7 @@
       // set placements
       if (this.helper.hasChange()) {
         // set placement
-        this.preview  = !!opts.preview;
+        this.preview  = !!(!this.acl.validate('admin') || opts.preview);
         this.position = opts.position;
         
         // reset loading

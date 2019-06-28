@@ -1,8 +1,9 @@
 <page-page>
-  <div class="cms-placement-blocks" data-placement={ (opts.item || {}).id || 'page' } data-is="eden-blocks" placement={ this.page.get('placement') || {} } for="frontend" blocks={ opts.blocks } on-save={ onPlacement } position={ (opts.item || {}).id || 'page' } />
+  <div class="cms-placement-blocks" data-placement={ (opts.item || {}).id || 'page' } data-is="eden-blocks" placement={ this.page.get('placement') || {} } for="frontend" blocks={ opts.blocks } on-save={ onPlacement } position={ (opts.item || {}).id || 'page' } preview={ !this.acl.validate('admin') } />
 
   <script>
     // do mixins
+    this.mixin('acl');
     this.mixin('i18n');
     this.mixin('model');
 

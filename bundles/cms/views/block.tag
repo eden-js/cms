@@ -1,7 +1,7 @@
 <block>
   <div class={ 'eden-block' : true, 'eden-block-admin' : this.acl.validate('admin') && !opts.preview } data-block={ opts.block.uuid } id="block-{ opts.block.uuid }">
 
-    <div class="eden-block-hover" if={ this.acl.validate('admin') && !opts.preview }>
+    <div class="eden-block-hover{ opts.isContainer ? ' eden-block-hover-dropzone' : '' }" if={ this.acl.validate('admin') && !opts.preview }>
       <div class="row row-eq-height">
         <div class="col-8 d-flex align-items-center">
           <div class="w-100">
@@ -12,13 +12,10 @@
           <div class="w-100">
             <div class="btn-group float-right">
               <yield from="buttons" />
-              <button class="btn btn-sm btn-secondary" onclick={ onRefresh }>
-                <i class={ 'fa fa-sync' : true, 'fa-spin' : this.refreshing || opts.block.refreshing } />
-              </button>
-              <button class="btn btn-sm btn-secondary" onclick={ onUpdateModal }>
+              <button class="btn btn-sm btn-secondary" onclick={ onUpdateSidebar }>
                 <i class="fa fa-pencil" />
               </button>
-              <button class="btn btn-sm btn-secondary" onclick={ onRemoveModal }>
+              <button class="btn btn-sm btn-secondary" onclick={ onRemoveSidebar }>
                 <i class={ 'fa fa-times' : true, 'fa-spin' : this.removing || opts.block.removing } />
               </button>
               <span class="btn btn-sm btn-secondary move" for={ opts.block.uuid }>
@@ -33,49 +30,50 @@
     <yield from="body" />
   </div>
 
-  <div class="modal fade" ref="update" id="block-{ opts.block.uuid }-update" tabindex="-1" role="dialog" aria-labelledby="block-{ opts.block.uuid }-label" aria-hidden="true" if={ this.modal.update && this.acl.validate('admin') && !opts.preview }>
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">
-            Update Block
-          </h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+  <div class="eden-blocks-backdrop" if={ this.showing } onclick={ ohHideSidebar } />
+
+  <div class={ 'eden-blocks-sidebar' : true, 'eden-blocks-sidebar-show' : this.sidebar.update } ref="update" if={ this.showing && this.acl.validate('admin') && !opts.preview }>
+    <div class="card">
+      <div class="card-header">
+        <h5 class="m-0">
+          Update Block
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label>
+            Block Class
+          </label>
+          <input class="form-control" ref="class" value={ opts.block.class } onchange={ onClass } />
         </div>
-        <div class="modal-body">
-          <div class="form-group">
-            <label>
-              Block Class
-            </label>
-            <input class="form-control" ref="class" value={ opts.block.class } onchange={ onClass } />
-          </div>
-          <yield from="modal" />
-        </div>
+        <yield from="modal" />
+        <yield from="options" />
+      </div>
+      <div class="card-footer">
+        <button class={ 'btn btn-secondary float-right' : true, 'disabled' : this.removing } onclick={ ohHideSidebar }>
+          Close
+        </button>
       </div>
     </div>
   </div>
 
-  <div class="modal fade" ref="remove" id="block-{ opts.block.uuid }-remove" tabindex="-1" role="dialog" aria-labelledby="block-{ opts.block.uuid }-label" aria-hidden="true" if={ this.modal.remove && this.acl.validate('admin') && !opts.preview }>
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">
-            Remove Block
-          </h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          Are you sure you want to remove this block?
-        </div>
-        <div class="modal-footer">
-          <button class={ 'btn btn-danger float-right' : true, 'disabled' : this.removing } onclick={ onRemove } disabled={ this.removing }>
-            { this.removing ? 'Removing...' : 'Remove' }
-          </button>
-        </div>
+  <div class={ 'eden-blocks-sidebar' : true, 'eden-blocks-sidebar-show' : this.sidebar.remove } ref="remove" if={ this.showing && this.acl.validate('admin') && !opts.preview }>
+    <div class="card">
+      <div class="card-header">
+        <h5 class="m-0">
+          Remove Block
+        </h5>
+      </div>
+      <div class="card-body">
+        Are you sure you want to remove this block?
+      </div>
+      <div class="card-footer">
+        <button class={ 'btn btn-danger' : true, 'disabled' : this.removing } onclick={ onRemove } disabled={ this.removing }>
+          { this.removing ? 'Removing...' : 'Remove' }
+        </button>
+        <button class={ 'btn btn-secondary float-right' : true, 'disabled' : this.removing } onclick={ ohHideSidebar }>
+          Close
+        </button>
       </div>
     </div>
   </div>
@@ -86,28 +84,31 @@
     this.mixin('block');
 
     // set variables
-    this.modal = {};
-    this.loading = {};
-    this.updating = {};
+    this.sidebar = {};
 
     /**
      * on update modal
 
      * @param  {Event} e
      */
-    onUpdateModal (e) {
+    onUpdateSidebar (e) {
       // prevent default
       e.preventDefault();
       e.stopPropagation();
 
       // set class
-      this.modal.update = true;
+      this.showing = true;
+      
+      // set editing
+      opts.onEditing(opts.block);
 
       // update view
       this.update();
+      this.sidebar.update = true;
+      this.sidebar.remove = false;
 
-      // run opts
-      jQuery(this.refs.update).modal('show');
+      // update view
+      this.update();
     }
 
     /**
@@ -115,19 +116,43 @@
 
      * @param  {Event} e
      */
-    onRemoveModal (e) {
+    onRemoveSidebar (e) {
       // prevent default
       e.preventDefault();
       e.stopPropagation();
 
       // set class
-      this.modal.remove = true;
+      this.showing = true;
 
       // update view
       this.update();
+      this.sidebar.remove = true;
+      this.sidebar.update = false;
 
-      // run opts
-      jQuery(this.refs.remove).modal('show');
+      // update view
+      this.update();
+    }
+
+    /**
+     * on remove modal
+
+     * @param  {Event} e
+     */
+    ohHideSidebar(e) {
+      // prevent default
+      e.preventDefault();
+      e.stopPropagation();
+
+      // set class
+      this.showing = false;
+
+      // update view
+      this.update();
+      this.sidebar.update = false;
+      this.sidebar.remove = false;
+
+      // update view
+      this.update();
     }
 
     /**
@@ -145,28 +170,6 @@
 
       // run opts
       if (opts.onSave) await opts.onSave(opts.block, opts.data, opts.placement);
-    }
-
-    /**
-     * on refresh
-     *
-     * @param  {Event} e
-     */
-    async onRefresh (e) {
-      // set refreshing
-      this.refreshing = true;
-
-      // update view
-      this.update();
-
-      // run opts
-      if (opts.onRefresh) await opts.onRefresh(opts.block, opts.data, opts.placement);
-
-      // set refreshing
-      this.refreshing = false;
-
-      // update view
-      this.update();
     }
 
     /**
@@ -198,6 +201,39 @@
 
       // remove modal backdrops
       jQuery('.modal-backdrop').remove();
+    });
+
+    // on update
+    this.on('update', () => {
+      // check frontend
+      if (!this.eden.frontend) return;
+
+      // remove editing
+      if (!this.showing && !this.sidebar.update && (opts.editing === opts.block.uuid)) {
+        // set editing
+        opts.block.editing = false;
+
+        // set false
+        opts.onEditing(false);
+      }
+    });
+
+    // on unmount function
+    this.on('mount', () => {
+      // check frontend
+      if (!this.eden.frontend || opts.preview) return;
+
+      // remove modal backdrops
+      if (opts.editing === opts.block.uuid) {
+        // set update
+        this.sidebar.update = true;
+  
+        // update view
+        this.update();
+        
+        // show modal immediately
+        jQuery(this.refs.update).removeClass('fade').modal('show').addClass('fade');
+      }
     });
   </script>
 </block>

@@ -4,7 +4,6 @@ const Controller = require('controller');
 
 // require models
 const Page      = model('page');
-const Block     = model('block');
 const Placement = model('placement');
 
 // require helpers
@@ -113,7 +112,7 @@ class CMSController extends Controller {
     if (!page) return next();
 
     // render Page
-    res.render('page', {
+    return res.render('page', {
       item   : await page.sanitise(req),
       title  : page.get('title')[req.language],
       blocks : BlockHelper.renderBlocks('frontend'),

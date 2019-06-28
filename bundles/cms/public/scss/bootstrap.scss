@@ -24,6 +24,8 @@ $eden-admin-aside-hover-color: $white!default;
 
 // alter dashboard options
 .eden-blocks {
+  @include transition(all 0.5s ease);
+
 
   .eden-dropzone {
     position : relative;
@@ -37,49 +39,53 @@ $eden-admin-aside-hover-color: $white!default;
   &:hover,
   &.is-dragging {
     .eden-dropzone {
-      outline        : $border-width solid theme-color(secondary);
-      padding-top    : $spacer;
-      padding-bottom : $spacer;
-
       .eden-block-hover,
       .eden-dropzone-label {
         display : block;
       }
 
-      &.eden-block-over {
-        outline : $border-width solid theme-color(primary);
-
-        &:before {
-          top        : 0;
-          left       : 0;
-          right      : 0;
-          bottom     : 0;
-          content    : '';
-          position   : absolute;
-          background : rgba(theme-color(primary), 0.1);
-        }
-      }
-
       .eden-dropzone-label {
-        top        : 0;
+        @include border-radius();
+
         left       : 0;
         color      : $white;
+        bottom     : calc(100% + #{($spacer / 2)});
         opacity    : 0;
-        z-index    : 103;
+        z-index    : 91;
         position   : absolute;
-        background : theme-color(primary);
+        background : rgba(theme-color(info), 0.5);
 
         padding-left  : ($spacer / 2);
         padding-right : ($spacer / 2);
 
+        border-bottom-left-radius  : 0;
+        border-bottom-right-radius : 0;
+
         &.eden-dropzone-label-end {
-          top    : auto;
-          bottom : 0;
+          @include border-radius();
+
+          top    : calc(100% + #{($spacer / 2)});
+          bottom : auto;
+
+          border-top-left-radius  : 0;
+          border-top-right-radius : 0;
         }
       }
 
       &:hover {
-        outline : $border-width solid theme-color(primary);
+
+        &:before {
+          @include border-radius($card-border-radius);
+
+          top        : -($spacer / 2);
+          left       : -($spacer / 2);
+          right      : -($spacer / 2);
+          bottom     : -($spacer / 2);
+          border     : $border-width solid rgba(theme-color(info), 0.5);
+          content    : '';
+          position   : absolute;
+          background : rgba(theme-color(info), 0.1);
+        }
 
         > .eden-block-hover {
           opacity : 1;
@@ -90,27 +96,55 @@ $eden-admin-aside-hover-color: $white!default;
       }
 
       .eden-block {
-        outline  : $border-width solid rgba(theme-color(secondary), 0.2);
         position : relative;
 
         // alter hover
         > .eden-block-hover {
           @include transition(all 0.5s ease);
+          @include border-radius($card-border-radius);
 
-          top      : 0;
-          right    : 0;
+          right    : ($spacer / 2);
+          bottom   : 100%;
           opacity  : 0;
-          z-index  : 105;
+          z-index  : 92;
           position : absolute;
+
+          border-bottom-left-radius  : 0;
+          border-bottom-right-radius : 0;
+
+          &.eden-block-hover-dropzone {
+            right  : 0;
+            bottom : calc(100% + #{($spacer / 2)});
+          }
+
+          &:hover {
+            z-index : 93;
+          }
         }
 
         &:hover {
-          outline : $border-width solid theme-color(primary);
+          &:before {
+            top        : -($spacer / 2);
+            left       : -($spacer / 2);
+            right      : -($spacer / 2);
+            bottom     : -($spacer / 2);
+            border     : $border-width solid rgba(theme-color(info), 0.5);
+            content    : '';
+            position   : absolute;
+            background : rgba(theme-color(info), 0.2);
+          }
 
+          // on hover
+          > eden-add > .eden-add,
+          > div > eden-add > .eden-add {
+            opacity : 1;
+            z-index : 94;
+          }
           > .eden-block-hover {
             opacity : 1;
           }
-          > .eden-dropzone-label {
+          > .eden-dropzone-label,
+          > div > .eden-dropzone-label {
             opacity : 1;
           }
         }
@@ -121,84 +155,102 @@ $eden-admin-aside-hover-color: $white!default;
   .eden-add {
     @include transition(all 0.5s ease);
 
-    top      : 0;
-    left     : 0;
-    right    : 0;
+    top    : 0;
+    left   : 0;
+    right  : 0;
+    bottom : 0;
+
+    // set size
+    width  : ($spacer * 3);
+    height : ($spacer * 3);
+
+    right    : $spacer;
     cursor   : pointer;
-    bottom   : 0;
-    height   : $spacer * 1.5;
+    height   : $spacer * 3;
     opacity  : 0;
-    z-index  : 102;
+    z-index  : 92;
     position : absolute;
+
+    background    : theme-color(secondary);
+    border-radius : 50%;
 
     &:hover {
       opacity : 1;
     }
 
-    &:before {
-      top        : 0;
-      left       : 0;
-      right      : 0;
-      height     : ($spacer / 4);
-      content    : '';
-      position   : absolute;
-      background : theme-color(primary);
-    }
-
     i {
-      transform : translateX(50%);
-
-      right       : 50%;
       color       : $white;
-      width       : ($spacer * 1.5);
-      height      : ($spacer * 1.5);
-      position    : absolute;
+      width       : 100%;
+      height      : 100%;
       text-align  : center;
-      line-height : ($spacer * 1.5);
-
-      background    : theme-color(primary);
-      border-radius : 50%;
-
-      border-top-left-radius  : 0;
-      border-top-right-radius : 0;
+      line-height : ($spacer * 3);
     }
 
     &.eden-add-left {
-      right : auto;
+      left  : auto;
+      right : 100%;
     }
     &.eden-add-right {
-      left : auto;
+      left  : 100%;
+      right : auto;
     }
     &.eden-add-bottom {
-      top : auto;
-
-      &:before {
-        top    : auto;
-        bottom : 0;
-      }
-
-      i {
-        border-radius : 50%;
-
-        border-bottom-left-radius  : 0;
-        border-bottom-right-radius : 0;
-      }
+      top    : calc(100% - #{($spacer * 1)});
+      bottom : auto;
     }
     &.eden-add-top {
-      bottom : auto;
+      top    : auto;
+      bottom : calc(100% - #{($spacer * 1)});
+    }
+
+    &.eden-add-top,
+    &.eden-add-bottom {
+      left      : 50%;
+      translate : translateX(-50%);
     }
 
     &.eden-add-left,
     &.eden-add-right {
-      width  : $spacer * 2;
-      height : auto;
-
-      i {
-        transform : translateY(-50%);
-
-        top   : 50%;
-        right : auto;
-      }
+      bottom : -($spacer / 2);
     }
   }
+}
+
+
+.eden-blocks-sidebar {
+  @include transition(all 0.5s ease);
+
+  top      : 0;
+  left     : 100%;
+  width    : ($spacer * 30);
+  z-index  : 1032;
+  opacity  : 0;
+  position : fixed;
+
+  &.eden-blocks-sidebar-show {
+    // move into view
+    opacity   : 1;
+    transform : translateX(-100%);
+  }
+
+  > .card {
+    height        : 100vh;
+    border-top    : 0;
+    border-radius : 0;
+
+    > .card-body {
+      overflow-y : scroll;
+    }
+  }
+}
+
+
+.eden-blocks-backdrop {
+  top        : 0;
+  left       : 0;
+  right      : 0;
+  bottom     : 0;
+  z-index    : 1031;
+  position   : fixed;
+  background : rgba(theme-color(secondary), 0.5);
 }

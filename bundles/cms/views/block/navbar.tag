@@ -1,5 +1,5 @@
 <block-navbar>
-  <block ref="block" class="block-navbar-inner" on-navbar-class={ onNavbarClass } on-navbar-container-class={ onNavbarContainerClass } get-blocks={ getBlocks } get-element={ getElement }>
+  <block ref="block" class="block-navbar-inner" is-container={ true } on-navbar-class={ onNavbarClass } on-navbar-container-class={ onNavbarContainerClass } get-blocks={ getBlocks } get-element={ getElement }>
     <yield to="body">
       <span class="eden-dropzone-label" if={ this.acl.validate('admin') && !opts.preview }>
         Navbar #{ opts.placement }
@@ -11,7 +11,7 @@
             <eden-add type="top" onclick={ opts.onAddBlock } way="unshift" placement={ opts.placement + '.left' } if={ this.acl.validate('admin') && !opts.preview } />
             
             <div if={ !opts.getBlocks(opts.block.left).length } class="text-center">Add Elements</div>
-            <div each={ child, a in opts.getBlocks(opts.block.left) } no-reorder class={ child.class } data-is={ opts.getElement(child) } preview={ opts.preview } data-block={ child.uuid } data={ opts.getBlock(child) } block={ child } get-block={ opts.getBlock } on-add-block={ opts.onAddBlock } on-save={ opts.onSave } on-remove={ opts.onRemove } on-refresh={ opts.onRefresh } i={ a } placement={ opts.placement + '.left.' + a } />
+            <div each={ child, a in opts.getBlocks(opts.block.left) } no-reorder class={ child.class } editing={ opts.editing } data-is={ opts.getElement(child) } preview={ opts.preview } data-block={ child.uuid } data={ opts.getBlock(child) } block={ child } get-block={ opts.getBlock } on-editing={ opts.onEditing } on-add-block={ opts.onAddBlock } on-save={ opts.onSave } on-remove={ opts.onRemove } on-refresh={ opts.onRefresh } i={ a } placement={ opts.placement + '.left.' + a } />
             
             <eden-add type="bottom" onclick={ opts.onAddBlock } way="push" placement={ opts.placement + '.left' } if={ this.acl.validate('admin') && !opts.preview } />
           </div>
@@ -24,7 +24,7 @@
             <eden-add type="top" onclick={ opts.onAddBlock } way="unshift" placement={ opts.placement + '.right' } if={ this.acl.validate('admin') && !opts.preview } />
             
             <div if={ !opts.getBlocks(opts.block.right).length } class="text-center">Add Elements</div>
-            <div each={ child, a in opts.getBlocks(opts.block.right) } no-reorder class={ child.class } data-is={ opts.getElement(child) } preview={ opts.preview } data-block={ child.uuid } data={ opts.getBlock(child) } block={ child } get-block={ opts.getBlock } on-add-block={ opts.onAddBlock } on-save={ opts.onSave } on-remove={ opts.onRemove } on-refresh={ opts.onRefresh } i={ a } placement={ opts.placement + '.right.' + a } />
+            <div each={ child, a in opts.getBlocks(opts.block.right) } no-reorder class={ child.class } editing={ opts.editing } data-is={ opts.getElement(child) } preview={ opts.preview } data-block={ child.uuid } data={ opts.getBlock(child) } block={ child } get-block={ opts.getBlock } on-editing={ opts.onEditing } on-add-block={ opts.onAddBlock } on-save={ opts.onSave } on-remove={ opts.onRemove } on-refresh={ opts.onRefresh } i={ a } placement={ opts.placement + '.right.' + a } />
             
             <eden-add type="bottom" onclick={ opts.onAddBlock } way="push" placement={ opts.placement + '.right' } if={ this.acl.validate('admin') && !opts.preview } />
           </div>

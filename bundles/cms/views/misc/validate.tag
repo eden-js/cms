@@ -53,17 +53,17 @@
     <div class="input-group" if={ ['select'].includes(opts.type) }>
       <div if={ opts.prepend } data-is={ opts.prepend } class="input-group-prepend" />
       <yield from="prepend" />
-      <select autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" required={ opts.required } placeholder={ opts.placeholder || opts.label }>
+      <select autocomplete={ opts.autocomplete } id={ opts.name } name={ opts.name } onchange={ onChange } class="{ opts.inputClass || 'form-control' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" multiple={ opts.multiple } required={ opts.required } placeholder={ opts.placeholder || opts.label }>
         <option value="" if={ opts.label }>Select { opts.label }</option>
-        <option each={ option, i in opts.options } value={ option.value } selected={ this.value === option.value }>{ option.label }</option>
+        <option each={ option, i in opts.options } value={ option.value } selected={ (this.value || []).includes(option.value) }>{ option.label }</option>
       </select>
       <div if={ opts.append } data-is={ opts.append } class="input-group-append" />
       <yield from="append" />
     </div>
 
     <div if={ ['checkbox'].includes(opts.type) } class="custom-control custom-checkbox { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }">
-      <input type="checkbox" class="{ opts.inputClass || 'custom-control-input' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" name={ opts.name } value={ opts.default || 'true' } id={ opts.name } checked={ opts.checked } onchange={ onChange } />
-      <label class="custom-control-label" for={ opts.name }>{ opts.label }</label>
+      <input type="checkbox" class="{ opts.inputClass || 'custom-control-input' } { 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true }" name={ opts.name } value={ opts.dataValue || 'true' } id={ this.uuid } checked={ opts.checked } onchange={ onChange } />
+      <label class="custom-control-label" for={ this.uuid }>{ opts.label }</label>
 
       <div if={ isValid() === false } class="invalid-{ opts.errorType || 'tooltip' }">
         { this.message }
@@ -78,7 +78,11 @@
   </div>
 
   <script>
+    // uuid
+    const uuid = require('uuid');
+    
     // set value
+    this.uuid      = uuid();
     this.value     = opts.value || opts.dataValue;
     this.message   = '';
     this.validated = opts.validated || this.value || false;
@@ -95,7 +99,7 @@
     }
 
     // add years
-    for (let i = (new Date()).getFullYear(); i >= ((new Date()).getFullYear() - 80); i--) {
+    for (let i = (opts.startYear || (new Date()).getFullYear()); i >= (opts.endYear || ((new Date()).getFullYear() - 80)); i--) {
       // add to years
       this.years.push(i);
     }
@@ -240,8 +244,6 @@
       birthday.setYear(jQuery(this.refs.year).val());
       birthday.setMonth(this.months.map((item) => item.toLowerCase()).indexOf(jQuery(this.refs.month).val().toLowerCase()));
       birthday.setDate(jQuery(this.refs.day).val());
-
-      console.log(jQuery(this.refs.day).val(), this.months.map((item) => item.toLowerCase()).indexOf(jQuery(this.refs.month).val().toLowerCase()), jQuery(this.refs.year).val());
 
       // set value
       this.value = birthday.toISOString();

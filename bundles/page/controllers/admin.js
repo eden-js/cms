@@ -143,7 +143,7 @@ class PageAdminController extends Controller {
     // return JSON
     res.json({
       state   : 'success',
-      result  : await page.sanitise(),
+      result  : sanitised,
       message : 'Successfully got blocks',
     });
   }
@@ -162,8 +162,6 @@ class PageAdminController extends Controller {
    * @layout  admin
    */
   async indexAction(req, res) {
-    console.log('INDEXXXX');
-
     // render grid
     res.render('page/admin', {
       grid : await this._grid(req).render(req),
@@ -265,7 +263,7 @@ class PageAdminController extends Controller {
     // return JSON
     res.json({
       state   : 'success',
-      result  : await page.sanitise(),
+      result  : await page.sanitise(req),
       message : 'Successfully updated page',
     });
   }
@@ -291,7 +289,7 @@ class PageAdminController extends Controller {
 
     // render page
     res.render('page/admin/remove', {
-      item  : await page.sanitise(),
+      item  : await page.sanitise(req),
       title : `Remove ${page.get('_id').toString()}`,
     });
   }
