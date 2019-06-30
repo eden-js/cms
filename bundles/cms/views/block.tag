@@ -19,7 +19,7 @@
                 <i class={ 'fa fa-times' : true, 'fa-spin' : this.removing || opts.block.removing } />
               </button>
               <span class="btn btn-sm btn-secondary move" for={ opts.block.uuid }>
-                <i class="fa fa-arrows" />
+                <i class="fa fa-arrows-alt" />
               </span>
             </div>
           </div>
