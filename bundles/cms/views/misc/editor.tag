@@ -260,7 +260,7 @@
         'menuCheck'     : 'fa fa-check',
         'minus'         : 'fa fa-minus',
         'orderedlist'   : 'fa fa-list-ol',
-        'pencil'        : 'fa fa-pencil',
+        'pencil'        : 'fa fa-pencil-alt',
         'picture'       : 'fa fa-image',
         'question'      : 'fa fa-question',
         'redo'          : 'fa fa-redo',
