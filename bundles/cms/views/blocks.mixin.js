@@ -42,12 +42,6 @@ class BlocksMixin {
       return true;
     }
 
-    // check matched preview
-    if (!!this.element.preview !== !!(!this.element.acl.validate('admin') || this.element.opts.preview)) {
-      // preview does not match
-      return true;
-    }
-
     // check matched model
     if (!this.element.opts.model && this.placementID !== this.element.placement.get('id')) {
       // set placement id

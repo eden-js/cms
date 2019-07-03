@@ -1,5 +1,29 @@
 <upload>
-  <div class="row row-eq-height upload upload-images">
+  <div if={ opts.showType === 'input' }>
+    <div class={ 'custom-file' : !this.value.length }>
+      <input type="file" class="custom-file-input" id={ opts.name } onchange={ onUpload } if={ !this.value.length } multiple={ this.multi }>
+      <label class="custom-file-label" for={ opts.name } if={ !this.value.length }>
+        Choose File
+      </label>
+      
+      <div class="d-block" each={ file, i in this.value }>
+        <div class="btn-group d-block w-100">
+          <button class="btn btn-link text-overflow">
+            { file.name }
+          </button>
+          <a href="#!" onclick={ onRemove } class="btn btn-danger">
+            <i class="fa fa-times" />
+          </a>
+        </div>
+        <input type="hidden" if={ file.id } name={ this.name + (this.multi ? '[' + i + ']' : '') } value={ file.id } class="file-input">
+      </div>
+
+      <div class="progress" each={ file, i in this.value } if={ typeof file.uploaded !== 'undefined' }>
+        <div class="progress-bar bg-success" role="progressbar" style="width : { file.uploaded }%;" aria-valuenow={ file.uploaded } aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+    </div>
+  </div>
+  <div class="row row-eq-height upload upload-images" if={ (opts.showType || 'box') === 'box' }>
     <div each={ file, i in this.value } class="{ opts.col || 'col-6 col-md-4 col-xl-3' } form-group-image mb-2">
       <div class="card card-outline-primary" style={ !opts.type || opts.type === 'image' ? 'background-image: url(' + thumb(file) + ')' : '' }>
         <span class="btn-group p-0" if={ this.multi }>
@@ -183,6 +207,14 @@
         // read file
         fr.readAsDataURL(fl);
       }
+    }
+
+    /**
+     * get name
+     */
+    getName() {
+      // map
+      return this.value.map((val) => val.name).join(', ');
     }
 
     /**

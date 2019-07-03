@@ -26,6 +26,23 @@ $eden-admin-aside-hover-color: $white!default;
 .eden-blocks {
   @include transition(all 0.5s ease);
 
+  position : relative;
+
+  .eden-dropzone-preview {
+    right    : 0;
+    bottom   : calc(100% + #{($spacer / 2)});
+    opacity  : 0;
+    position : absolute;
+
+    border-bottom-left-radius  : 0;
+    border-bottom-right-radius : 0;
+
+    &:hover {
+      opacity : 1;
+      z-index : 93;
+    }
+  }
+
 
   .eden-dropzone {
     position : relative;
@@ -38,6 +55,11 @@ $eden-admin-aside-hover-color: $white!default;
 
   &:hover,
   &.is-dragging {
+
+    .eden-dropzone-preview {
+      opacity : 1;
+    }
+
     .eden-dropzone {
       .eden-block-hover,
       .eden-dropzone-label {

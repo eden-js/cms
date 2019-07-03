@@ -8,6 +8,10 @@
       <eden-add type="top" onclick={ onAddBlock } way="unshift" placement="" if={ !this.preview } />
       <div each={ el, i in getBlocks() } editing={ getThis().editing } preview={ getThis().preview } el={ el } no-reorder class={ el.class } data-is={ getElement(el) } data-block={ el.uuid } data={ getBlock(el) } block={ el } get-block={ getBlock } on-editing={ onSetEditing } on-add-block={ onAddBlock } on-save={ this.onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ this.onRefreshBlock } placement={ i } i={ i } />
       <eden-add type="bottom" onclick={ onAddBlock } way="push" placement="" if={ !this.preview } />
+
+      <button class="btn btn-sm btn-secondary eden-dropzone-preview" if={ this.acl.validate('admin') } onclick={ onPreview }>
+        <i class="fa fa-eye" />
+      </button>
     </div>
   </div>
 
@@ -86,6 +90,25 @@
     getBlocks () {
       // return filtered blocks
       return (this.placement.get('positions') || []).map(this.filter.fix).filter((block) => block);
+    }
+
+    /**
+     * on add block
+     *
+     * @param  {Event} e
+     *
+     * @return {*}
+     */
+    onPreview(e) {
+      // prevent
+      e.preventDefault();
+      e.stopPropagation();
+
+      // set preview
+      this.preview = !this.preview;
+
+      // full update
+      this.helper.update();
     }
 
     /**
@@ -589,7 +612,6 @@
       // set placements
       if (this.helper.hasChange()) {
         // set placement
-        this.preview  = !!(!this.acl.validate('admin') || opts.preview);
         this.position = opts.position;
         
         // reset loading

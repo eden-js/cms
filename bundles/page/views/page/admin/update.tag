@@ -108,14 +108,7 @@
      * @param  {Event} e
      */
     onSlug (e) {
-      // require slug
-      let slug = require('slug');
-
-      // set slug
-      this.refs.slug.value = slug(e.target.value).toLowerCase();
-
-      // save page
-      this.savePage(this.page);
+      
     }
 
     /**
