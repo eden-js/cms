@@ -50,7 +50,7 @@ class BannerController extends Controller {
 
       // return
       return data;
-    }, async (req, block) => { });
+    }, async () => { });
   }
 }
 
@@ -59,4 +59,4 @@ class BannerController extends Controller {
  *
  * @type {BannerController}
  */
-exports = module.exports = BannerController;
+module.exports = BannerController;

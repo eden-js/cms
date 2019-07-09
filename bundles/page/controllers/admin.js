@@ -127,14 +127,12 @@ class PageAdminController extends Controller {
    */
   async viewAction(req, res) {
     // set website variable
-    let page   = new Page();
-    let create = true;
+    let page = new Page();
 
     // check for website model
     if (req.params.id) {
       // load by id
       page = await Page.findById(req.params.id);
-      create = false;
     }
 
     // res JSON
@@ -175,9 +173,9 @@ class PageAdminController extends Controller {
    * @layout   admin
    * @priority 12
    */
-  createAction() {
+  createAction(...args) {
     // return update action
-    return this.updateAction(...arguments);
+    return this.updateAction(...args);
   }
 
   /**
@@ -217,9 +215,9 @@ class PageAdminController extends Controller {
    * @route   {post} /create
    * @layout  admin
    */
-  createSubmitAction() {
+  createSubmitAction(...args) {
     // return update action
-    return this.updateSubmitAction(...arguments);
+    return this.updateSubmitAction(...args);
   }
 
 
@@ -362,19 +360,19 @@ class PageAdminController extends Controller {
     }).column('slug', {
       sort   : true,
       title  : 'Slug',
-      format : async (col, row) => {
+      format : async (col) => {
         return col ? col.toString() : '<i>N/A</i>';
       },
     }).column('title', {
       sort   : true,
       title  : 'Title',
-      format : async (col, row) => {
+      format : async (col) => {
         return col ? (col[req.language] || '').toString() : '<i>N/A</i>';
       },
     }).column('layout', {
       sort   : true,
       title  : 'Layout',
-      format : async (col, row) => {
+      format : async (col) => {
         return col ? col.toString() : '<i>N/A</i>';
       },
     })
@@ -465,4 +463,4 @@ class PageAdminController extends Controller {
  *
  * @type {ADMIN}
  */
-exports = module.exports = PageAdminController;
+module.exports = PageAdminController;

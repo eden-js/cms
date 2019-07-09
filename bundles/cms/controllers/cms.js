@@ -132,7 +132,7 @@ class CMSController extends Controller {
     res.locals.placements = [];
 
     // create Block method
-    res.placement = req.placement = (placement) => {
+    const middlePlacement = (placement) => {
       // check locals
       if (!Array.isArray(res.locals.placements)) res.locals.placements = [];
 
@@ -142,6 +142,10 @@ class CMSController extends Controller {
       // add to Block
       res.locals.placements.push(placement);
     };
+
+    // set to req/res
+    res.placement = middlePlacement;
+    req.placement = middlePlacement;
 
     // run next
     return next();
@@ -153,4 +157,4 @@ class CMSController extends Controller {
  *
  * @type {CMSController}
  */
-exports = module.exports = CMSController;
+module.exports = CMSController;

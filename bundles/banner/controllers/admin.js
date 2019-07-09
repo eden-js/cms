@@ -119,9 +119,9 @@ class BannerAdminController extends Controller {
    * @layout   admin
    * @priority 12
    */
-  createAction() {
+  createAction(...args) {
     // return update action
-    return this.updateAction(...arguments);
+    return this.updateAction(...args);
   }
 
   /**
@@ -159,9 +159,9 @@ class BannerAdminController extends Controller {
    * @layout  admin
    * @upload  {single} image
    */
-  createSubmitAction() {
+  createSubmitAction(...args) {
     // return update action
-    return this.updateSubmitAction(...arguments);
+    return this.updateSubmitAction(...args);
   }
 
   /**
@@ -312,13 +312,13 @@ class BannerAdminController extends Controller {
     }).column('title', {
       sort   : true,
       title  : 'Title',
-      format : async (col, row) => {
+      format : async (col) => {
         return col ? ((col || {})[req.language] || '').toString() : '<i>N/A</i>';
       },
     }).column('category', {
       sort   : true,
       title  : 'Category',
-      format : async (col, row) => {
+      format : async (col) => {
         return col ? col.toString() : '<i>N/A</i>';
       },
       update : async (row, value) => {
@@ -337,7 +337,7 @@ class BannerAdminController extends Controller {
     }).column('class', {
       sort   : true,
       title  : 'Class',
-      format : async (col, row) => {
+      format : async (col) => {
         return col ? col.toString() : '<i>N/A</i>';
       },
       update : async (row, value) => {

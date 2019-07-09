@@ -10,14 +10,6 @@ const BlockHelper = helper('cms/block');
  */
 class Placement extends Model {
   /**
-   * construct placement model
-   */
-  constructor() {
-    // run super
-    super(...arguments);
-  }
-
-  /**
    * sanitises placement
    *
    * @return {Promise}
@@ -55,4 +47,4 @@ class Placement extends Model {
  * export user class
  * @type {user}
  */
-exports = module.exports = Placement;
+module.exports = Placement;

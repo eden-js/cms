@@ -12,9 +12,9 @@ class Page extends Model {
    * @param attrs
    * @param options
    */
-  constructor() {
+  constructor(...args) {
     // run super
-    super(...arguments);
+    super(...args);
 
     // bind methods
     this.sanitise = this.sanitise.bind(this);
@@ -43,4 +43,4 @@ class Page extends Model {
  *
  * @type {page}
  */
-exports = module.exports = Page;
+module.exports = Page;

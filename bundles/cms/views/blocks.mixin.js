@@ -50,6 +50,9 @@ class BlocksMixin {
       // placement id does not match
       return true;
     }
+
+    // return false
+    return false;
   }
 
   /**
@@ -69,6 +72,9 @@ class BlocksMixin {
       // field lengths do not match
       return true;
     }
+
+    // return false
+    return false;
   }
 
   /**
@@ -111,14 +117,14 @@ class BlocksMixin {
     const children = ['left', 'right', 'children'];
 
     // return if moving
-    if (!field) return;
+    if (!field) return null;
 
     // check children
     for (const child of children) {
       // check child
       if (field[child]) {
         // remove empty blocks
-        field[child] = Object.values(field[child]).filter(field => field);
+        field[child] = Object.values(field[child]).filter(f => f);
 
         // push children to flat
         field[child] = field[child].map(this.filter.fix);
@@ -141,7 +147,7 @@ class BlocksMixin {
     const children = ['left', 'right', 'children'];
 
     // return if moving
-    if (field.moving || field.removing) return;
+    if (field.moving || field.removing) return null;
 
     // check children
     for (const child of children) {
@@ -151,7 +157,7 @@ class BlocksMixin {
         field[child] = Object.values(field[child]);
 
         // push children to flat
-        field[child] = field[child].map(this.filter.place).filter(field => field);
+        field[child] = field[child].map(this.filter.place).filter(f => f);
       }
     }
 
@@ -189,7 +195,7 @@ class BlocksMixin {
       // check child
       if (field[child]) {
         // remove empty blocks
-        field[child] = field[child].filter(field => field);
+        field[child] = field[child].filter(f => f);
 
         // push children to flat
         accum.push(...field[child].reduce(this.filter.flatten, []));
@@ -214,15 +220,15 @@ class BlocksMixin {
       const children = ['left', 'right', 'children'];
 
       // return if moving
-      if (field.moving || field.removing) return;
+      if (field.moving || field.removing) return null;
 
       // set field info for replace
       if (field.uuid === b.uuid) {
         // remove
-        for (const key in b) {
+        Object.keys(b).forEach((key) => {
           // set key
           field[key] = b[key];
-        }
+        });
       }
 
       // check children
@@ -233,7 +239,7 @@ class BlocksMixin {
           field[child] = Object.values(field[child]);
 
           // push children to flat
-          field[child] = field[child].map(this.filter.replace(b)).filter(field => field);
+          field[child] = field[child].map(this.filter.replace(b)).filter(f => f);
         }
       }
 

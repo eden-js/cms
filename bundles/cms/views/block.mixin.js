@@ -6,9 +6,9 @@ riot.mixin('block', {
    */
   init() {
     // set opts from parent opts
-    for (const key in this.parent.opts) {
+    Object.keys(this.parent.opts).forEach((key) => {
       // set key
       this.opts[key] = this.parent.opts[key];
-    }
+    });
   },
 });

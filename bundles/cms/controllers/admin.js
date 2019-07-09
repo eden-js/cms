@@ -72,7 +72,7 @@ class CMSAdminController extends Controller {
 
       // return
       return block;
-    }, async (req, block) => { });
+    }, async () => { });
 
     // register simple block
     BlockHelper.block('structure.row', {
@@ -86,7 +86,7 @@ class CMSAdminController extends Controller {
 
       // return
       return block;
-    }, async (req, block) => { });
+    }, async () => { });
 
     // register simple block
     BlockHelper.block('structure.div', {
@@ -100,7 +100,7 @@ class CMSAdminController extends Controller {
 
       // return
       return block;
-    }, async (req, block) => { });
+    }, async () => { });
 
     // register simple block
     BlockHelper.block('structure.navbar', {
@@ -114,7 +114,7 @@ class CMSAdminController extends Controller {
 
       // return
       return block;
-    }, async (req, block) => { });
+    }, async () => { });
   }
 
   /**
@@ -158,4 +158,4 @@ class CMSAdminController extends Controller {
  *
  * @type {CMSAdminController}
  */
-exports = module.exports = CMSAdminController;
+module.exports = CMSAdminController;

@@ -103,7 +103,7 @@ class BlockHelper extends Helper {
    *
    * @return {Promise}
    */
-  async render(type, user) {
+  async render(type) {
     // return object
     return {
       blocks    : this.renderBlocks(),

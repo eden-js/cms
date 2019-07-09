@@ -7,14 +7,6 @@ const Model = require('model');
  */
 class Block extends Model {
   /**
-   * construct placement model
-   */
-  constructor() {
-    // run super
-    super(...arguments);
-  }
-
-  /**
    * sanitises placement
    *
    * @return {Promise}
@@ -34,4 +26,4 @@ class Block extends Model {
  * export user class
  * @type {user}
  */
-exports = module.exports = Block;
+module.exports = Block;

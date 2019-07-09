@@ -7,14 +7,6 @@ const Model = require('model');
  */
 class Banner extends Model {
   /**
-   * construct banner model
-   */
-  constructor() {
-    // run super
-    super(...arguments);
-  }
-
-  /**
    * sanitises banner
    *
    * @return {Promise}
@@ -36,4 +28,4 @@ class Banner extends Model {
  * export user class
  * @type {user}
  */
-exports = module.exports = Banner;
+module.exports = Banner;

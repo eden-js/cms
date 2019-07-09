@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 
 // require dependencies
 const socket     = require('socket');
@@ -128,7 +129,7 @@ class PlacementController extends Controller {
         // load by id
         placement = await Placement.findById(req.params.id);
       }
-    } catch (e) {}
+    } catch (e) { }
 
     // get block
     const blocks  = placement.get('elements') || [];
