@@ -228,7 +228,7 @@ $eden-admin-aside-hover-color: $white!default;
     &.eden-add-top,
     &.eden-add-bottom {
       left      : 50%;
-      translate : translateX(-50%);
+      transform : translateX(-50%);
     }
 
     &.eden-add-left,

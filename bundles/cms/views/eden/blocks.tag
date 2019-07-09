@@ -575,6 +575,9 @@
       // check frontend
       if (!this.eden.frontend) return;
 
+      // set preview
+      this.preview = !!(!this.acl.validate('admin') || opts.preview);
+
       // check type
       if (this.helper.hasChange()) {
         // trigger mount
