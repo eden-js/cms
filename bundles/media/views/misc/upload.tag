@@ -17,7 +17,7 @@
       <div class="progress-bar bg-success" role="progressbar" style="width : { file.uploaded }%;" aria-valuenow={ file.uploaded } aria-valuemin="0" aria-valuemax="100"></div>
     </div>
 
-    <div class="custom-file" if={ this.value.length || this.multi }>
+    <div class="custom-file" if={ !this.value.length || this.multi }>
       <input type="file" class="custom-file-input" id={ opts.name } onchange={ onUpload } multiple={ this.multi }>
       <label class="custom-file-label" for={ opts.name }>
         Choose File
