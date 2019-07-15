@@ -1,0 +1,282 @@
+<validate>
+  <div class={ `${props.groupClass || 'form-group'} form-group-${props.type} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` }>
+    <label if={ !['checkbox'].includes(props.type) } for={ props.name } class={ props.labelClass }>
+      { props.label }
+    </label>
+
+    <div class="input-group" if={ ['tel', 'text', 'email', 'number', 'password'].includes(props.type) }>
+      <div if={ props.prepend } data-is={ props.prepend } class="input-group-prepend" />
+      <slot name="prepend" />
+      <input autocomplete={ props.autocomplete } id={ props.name } name={ props.name } onchange={ (e) => onChange(e) } onkeyup={ (e) => onKeyup(e) } type={ props.type } class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } required={ props.required } placeholder={ props.placeholder || props.label } value={ this.value } />
+      <div if={ props.append } data-is={ props.append } class="input-group-append" />
+      <slot name="append" />
+    </div>
+    
+    <div class="input-group" if={ ['textarea'].includes(props.type) }>
+      <div if={ props.prepend } data-is={ props.prepend } class="input-group-prepend" />
+      <slot name="prepend" />
+      <textarea autocomplete={ props.autocomplete } id={ props.name } name={ props.name } onchange={ (e) => onChange(e) } onkeyup={ (e) => onKeyup(e) } class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } required={ props.required } placeholder={ props.placeholder || props.label }>{ this.value }</textarea>
+      <div if={ props.append } data-is={ props.append } class="input-group-append" />
+      <slot name="append" />
+    </div>
+
+    <div if={ ['date'].includes(props.type) } class="row">
+      <input class="hidden" type="hidden" name={ props.name } value={ this.value } ref="date" />
+      <div class="col-md-4">
+        <select ref="day" class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } onchange={ (e) => onDate(e) }>
+          <option each={ day, i in this.days } value={ day } selected={ this.value ? new Date(this.value).getDate() === day : null }>{ day }</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <select ref="month" class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } onchange={ (e) => onDate(e) }>
+          <option each={ month, i in this.months } value={ month } selected={ this.value ? new Date(this.value).getMonth() === i : null }>{ month }</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <select ref="year" class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } onchange={ (e) => onDate(e) }>
+          <option each={ year, i in this.years } value={ year } selected={ this.value ? new Date(this.value).getFullYear() === year : null }>{ year }</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="input-group" if={ ['boolean'].includes(props.type) }>
+      <div if={ props.prepend } data-is={ props.prepend } class="input-group-prepend" />
+      <slot name="prepend" />
+      <select autocomplete={ props.autocomplete } id={ props.name } name={ props.name } onchange={ (e) => onChange(e) } class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } required={ props.required } placeholder={ props.placeholder || props.label }>
+        <option value="true" selected={ this.value || this.value === 'true' }>Yes</option>
+        <option value="false" selected={ !this.value || this.value === 'false' }>No</option>
+      </select>
+      <div if={ props.append } data-is={ props.append } class="input-group-append" />
+      <slot name="append" />
+    </div>
+
+    <div class="input-group" if={ ['select'].includes(props.type) }>
+      <div if={ props.prepend } data-is={ props.prepend } class="input-group-prepend" />
+      <slot name="prepend" />
+      <select autocomplete={ props.autocomplete } id={ props.name } name={ props.name } onchange={ (e) => onChange(e) } class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } multiple={ props.multiple } required={ props.required } placeholder={ props.placeholder || props.label }>
+        <option value="" if={ props.label }>Select { props.label }</option>
+        <option each={ option, i in props.options } value={ option.value } selected={ (this.value || []).includes(option.value) }>{ option.label }</option>
+      </select>
+      <div if={ props.append } data-is={ props.append } class="input-group-append" />
+      <slot name="append" />
+    </div>
+
+    <div if={ ['checkbox'].includes(props.type) } class={ `custom-control custom-checkbox ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` }>
+      <input type="checkbox" class={ `${props.inputClass || 'custom-control-input'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } name={ props.name } value={ props.dataValue || 'true' } id={ this.uuid } checked={ props.checked } onchange={ (e) => onChange(e) } />
+      <label class="custom-control-label" for={ this.uuid }>{ props.label }</label>
+
+      <div if={ isValid() === false } class="invalid-{ props.errorType || 'tooltip' }">
+        { this.message }
+      </div>
+    </div>
+
+    <div if={ !['checkbox'].includes(props.type) && isValid() === false } class={ `invalid-${props.errorType || 'tooltip'}` }>
+      { this.message }
+    </div>
+
+    <slot />
+  </div>
+
+  <script>
+    // import base class
+    import Base from '../js/base';
+    import uuid from 'uuid';
+
+    // export default class
+    export default class Validate extends Base {
+
+      /**
+       * on before mount
+       *
+       * @param {Object} props
+       */
+      onBeforeMount(props) {
+        // run super
+        super.onBeforeMount(...arguments);
+
+        // set value
+        this.uuid      = uuid();
+        this.value     = props.value || props.dataValue;
+        this.message   = '';
+        this.validated = props.validated || this.value || false;
+
+        // set date logic
+        this.days   = [];
+        this.years  = [];
+        this.months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        // add days
+        for (let i = 1; i <= 31; i++) {
+          // add to days
+          this.days.push(i);
+        }
+
+        // add years
+        for (let i = (props.startYear || (new Date()).getFullYear()); i >= (props.endYear || ((new Date()).getFullYear() - 80)); i--) {
+          // add to years
+          this.years.push(i);
+        }
+      }
+
+      /**
+       * value
+       *
+       * @return {*}
+       */
+      val (value) {
+        // return value
+        if (!value) return this.value;
+
+        // set value
+        jQuery($('input, select')[0]).val(value);
+      }
+
+      /**
+       * returns if valid
+       *
+       * @return {*}
+       */
+      isValid () {
+        // check validated
+        if (!this.validated) return null;
+
+        // set props
+        const props = this.props;
+
+        // check required
+        if (props.required && !(this.value || '').length) {
+          // set message
+          this.message = 'This field is required';
+
+          // return false
+          return false;
+        }
+
+        // check length
+        if (props.minLength && (this.value || '').length < parseInt(props.minLength)) {
+          // set message
+          this.message = 'Please make sure you use at least ' + props.minLength + ' characters';
+
+          // return false
+          return false;
+        }
+
+        // check length
+        if (props.maxLength && (this.value || '').length > parseInt(props.maxLength)) {
+          // set message
+          this.message = 'Please make sure you use less than ' + props.maxLength + ' characters';
+
+          // return false
+          return false;
+        }
+
+        // check regex
+        if (props.regex && !props.regex.test((this.value || '').toLowerCase())) {
+          // set message
+          this.message = 'Please make sure you enter valid information';
+
+          // return false
+          return false;
+        }
+
+        // check valid
+        if (props.isValid) {
+          // check valid
+          let valid = props.isValid(this.value, this);
+
+          // return error
+          if (valid !== true) {
+            // set message
+            this.message = valid;
+
+            // return false
+            return false;
+          }
+        }
+
+        // return valid
+        return true;
+      }
+
+      /**
+       * on change
+       *
+       * @param  {Event} e
+       *
+       * @return {*}
+       */
+      onChange (e) {
+        // set value
+        this.value = jQuery(e.target).val();
+        
+        // set value
+        this.value = ['checkbox'].includes(props.type) ? (jQuery(e.target).is(':checked') ? jQuery(e.target).val() : null) : e.target.value;
+
+        // set validated
+        this.validated = true;
+
+        // proxy change function
+        if (this.props.onChange) this.props.onChange(e);
+
+        // trigger update
+        this.update();
+      }
+
+      /**
+       * on change
+       *
+       * @param  {Event} e
+       *
+       * @return {*}
+       */
+      onKeyup (e) {
+        // set value
+        this.value = jQuery(e.target).val();
+
+        // proxy change function
+        if (this.props.onKeyup) props.onKeyup(e);
+
+        // trigger update
+        if (['msie', 'trident/'].find(key => (navigator.userAgent || '').toLowerCase().includes(key))) {
+          // on change for ie
+          this.onChange(e);
+        } else {
+          // trigger update
+          this.trigger('update');
+        }
+      }
+
+      /**
+      * on day
+      *
+      * @param  {Event} e
+      *
+      * @return {*}
+      */
+      onDate (e) {
+        // set birthday
+        const birthday = new Date();
+
+        // set year
+        birthday.setYear(jQuery($('[ref="year"]')[0]).val());
+        birthday.setMonth(this.months.map((item) => item.toLowerCase()).indexOf(jQuery($('[ref="month"]')[0]).val().toLowerCase()));
+        birthday.setDate(jQuery($('[ref="day"]')[0]).val());
+
+        // set value
+        this.value = birthday.toISOString();
+
+        // set target
+        let faux = Object.assign({}, e);
+
+        // set value
+        $('[ref="date"]')[0].value = this.value;
+
+        // set target
+        faux.target = $('[ref="date"]')[0];
+
+        // set change
+        this.onChange(faux);
+      }
+    }
+  </script>
+</validate>
