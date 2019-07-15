@@ -1,0 +1,80 @@
+<chart>
+  <canvas class={ `chart chart-${props.type}` } ref="chart" />
+
+  <script>
+    // import base
+    import Base from '../js/base';
+
+    // export default
+    export default class Chart extends Base {
+      /**
+       * on before mount
+       *
+       * @param {Object} props
+       */
+      onBeforeMount(props) {
+        // run super
+        super.onBeforeMount(...arguments);
+
+        // set c to false
+        this.built = false;
+
+        // draw chart
+        if (props.type && props.data && props.size && props.size.width) this.drawChart();
+      }
+
+      /**
+       * on before mount
+       *
+       * @param {Object} props
+       */
+      onBeforeUpdate(props) {
+        // run super
+        super.onBeforeUpdate(...arguments);
+
+        // draw chart
+        if (props.type && props.data && props.size && props.size.width) this.drawChart();
+      }
+
+      /**
+       * draw chart function
+       */
+      drawChart () {
+        // set c
+        if (this.build) this.build.destroy();
+
+        // set width/height
+        jQuery(this.refs.chart).attr('width', (props.size || {}).width);
+        jQuery(this.refs.chart).attr('height', (props.size || {}).height);
+
+        // set chart
+        let ctx = $('[ref="chart"]')[0].getContext('2d');
+        
+        // require chart
+        const Chart = require('chart.js');
+
+        // set chart
+        this.build = new Chart(ctx, {
+          'type'    : props.type,
+          'data'    : props.data,
+          'options' : props.options
+        });
+      }
+
+      /**
+       * should update
+       *
+       * @param  {*} data
+       *
+       * @return {Boolean}
+       */
+      shouldUpdate (data) {
+        // check jQuery
+        if (!this.built) return true;
+
+        // return built
+        return false;
+      }
+    }
+  </script>
+</chart>
