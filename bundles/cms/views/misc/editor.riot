@@ -24,23 +24,17 @@
         this.value = props.content;
         this.summernote = false;
 
-        // set inner html
-        $('[ref="editor"]')[0].innerHTML = this.props.content;
-
-        // init summernote
-        this._summernote();
-
         /**
         * on change function
         *
         * @param {Event} 'change'
         */
-        this.on('change', () => {
+        this.on('change', (val) => {
           // check if frontend
           if (!this.eden.frontend) return;
 
           // set value
-          this.value = jQuery('.note-codable', this.root).is(':visible') ? jQuery('.note-codable', this.root).val() : jQuery($('[ref="editor"]')[0]).summernote('code');
+          this.value = val;
 
           // on update
           if (this.props.onUpdate) {
@@ -49,8 +43,19 @@
           }
 
           // set value
-          jQuery($('[ref="editor"]')[0]).val(jQuery($('[ref="editor"]')[0]).summernote('code'));
+          jQuery(this.$('[ref="editor"]')).val(this.value);
         });
+      }
+      
+      /**
+       * on mounted
+       */
+      onMounted() {
+        // set inner html
+        this.$('[ref="editor"]').innerHTML = this.props.content;
+
+        // init summernote
+        this._summernote();
       }
 
       /**
@@ -61,7 +66,7 @@
         if (!this.eden.frontend) return;
 
         // destroy summernote
-        jQuery($('[ref="editor"]')[0]).summernote('destroy');
+        jQuery(this.$('[ref="editor"]')).summernote('destroy');
       }
 
       /**
@@ -115,7 +120,7 @@
               let fileHTML = jQuery('<a target="_BLANK" href="#uploading" data-id="' + value.temp + '">' + value.name + '</a>');
 
               // insert image
-              let insert = jQuery($('[ref="editor"]')[0]).summernote('insertNode', fileHTML[0]);
+              let insert = jQuery(this.$('[ref="editor"]')).summernote('insertNode', fileHTML[0]);
             } else {
               // create figure
               let imageHTML   = jQuery('<img src="' + value.src + '" data-id="' + value.temp + '" class="img-resize img-fluid img-grayscale" />');
@@ -127,7 +132,7 @@
               captionHTML.appendTo(figureHTML);
 
               // insert image
-              let insert = jQuery($('[ref="editor"]')[0]).summernote('insertNode', figureHTML[0]);
+              let insert = jQuery(this.$('[ref="editor"]')).summernote('insertNode', figureHTML[0]);
             }
 
             // do upload
@@ -215,8 +220,11 @@
                 if (i && i.length) i.remove();
               }
 
+              // get value
+              const val = jQuery(this.$('.note-codable')).is(':visible') ? jQuery(this.$('.note-codable')).val() : jQuery(this.$('[ref="editor"]')).summernote('code');
+
               // do update
-              this.trigger('change');
+              this.emit('change', val);
             }
           },
           'dataType'    : 'json',
@@ -251,7 +259,7 @@
         };
 
         // insert image
-        let insert = jQuery($('[ref="editor"]')[0]).summernote('insertNode', jQuery('<a href="#uploading" target="_blank" data-id="' + id + '">' + e.target.files[0].name + ' <i>Uploading...</i></a>')[0]);
+        let insert = jQuery(this.$('[ref="editor"]')).summernote('insertNode', jQuery('<a href="#uploading" target="_blank" data-id="' + id + '">' + e.target.files[0].name + ' <i>Uploading...</i></a>')[0]);
 
         // do upload
         this._ajaxUpload(value, 'file');
@@ -277,7 +285,7 @@
       */
       val () {
         // return value
-        return jQuery($('[ref="editor"]')[0]).summernote('code');
+        return jQuery(this.$('[ref="editor"]')).summernote('code');
       }
 
       /**
@@ -344,19 +352,25 @@
         ];
 
         // run summernote
-        this.summernote = jQuery($('[ref="editor"]')[0]).summernote({
-          'focus'     : false,
-          'icons'     : icons,
-          'toolbar'   : toolbar,
-          'airMode'   : !!this.props.airMode,
-          'onChange'  : () => {
+        this.summernote = jQuery(this.$('[ref="editor"]')).summernote({
+          'focus'    : false,
+          'icons'    : icons,
+          'toolbar'  : toolbar,
+          'airMode'  : !!this.props.airMode,
+          'onChange' : () => {
+            // get value
+            const val = jQuery(this.$('.note-codable')).is(':visible') ? jQuery(this.$('.note-codable')).val() : jQuery(this.$('[ref="editor"]')).summernote('code');
+
             // trigger change
-            this.trigger('change');
+            this.emit('change', val);
           },
           'callbacks' : {
             'onBlur' : () => {
+              // get value
+              const val = jQuery(this.$('.note-codable')).is(':visible') ? jQuery(this.$('.note-codable')).val() : jQuery(this.$('[ref="editor"]')).summernote('code');
+
               // trigger change
-              this.trigger('change');
+              this.emit('change', val);
             },
             'onImageUpload' : this._image
           },
@@ -368,9 +382,12 @@
         });
 
         // trigger change on keyup
-        jQuery('.note-codable', this.root).on('keyup', () => {
+        jQuery(this.$('.note-codable')).on('keyup', () => {
+          // get value
+          const val = jQuery(this.$('.note-codable')).is(':visible') ? jQuery(this.$('.note-codable')).val() : jQuery(this.$('[ref="editor"]')).summernote('code');
+
           // trigger change on keyup
-          this.trigger('change');
+          this.emit('change', val);
         });
 
         // remove toolbar

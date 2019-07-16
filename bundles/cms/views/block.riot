@@ -30,50 +30,52 @@
     <slot name="body" />
   </div>
 
-  <div class="eden-blocks-backdrop" if={ showing } onclick={ (e) => ohHideSidebar(e) } />
-
-  <div class={ classes({ 'eden-blocks-sidebar' : true, 'eden-blocks-sidebar-show' : sidebar.update }) } ref="update" if={ showing && eden.get('user.acl.validate')('admin') && !props.preview }>
-    <div class="card">
-      <div class="card-header">
-        <h5 class="m-0">
-          Update Block
-        </h5>
-      </div>
-      <div class="card-body">
-        <div class="form-group">
-          <label>
-            Block Class
-          </label>
-          <input class="form-control" ref="class" value={ props.block.class } onchange={ (e) => onClass(e) } />
+  <div class={ classes({ 'd-none' : !(showing && eden.get('user.acl.validate')('admin') && !props.preview) }) }>
+    <div class="eden-blocks-backdrop" onclick={ (e) => ohHideSidebar(e) } />
+    
+    <div class={ classes({ 'eden-blocks-sidebar' : true, 'eden-blocks-sidebar-show' : get('sidebar.update') }) }>
+      <div class="card">
+        <div class="card-header">
+          <h5 class="m-0">
+            Update Block
+          </h5>
         </div>
-        <slot name="modal" />
-        <slot name="options" />
-      </div>
-      <div class="card-footer">
-        <button class={ classes({ 'btn btn-secondary float-right' : true, 'disabled' : removing }) } onclick={ (e) => ohHideSidebar(e) }>
-          Close
-        </button>
+        <div class="card-body">
+          <div class="form-group">
+            <label>
+              Block Class
+            </label>
+            <input class="form-control" ref="class" value={ props.block.class || '' } onchange={ (e) => onClass(e) } />
+          </div>
+          <slot name="modal" />
+          <slot name="options" />
+        </div>
+        <div class="card-footer">
+          <button class={ classes({ 'btn btn-secondary float-right' : true, 'disabled' : removing }) } onclick={ (e) => ohHideSidebar(e) }>
+            Close
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-
-  <div class={ classes({ 'eden-blocks-sidebar' : true, 'eden-blocks-sidebar-show' : sidebar.remove }) } ref="remove" if={ showing && eden.get('user.acl.validate')('admin') && !props.preview }>
-    <div class="card">
-      <div class="card-header">
-        <h5 class="m-0">
-          Remove Block
-        </h5>
-      </div>
-      <div class="card-body">
-        Are you sure you want to remove this block?
-      </div>
-      <div class="card-footer">
-        <button class={ classes({ 'btn btn-danger' : true, 'disabled' : removing }) } onclick={ (e) => onRemove(e) } disabled={ removing }>
-          { removing ? 'Removing...' : 'Remove' }
-        </button>
-        <button class={ classes({ 'btn btn-secondary float-right' : true, 'disabled' : removing }) } onclick={ (e) => ohHideSidebar(e) }>
-          Close
-        </button>
+    
+    <div class={ classes({ 'eden-blocks-sidebar' : true, 'eden-blocks-sidebar-show' : get('sidebar.remove') }) }>
+      <div class="card">
+        <div class="card-header">
+          <h5 class="m-0">
+            Remove Block
+          </h5>
+        </div>
+        <div class="card-body">
+          Are you sure you want to remove this block?
+        </div>
+        <div class="card-footer">
+          <button class={ classes({ 'btn btn-danger' : true, 'disabled' : removing }) } onclick={ (e) => onRemove(e) } disabled={ removing }>
+            { removing ? 'Removing...' : 'Remove' }
+          </button>
+          <button class={ classes({ 'btn btn-secondary float-right' : true, 'disabled' : removing }) } onclick={ (e) => ohHideSidebar(e) }>
+            Close
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -93,9 +95,6 @@
       onBeforeMount(props) {
         // run super
         super.onBeforeMount(...arguments);
-
-        // set variables
-        this.sidebar = {};
       }
 
       /**
@@ -111,12 +110,12 @@
         if (!this.eden.frontend) return;
 
         // remove editing
-        if (!this.showing && !this.sidebar.update && (props.editing === props.block.uuid)) {
+        if (!this.showing && !this.get('sidebar.update') && (this.props.editing === this.props.block.uuid)) {
           // set editing
-          props.block.editing = false;
+          this.props.block.editing = false;
 
           // set false
-          props.onEditing(false);
+          this.props.onEditing(false);
         }
       }
 
@@ -132,17 +131,20 @@
 
         // set class
         this.showing = true;
+
+        // update view
+        this.update();
         
         // set editing
-        props.onEditing(props.block);
+        this.props.onEditing(this.props.block);
 
         // update view
-        this.update();
-        this.sidebar.update = true;
-        this.sidebar.remove = false;
-
-        // update view
-        this.update();
+        this.update({
+          sidebar : {
+            update : true,
+            remove : false,
+          }
+        });
       }
 
       /**
@@ -160,11 +162,14 @@
 
         // update view
         this.update();
-        this.sidebar.remove = true;
-        this.sidebar.update = false;
 
         // update view
-        this.update();
+        this.update({
+          sidebar : {
+            update : false,
+            remove : true,
+          }
+        });
       }
 
       /**
@@ -182,11 +187,14 @@
 
         // update view
         this.update();
-        this.sidebar.update = false;
-        this.sidebar.remove = false;
 
         // update view
-        this.update();
+        this.update({
+          sidebar : {
+            update : false,
+            remove : false,
+          }
+        });
       }
 
       /**
@@ -200,10 +208,10 @@
         e.stopPropagation();
 
         // set class
-        props.block.class = e.target.value.length ? e.target.value : null;
+        this.props.block.class = e.target.value.length ? e.target.value : null;
 
         // run opts
-        if (props.onSave) await props.onSave(props.block, props.data, props.placement);
+        if (this.props.onSave) await this.props.onSave(this.props.block, this.props.data, this.props.placement);
       }
 
       /**
@@ -219,7 +227,7 @@
         this.update();
 
         // run opts
-        if (props.onRemove) await props.onRemove(props.block, props.data, props.placement);
+        if (this.props.onRemove) await this.props.onRemove(this.props.block, this.props.data, this.props.placement);
 
         // set refreshing
         this.removing = false;

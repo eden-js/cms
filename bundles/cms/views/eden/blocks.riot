@@ -1,0 +1,852 @@
+<eden-blocks>
+  <div class="eden-blocks">
+
+    <div class={ classes({ 'eden-dropzone' : !preview, 'empty' : !getBlocks().length }) } ref="placement" data-placement="" if={ !updating }>
+      <span class="eden-dropzone-label" if={ !preview }>
+        { position }
+      </span>
+      <eden-add type="top" onclick={ (e) => onAddBlock(e) } way="unshift" if={ !preview } />
+      <div each={ (el, i) in getBlocks() } editing={ editing } is={ getIs(el) } preview={ preview } el={ el } class={ el.class } data-block={ el.uuid } data={ getData(el) } block={ el } get-data={ getData } on-editing={ onEditing } on-add-block={ onAddBlock } on-save={ onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ onRefreshBlock } { ...attributes } placement={ i } i={ i } />
+      <eden-add type="bottom" onclick={ (e) => onAddBlock(e) } way="push" if={ !preview } />
+
+      <button class="btn btn-sm btn-secondary eden-dropzone-preview" if={ eden.get('user.acl.validate')('admin') } onclick={ (e) => onPreview(e) }>
+        <i class="fa fa-eye" />
+      </button>
+    </div>
+  </div>
+
+  <block-sidebar ref={ ref('sidebar') } blocks={ props.blocks } add-block={ onSetBlock } />
+
+  <script>
+    // import base class
+    import qs from 'querystring';
+    import Base from '../js/base';
+    import uuid from 'uuid';
+    import dotProp from 'dot-prop';
+
+    // export default class
+    export default class EdenBlocks extends Base {
+
+      // ////////////////////////////////////////////////////////////////////////////
+      //
+      // Riot Methods
+      //
+      // ////////////////////////////////////////////////////////////////////////////
+
+      /**
+       * on before mount
+       *
+       * @param {Object} props
+       * @param {Object} state
+       */
+      onBeforeMount(props, state) {
+        // on before mount
+        super.onBeforeMount(...arguments);
+
+        // set filter blocks
+        this.filter = {
+          fix     : this.filterFix.bind(this),
+          place   : this.filterPlace.bind(this),
+          flatten : this.filterFlatten.bind(this),
+          replace : this.filterReplace.bind(this),
+        };
+
+        // bind methods
+        this.getData = this.getData.bind(this);
+        this.onEditing = this.onEditing.bind(this);
+        this.onSetBlock = this.onSetBlock.bind(this);
+        this.onAddBlock = this.onAddBlock.bind(this);
+        this.onSaveBlock = this.onSaveBlock.bind(this);
+
+        // set update
+        this.render    = (props.placement || {}).render || [];
+        this.editing   = null;
+        this.preview   = !!(!this.eden.get('user.acl.validate')('admin') || props.preview);
+        this.updating  = false;
+        this.position  = props.position;
+        this.placement = props.placement ? (props.model ? this.parent.placement : this.eden.get('model.get')('placement', props.placement.id, props.placement)) : this.eden.get('model.get')('placement', null, {
+          'position' : props.position
+        });
+
+        // attributes
+        this.attributes = {
+          preview : this.preview,
+        };
+
+        // set refs
+        this.refs.placement = this.$('[ref="placement"]');
+      }
+
+      /**
+       * on updated
+       */
+      onUpdated(props, state) {
+        // set props/state
+        this.props = props;
+        this.state = state;
+
+        // has change
+        if (this.hasChange()) {
+          // on before mount
+          this.onBeforeMount(props, state);
+
+          // update
+          this.update();
+        }
+
+        // set containers
+        this.dragula.containers = jQuery('.eden-dropzone', this.refs.placement).toArray();
+      }
+
+      /**
+       * on mounted
+       */
+      onMounted() {
+        // check frontend
+        if (!this.eden.frontend) return;
+
+        // init dragula
+        if (!this.dragula && this.eden.get('user.acl.validate')('admin')) this.initDragula();
+
+        // set default placements
+        if (this.props.placements && !(this.placement.get('placements') || []).length && !this.placement.get('id')) {
+          // set default
+          this.placement.set('placements', this.props.placements);
+          this.placement.set('fields', (this.placement.get('placements') || []).reduce(this.filter.flatten, []));
+
+          // save fields
+          this.savePlacement();
+        }
+
+        // check fields
+        if (this.shouldLoad()) {
+          // load fields
+          this.loadBlocks();
+        }
+      }
+
+      // ////////////////////////////////////////////////////////////////////////////
+      //
+      // Get Methods
+      //
+      // ////////////////////////////////////////////////////////////////////////////
+
+
+      /**
+       * get blocks
+       *
+       * @return {Array}
+       */
+      getBlocks () {
+        // return filtered blocks
+        return (this.placement.get('positions') || []).map(this.filter.fix).filter((block) => block);
+      }
+
+      /**
+       * get block data
+       *
+       * @param  {Object} block
+       *
+       * @return {*}
+       */
+      getData (block) {
+        // return on no block
+        if (!block) return;
+
+        // get found
+        let found = this.render.find((b) => b.uuid === block.uuid);
+
+        // gets data for block
+        if (!found) return null;
+
+        // return found
+        return found;
+      }
+
+      /**
+       * get element
+       *
+       * @param  {Object} child
+       *
+       * @return {*}
+       */
+      getIs (child) {
+        // return get child
+        return (this.getData(child) || {}).tag ? 'block-' + (this.getData(child) || {}).tag : 'eden-loading';
+      }
+
+      // ////////////////////////////////////////////////////////////////////////////
+      //
+      // Event Methods
+      //
+      // ////////////////////////////////////////////////////////////////////////////
+
+      /**
+       * on add block
+       *
+       * @param  {Event} e
+       *
+       * @return {*}
+       */
+      onPreview(e) {
+        // prevent
+        e.preventDefault();
+        e.stopPropagation();
+
+        // set preview
+        this.preview = !this.preview;
+
+        // full update
+        this.update();
+      }
+
+      /**
+       * on add block
+       *
+       * @param  {Event} e
+       *
+       * @return {*}
+       */
+      onAddBlock (e) {
+        // prevent
+        e.preventDefault();
+        e.stopPropagation();
+
+        // get target
+        let target = !jQuery(e.target).is('eden-add') ? jQuery(e.target).closest('eden-add') : jQuery(e.target);
+
+        // way
+        this.way      = target.attr('way');
+        this.blockPos = target.attr('placement') || '';
+        
+        // open modal
+        this.refs.sidebar.show();
+      }
+
+      /**
+       * on refresh block
+       *
+       * @param  {Event}  e
+       * @param  {Object} block
+       */
+      async onSaveBlock (block, data, placement, preventUpdate) {
+        // clone
+        const blockClone = Object.assign({}, block);
+          
+        // reset modal
+        jQuery('body').removeAttr('style').removeClass('modal-open');
+
+        // prevent update check
+        if (!preventUpdate) {
+          // set loading
+          block.saving = true;
+
+          // update view
+          this.update();
+        }
+        
+        // delete editing
+        delete block.saving;
+        delete blockClone.saving;
+
+        // log data
+        const res = await fetch('/placement/' + this.placement.get('id') + '/block/save', {
+          'body' : JSON.stringify({
+            'data'  : data,
+            'block' : blockClone
+          }),
+          'method'  : 'post',
+          'headers' : {
+            'Content-Type' : 'application/json'
+          },
+          'credentials' : 'same-origin'
+        });
+
+        // load data
+        const result = await res.json();
+
+        // set logic
+        for (let key in result.result) {
+          // clone to placement
+          data[key] = result.result[key];
+        }
+
+        // set to blocks
+        if (!this.render.find((b) => b.uuid === data.uuid)) this.render.push(data);
+
+        // set flat
+        this.placement.set('positions', (this.placement.get('positions') || []).map(this.filter.replace(blockClone)));
+        this.placement.set('elements', (this.placement.get('positions') || []).reduce(this.filter.flatten, []));
+
+        // save placement
+        await this.savePlacement(preventUpdate);
+
+        // check prevent update
+        if (!preventUpdate) {
+          // set loading
+          delete blockClone.saving;
+
+          // update view
+          this.update();
+        }
+      }
+
+      /**
+       * on refresh block
+       *
+       * @param  {Event}  e
+       * @param  {Object} block
+       */
+      async onRefreshBlock (block, data) {
+        // set loading
+        block.refreshing = true;
+
+        // update view
+        this.update();
+
+        // log data
+        let res = await fetch('/placement/' + this.placement.get('id') + '/block/save', {
+          'body' : JSON.stringify({
+            'data'  : data,
+            'block' : block
+          }),
+          'method'  : 'post',
+          'headers' : {
+            'Content-Type' : 'application/json'
+          },
+          'credentials' : 'same-origin'
+        });
+
+        // load data
+        let result = await res.json();
+
+        // set logic
+        for (let key in result.result) {
+          // clone to placement
+          data[key] = result.result[key];
+        }
+
+        // set loading
+        delete block.refreshing;
+
+        // update view
+        this.update();
+      }
+
+      /**
+       * on refresh block
+       *
+       * @param  {Event}  e
+       * @param  {Object} block
+       */
+      async onRemoveBlock (block, data, placement) {
+        // set loading
+        block.removing = true;
+
+        // update view
+        this.update();
+
+        // log data
+        let res = await fetch('/placement/' + this.placement.get('id') + '/block/remove', {
+          'body' : JSON.stringify({
+            'data'  : data,
+            'block' : block
+          }),
+          'method'  : 'post',
+          'headers' : {
+            'Content-Type' : 'application/json'
+          },
+          'credentials' : 'same-origin'
+        });
+
+        // load data
+        let result = await res.json();
+
+        // get positions
+        let positions = (this.placement.get('positions') || []).map(this.filter.fix).filter((block) => block);
+
+        // set moving on block
+        positions = dotProp.set(positions, placement + '.removing', true);
+
+        // get positions
+        this.placement.set('positions', positions.map(this.filter.place).filter((block) => block));
+        this.placement.set('elements', (this.placement.get('positions') || []).reduce(this.filter.flatten, []));
+
+        // save placement
+        await this.savePlacement();
+      }
+
+      /**
+       * adds block by type
+       *
+       * @param  {String} type
+       *
+       * @return {*}
+       */
+      async onSetBlock (type) {
+        console.log(type, this.blockPos);
+        // create block
+        let block = {
+          'uuid' : uuid(),
+          'type' : type
+        };
+
+        // check positions
+        if (!this.placement.get('positions')) this.placement.set('positions', []);
+
+        // get from position
+        let pos = (this.blockPos || '').length ? dotProp.get(this.placement.get('positions'), this.blockPos) : this.placement.get('positions');
+
+        // force pos to exist
+        if (!pos && (this.blockPos || '').length) {
+          // set pos
+          pos = [];
+
+          // set
+          this.placement.set('positions', dotProp.set(this.placement.get('positions'), this.blockPos, pos));
+        }
+
+        // do thing
+        pos[this.way](block);
+
+        // set flat
+        this.placement.set('elements', (this.placement.get('positions') || []).reduce(this.filter.flatten, []));
+
+        // save placement
+        await this.onSaveBlock(block, {});
+
+        // update view
+        this.update();
+      }
+      
+      /**
+       * set editing
+       *
+       * @param  {Object} block
+       */
+      onEditing(block) {
+        // set editing
+        this.editing = block ? block.uuid : null;
+      }
+
+      // ////////////////////////////////////////////////////////////////////////////
+      //
+      // Init Methods
+      //
+      // ////////////////////////////////////////////////////////////////////////////
+
+      /**
+       * init dragula
+       */
+      initDragula () {
+        // require dragula
+        const dragula = require('dragula');
+
+        // do dragula
+        this.dragula = dragula(jQuery('.eden-dropzone', this.refs.placement).toArray(), {
+          'moves' : (el, container, handle) => {
+            return (jQuery(el).is('[data-block]') || jQuery(el).closest('[data-block]').length) && (jQuery(handle).is('.move') || jQuery(handle).closest('.move').length) && (jQuery(handle).is('.move') ? jQuery(handle) : jQuery(handle).closest('.move')).attr('for') === jQuery(el).attr('data-block');
+          }
+        }).on('drop', (el, target, source, sibling) => {
+          // get current placement
+          let placement = jQuery(el).attr('placement');
+
+          // check target
+          if (!target || !source || !el) return;
+
+          // get blocks of target
+          let blocks = [];
+
+          // get positions
+          let positions = (this.placement.get('positions') || []).map(this.filter.fix).filter((block) => block);
+
+          // set moving on block
+          positions = dotProp.set(positions, placement + '.moving', true);
+
+          // loop physical blocks
+          jQuery('> [data-block]', target).each((i, block) => {
+            // set get from
+            let getFrom = jQuery(block).attr('placement');
+            let gotBlock = dotProp.get(positions, getFrom);
+
+            // return on no block
+            if (!gotBlock) return;
+
+            // clone block
+            if (getFrom === placement) {
+              // clone block
+              gotBlock = JSON.parse(JSON.stringify(gotBlock));
+
+              // delete placing
+              if (gotBlock.moving) delete gotBlock.moving;
+            }
+
+            // get actual block
+            blocks.push(gotBlock);
+          });
+
+          // remove logic
+          this.updating = true;
+          this.update();
+
+          // set placement
+          if (jQuery(target).attr('data-placement').length) {
+            // set positions
+            positions = dotProp.set(positions, jQuery(target).attr('data-placement'), blocks);
+          } else {
+            // set positions
+            positions = blocks;
+          }
+
+          // get positions
+          positions = (positions || []).map(this.filter.place).filter((block) => block);
+
+          // update placement
+          this.placement.set('positions', positions);
+
+          // remove logic
+          this.updating = false;
+          this.update();
+
+          // save
+          this.savePlacement();
+        }).on('drag', (el, source) => {
+          // add is dragging
+          jQuery(this.refs.placement).addClass('is-dragging');
+        }).on('dragend', () => {
+          // remove is dragging
+          jQuery(this.refs.placement).removeClass('is-dragging');
+        }).on('over', function (el, container) {
+          // add class
+          jQuery(container).addClass('eden-block-over');
+        }).on('out', function (el, container) {
+          // remove class
+          jQuery(container).removeClass('eden-block-over');
+        });
+      }
+
+      // ////////////////////////////////////////////////////////////////////////////
+      //
+      // Helper Methods
+      //
+      // ////////////////////////////////////////////////////////////////////////////
+
+      /**
+       * returns true if position changed
+       *
+       * @return {Boolean}
+       */
+      hasChange() {
+        // check matched type
+        if (this.props.position !== this.position) {
+          // type does not match
+          return true;
+        }
+
+        // check matched type
+        if (!!(!this.eden.get('user.acl.validate')('admin') || this.props.preview) !== this.preview) {
+          // type does not match
+          return true;
+        }
+
+        // check matched model
+        if (!this.props.model && this.placementID !== this.placement.get('id')) {
+          // set placement id
+          this.placementID = (this.props.placement || {}).id || this.placement.get('id');
+
+          // placement id does not match
+          return true;
+        }
+
+        // return false
+        return false;
+      }
+
+      /**
+       * returns true if should load
+       *
+       * @return {Boolean}
+       */
+      shouldLoad() {
+        // check matched blocks length
+        if ((this.placement.get('render') || []).length !== this.render.length) {
+          // field lengths do not match
+          return true;
+        }
+
+        // check if empty placement
+        if (!(this.placement.get('render') || []).length && !(this.eden.get('positions') || {})[this.placement.get('id')]) {
+          // field lengths do not match
+          return true;
+        }
+
+        // return false
+        return false;
+      }
+
+      /**
+       * saves placement
+       *
+       * @param {Boolean} preventRefresh
+       *
+       * @return {Promise}
+       */
+      async savePlacement (preventRefresh) {
+        // set loading
+        this.loading('save', true);
+
+        // update view
+        this.update();
+
+        // check type
+        if (!this.placement.type) this.placement.set('position', this.props.position);
+
+        // log data
+        let res = await fetch('/placement/' + (this.placement.get('id') ? this.placement.get('id') + '/update' : 'create'), {
+          'body'    : JSON.stringify(this.placement.get()),
+          'method'  : 'post',
+          'headers' : {
+            'Content-Type' : 'application/json'
+          },
+          'credentials' : 'same-origin'
+        });
+
+        // load data
+        let data = await res.json();
+
+        // set logic
+        for (let key in data.result) {
+          // clone to placement
+          this.placement.set(key, data.result[key]);
+
+          // set in opts
+          if (data.result[key] && !this.props.model) this.props.placement[key] = data.result[key];
+        }
+        
+        // set blocks
+        this.render = this.placement.get('render') || [];
+
+        // set in eden
+        window.eden.placements[this.placement.get('id')] = data.result;
+
+        // on save
+        if (this.props.onSave) this.props.onSave(this.placement);
+
+        // set loading
+        this.loading('save', false);
+
+        // update normally
+        this.update();
+      }
+
+      /**
+       * loads placement blocks
+       *
+       * @param  {Object} opts
+       *
+       * @return {Promise}
+       */
+      async loadBlocks (opts) {
+        // return on already loading
+        if (this.loading('blocks')) return;
+
+        // try/catch
+        try {
+          // set opts
+          if (!opts) opts = {};
+
+          // set opts
+          opts = qs.stringify(opts);
+
+          // set loading
+          this.loading('blocks', true);
+
+          // update view
+          this.update();
+
+          // log data
+          let res = await fetch((this.placement.get('id') ? ('/placement/' + this.placement.get('id') + '/view') : ('/placement/' + this.placement.get('position') + '/position')) + (opts.length ? '?' + opts : ''), {
+            'method'  : 'get',
+            'headers' : {
+              'Content-Type' : 'application/json'
+            },
+            'credentials' : 'same-origin'
+          });
+
+          // load data
+          let data = await res.json();
+
+          // set in eden
+          if (data.result) {
+            // set in eden
+            if (data.result.position) window.eden.placements[data.result.position] = data.result;
+
+            // set key
+            this.placement = this.model('placement', data.result);
+
+            // set loading
+            this.loading('blocks', false);
+
+            // get blocks
+            this.render = this.placement.get('render') || [];
+
+            // update view
+            this.helper.update();
+          }
+        } catch (e) {
+          // set loading
+          this.loading('blocks', false);
+        }
+      }
+
+      // ////////////////////////////////////////////////////////////////////////////
+      //
+      // Filter Methods
+      //
+      // ////////////////////////////////////////////////////////////////////////////
+
+      /**
+       * filter fix
+       *
+       * @param  {Object} field
+       *
+       * @return {Object}
+       */
+      filterFix(field) {
+        // standard children blocks
+        const children = ['left', 'right', 'children'];
+
+        // return if moving
+        if (!field) return null;
+
+        // check children
+        for (const child of children) {
+          // check child
+          if (field[child]) {
+            // remove empty blocks
+            field[child] = Object.values(field[child]).filter(f => f);
+
+            // push children to flat
+            field[child] = field[child].map(this.filter.fix);
+          }
+        }
+
+        // return accum
+        return field;
+      }
+
+      /**
+       * filter field
+       *
+       * @param  {Object} field
+       *
+       * @returns {Object}
+       */
+      filterPlace(field) {
+        // standard children blocks
+        const children = ['left', 'right', 'children'];
+
+        // return if moving
+        if (field.moving || field.removing) return null;
+
+        // check children
+        for (const child of children) {
+          // check child
+          if (field[child]) {
+            // remove empty blocks
+            field[child] = Object.values(field[child]);
+
+            // push children to flat
+            field[child] = field[child].map(this.filter.place).filter(f => f);
+          }
+        }
+
+        // return accum
+        return field;
+      }
+
+      /**
+       * filter flatten
+       *
+       * @param  {Array}  accum
+       * @param  {Object} field
+       *
+       * @returns {Array}
+       */
+      filterFlatten(accum, field) {
+        // standard children blocks
+        const children = ['left', 'right', 'children'];
+
+        // get sanitised
+        const sanitised = JSON.parse(JSON.stringify(field));
+
+        // loop for of
+        for (const child of children) {
+          // delete child field
+          delete sanitised[child];
+          delete sanitised.saving;
+        }
+
+        // check field has children
+        accum.push(sanitised);
+
+        // check children
+        for (const child of children) {
+          // check child
+          if (field[child]) {
+            // remove empty blocks
+            field[child] = field[child].filter(f => f);
+
+            // push children to flat
+            accum.push(...field[child].reduce(this.filter.flatten, []));
+          }
+        }
+
+        // return accum
+        return accum;
+      }
+
+      /**
+       * filter replace
+       *
+       * @param  {Field} b
+       *
+       * @returns {*}
+       */
+      filterReplace(b) {
+        // return field
+        return (field) => {
+          // standard children blocks
+          const children = ['left', 'right', 'children'];
+
+          // return if moving
+          if (field.moving || field.removing) return null;
+
+          // set field info for replace
+          if (field.uuid === b.uuid) {
+            // remove
+            Object.keys(b).forEach((key) => {
+              // set key
+              field[key] = b[key];
+            });
+          }
+
+          // check children
+          for (const child of children) {
+            // check child
+            if (field[child]) {
+              // remove empty blocks
+              field[child] = Object.values(field[child]);
+
+              // push children to flat
+              field[child] = field[child].map(this.filter.replace(b)).filter(f => f);
+            }
+          }
+
+          // return accum
+          return field;
+        };
+      }
+    }
+  </script>
+</eden-blocks>

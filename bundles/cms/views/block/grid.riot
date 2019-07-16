@@ -1,0 +1,51 @@
+<block-grid>
+  <block ref="block" class="block-grid" { ...props }>
+
+    <div slot="buttons">
+      <button class="btn btn-sm btn-secondary" onclick={ onSaveGrid }>
+        <i class="fa fa-save" />
+      </button>
+    </div>
+
+    <div class="card-body" slot="body">
+      <grid ref="grid" grid={ props.data.grid } table-class="table table-bordered table-striped" title={ props.data.title || props.block.title } on-state={ onGridState } />
+    </div>
+  </block>
+
+  <script>
+    // require dependencies
+    import Base from '../js/base';
+  
+    // export default
+    export default class BlockGrid extends Base {
+      /**
+       * on grid state
+       *
+       * @param  {Object} state
+       */
+      async onGridState(state) {
+        // set name
+        this.currentState = state;
+      }
+      
+      /**
+       * on save grid state
+       *
+       * @param  {Event}  e
+       *
+       * @return {Promise}
+       */
+      async onSaveGrid(e) {
+        // prevent default
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // set name
+        this.props.data.state = this.currentState;
+
+        // do update
+        await this.props.onSave(this.props.block, this.props.data, true);
+      }
+    }
+  </script>
+</block-grid>

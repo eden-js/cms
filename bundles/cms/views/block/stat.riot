@@ -1,0 +1,177 @@
+<block-stat>
+  <block ref={ ref('block') } class="block-stat" chart={ this.chart } options={ this.options } size={ this.size } { ...props }>
+    <div slot="modal">
+      <div class="form-group">
+        <label>
+          Block Color
+        </label>
+        <input class="form-control" ref="color" value={ props.block.color || 'primary' } onchange={ (e) => onColor(e) } />
+      </div>
+    </div>
+
+    <div slot="body">
+      <div class={ `card mb-3 bg-${props.block.color || 'primary'}` }>
+
+        <a class="card-body text-white" href={ props.data.href }>
+          <div class="row">
+            <div class="col-6">
+              <h3>
+                { props.data.total }
+              </h3>
+              { props.data.titles.total }
+            </div>
+            <div class="col-6 text-right">
+              <h3>
+                { props.data.today }
+              </h3>
+              { props.data.titles.today }
+            </div>
+          </div>
+
+          <div class="chart-wrapper" ref="chart">
+            <chart type="line" class="d-block" data={ props.chart.line } options={ props.options.line } size={ props.size } if={ eden.frontend && props.size.width } style={ props.size } />
+          </div>
+
+        </a>
+      </div>
+    </div>
+  </block>
+
+  <script>
+    // import base
+    import Base from '../js/base';
+
+    // export default
+    export default class BlockStat extends Base {
+
+      /**
+       * on before mount
+       *
+       * @param {Object} props
+       */
+      onBeforeMount(props) {
+
+        // set variables
+        this.size     = {};
+        this.loading  = {};
+        this.updating = {};
+
+        // set options
+        this.options = {
+          'line' : {
+            'maintainAspectRatio' : false,
+            'legend' : {
+              'display' : false
+            },
+            'scales' : {
+              'xAxes' : [
+                {
+                  'points'  : false,
+                  'display' : false,
+                }
+              ],
+              'yAxes' : [
+                {
+                  'display' : false,
+                }
+              ]
+            },
+            'elements' : {
+              'point' : {
+                'radius' : 0
+              }
+            }
+          }
+        };
+
+        // create days
+        let end   = props.end ? new Date(props.data.end) : new Date();
+        let days  = [];
+        let start = props.start ? new Date(props.data.start) : new Date();
+            start.setHours(24,0,0,0);
+            
+        if (!props.data.start) start.setDate(start.getDate() - 14);
+
+        // set current
+        let current = new Date(start);
+
+        // loop for deposits
+        while (current <= end) {
+          // set next
+          let next = new Date(current);
+              next.setDate(next.getDate() + 1);
+
+          // add date
+          days.push(current.toLocaleDateString('en-GB', {
+            'day'   : 'numeric',
+            'month' : 'short',
+            'year'  : 'numeric'
+          }));
+
+          // set next
+          current = next;
+        }
+
+        // set values
+        this.chart = {
+          'line' : {
+            'labels'   : days,
+            'datasets' : [
+              {
+                'data'            : props.data.totals,
+                'borderColor'     : 'rgba(255,255,255,.55)',
+                'borderWidth'     : 2,
+                'backgroundColor' : 'transparent',
+              },
+            ]
+          },
+          'bar' : {
+            'labels'   : days,
+            'datasets' : [
+              {
+                'data'            : props.data.values,
+                'backgroundColor' : 'rgba(0,0,0,.2)',
+              },
+            ]
+          }
+        };
+      }
+
+      /**
+       * on mounted
+       *
+       * @param {Object} props
+       */
+      onMounted(props) {
+        // check frontend
+        if (!this.eden.frontend) return;
+
+        // set size
+        if (jQuery(this.$('[ref="chart"]')).width()) this.size = {
+          'width'  : jQuery(this.$('[ref="chart"]')).width() + 'px',
+          'height' : (jQuery(this.$('[ref="chart"]')).width() / 4) + 'px'
+        };
+
+        // update
+        this.update();
+      }
+
+      /**
+       * on class
+       *
+       * @param  {Event} e
+       */
+      async onColor (e) {
+        // prevent default
+        e.preventDefault();
+        e.stopPropagation();
+
+        // set class
+        this.props.block.color = e.target.value.length ? e.target.value : null;
+
+        // run opts
+        if (this.props.onSave) await this.props.onSave(this.props.block, this.props.data);
+      }
+    }
+  </script>
+</block-stat>

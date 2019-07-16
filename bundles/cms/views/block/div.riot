@@ -1,0 +1,113 @@
+<block-div>
+  <block ref={ ref('block') } class="block-div-inner" is-container={ true } { ...props }>
+    <div slot="modal">
+      <div class="form-group">
+        <label>
+          Div Class
+        </label>
+        <input class="form-control" ref="div" value={ props.block.div || '' } onchange={ onDivClass } />
+      </div>
+    </div>
+
+    <div slot="body">
+      <span class="eden-dropzone-label" if={ !props.preview }>
+        Div #{ props.placement }
+      </span>
+      <eden-add type="top" onclick={ props.onAddBlock } way="unshift" placement={ `${props.placement}.children` } if={ !props.preview } />
+      
+      <div class={ `${props.block.div || ''} ${eden.get('user.acl.validate')('admin') && !props.preview ? 'eden-dropzone' : ''} ${ classes({ 'empty' : !getBlocks().length })}` } data-placement={ `${props.placement}.children` }>
+        <div if={ !getBlocks().length } class="py-5 text-center">
+          Add Elements
+        </div>
+        <div each={ (child, a) in getBlocks() } class={ child.class } is={ getElement(child) } { ...getProps(child, a, `${props.placement}.children.${a}`) } />
+      </div>
+      
+      <eden-add type="bottom" onclick={ props.onAddBlock } way="push" placement={ `${props.placement}.children` } if={ !props.preview } />
+      <span class="eden-dropzone-label eden-dropzone-label-end" if={ !props.preview }>
+        Div #{ props.placement } End
+      </span>
+    </div>
+  </block>
+  
+  <script>
+    // import base class
+    import Base from '../js/base';
+
+    // export block container class
+    export default class BlockContainer extends Base {
+
+      // on before mount
+      onBeforeMount() {
+        // run super
+        super.onBeforeMount(...arguments);
+
+        // blocks props
+        this.getProps = this.getProps.bind(this);
+        this.getBlocks = this.getBlocks.bind(this);
+        this.getElement = this.getElement.bind(this);
+        this.onDivClass = this.onDivClass.bind(this);
+      }
+
+      /**
+       * gets child props
+       *
+       * @return {Object}
+       */
+      getProps(child, i, placement) {
+        // return
+        return Object.assign({}, this.props, {
+          i,
+          placement,
+
+          data  : this.props.getData(child),
+          class : child.class || '',
+          block : child,
+
+
+          'data-block' : child.uuid,
+        })
+      }
+
+      /**
+       * get blocks
+       *
+       * @param  {Array} blocks
+       *
+       * @return {Array}
+       */
+      getBlocks () {
+        // return filtered blocks
+        return (this.props.block.children || []).filter((child) => child);
+      }
+      
+      /**
+       * get element
+       *
+       * @param  {Object} child
+       *
+       * @return {*}
+       */
+      getElement (child) {
+        // return get child
+        return (this.props.getData(child) || {}).tag ? 'block-' + (this.props.getData(child) || {}).tag : 'eden-loading';
+      }
+
+      /**
+       * on class
+       *
+       * @param  {Event} e
+       */
+      async onDivClass (e) {
+        // prevent default
+        e.preventDefault();
+        e.stopPropagation();
+
+        // set class
+        this.props.block.div = e.target.value.length ? e.target.value : null;
+
+        // run opts
+        if (this.props.onSave) await this.props.onSave(this.props.block, this.props.data, this.props.placement);
+      }
+    }
+  </script>
+</block-div>

@@ -1,0 +1,136 @@
+<block-slider>
+  <block ref={ ref('block') } class="block-slider" { ...props }>
+
+    <div slot="modal">
+      <div class="form-group">
+        <label>Category</label>
+        <input class="form-control" name="category" onchange={ onUpdateCategory } value={ props.block.category } />
+      </div>
+      <div class="form-group">
+        <label>Interval</label>
+        <input class="form-control" name="interval" onchange={ onUpdateInterval } value={ props.block.interval } />
+      </div>
+      <div class="form-group">
+        <label>Show Buttons</label>
+        <select class="form-control" onchange={ onUpdateShow } name="buttons">
+          <option value="true" selected={ get('block.show.buttons') }>Yes</option>
+          <option value="false" selected={ !get('block.show.buttons') }>No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Show Indicators</label>
+        <select class="form-control" onchange={ onUpdateShow } name="indicators">
+          <option value="true" selected={ get('block.show.indicators') }>Yes</option>
+          <option value="false" selected={ !get('block.show.indicators') }>No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Show Background</label>
+        <select class="form-control" onchange={ onUpdateShow } name="background">
+          <option value="true" selected={ get('block.show.background') }>Yes</option>
+          <option value="false" selected={ !get('block.show.background') }>No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Show Caption</label>
+        <select class="form-control" onchange={ onUpdateShow } name="caption">
+          <option value="true" selected={ get('block.show.caption') }>Yes</option>
+          <option value="false" selected={ !get('block.show.caption') }>No</option>
+        </select>
+      </div>
+    </div>
+
+    <div slot="body">
+      <div if={ !get('data.slides', []).length } class="py-5 text-center">
+        Select slider Category
+      </div>
+      <div id={ `slider-${props.data.uuid}` } class="carousel slide" ref="carousel">
+        <ol class="carousel-indicators" if={ get('block.show.indicators') }>
+          <li data-target={ `#slider-${props.data.uuid}` } each={ (indicator, i) in props.data.slides } data-slide-to={ i } class={ classes({ 'active' : i === 0 }) }></li>
+        </ol>
+        <div class="carousel-inner">
+          <div each={ (banner, i) in props.data.slides } class={ `${classes({ 'carousel-item' : true, 'active' : i === 0 })} ${banner.id} ${banner.class}` } style={ get('block.show.background') ? 'background-image:url(' + eden.get('media.url')(banner.image) + ');' : '' }>
+            <img src={ eden.get('media.url')(banner.image) } alt={ banner.title[eden.get('i18n.lang')()] } class="d-block w-100" if={ !get('block.show.background') }>
+            <div class="carousel-caption" if={ get('block.show.caption') }>
+              <h5 class="banner-title">{ banner.title[eden.get('i18n.lang')()] }</h5>
+              <div class="banner-content" if={ get(`banner.content.${eden.get('i18n.lang')()}`, '').length }>
+                <raw data={ { 'html' : banner.content[eden.get('i18n.lang')()] } } />
+              </div>
+            </div>
+          </div>
+        </div>
+        <a class="carousel-control-prev" href={ `#slider-${props.data.uuid}` } role="button" data-slide="prev" if={ get('block.show.buttons') }>
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href={ `#slider-${props.data.uuid}` } role="button" data-slide="next" if={ get('block.show.buttons') }>
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+    </div>
+
+  </block>
+
+  <script>
+    // import dependencies
+    import Base from '../js/base';
+
+    // export default
+    export default class BlockSlider extends Base {
+
+      // on mounted
+      onMounted(props) {
+        // check frontend
+        if (!this.eden.frontend) return;
+
+        // set interval
+        jQuery(this.refs.carousel).carousel({
+          'interval' : props.block.interval || 2000
+        });
+      }
+
+      /**
+       * on update category
+       *
+       * @param  {Event} e
+       */
+      async onUpdateCategory (e) {
+        // set name
+        this.props.block.category = e.target.value;
+
+        // do update
+        await this.props.onSave(this.props.block, this.props.data, this.props.placement);
+      }
+
+      /**
+       * on update category
+       *
+       * @param  {Event} e
+       */
+      async onUpdateInterval (e) {
+        // set name
+        this.props.block.interval = parseInt(e.target.value);
+
+        // do update
+        await this.props.onSave(this.props.block, this.props.data, this.props.placement);
+      }
+
+      /**
+       * on update category
+       *
+       * @param  {Event} e
+       */
+      async onUpdateShow (e) {
+        // set name
+        this.props.block.show = this.props.block.show || {};
+
+        // set show name
+        this.props.block.show[jQuery(e.target).attr('name')] = jQuery(e.target).val() === 'true';
+
+        // do update
+        await this.props.onSave(this.props.block, this.props.data, this.props.placement);
+      }
+    }
+  </script>
+</block-slider>

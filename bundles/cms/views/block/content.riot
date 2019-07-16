@@ -1,0 +1,68 @@
+<block-content>
+  <block ref={ ref('block') } class="block-content" { ...props }>
+    <div slot="body">
+      <div if={ props.preview }>
+        <div if={ !props.data.content } class="py-5 text-center">Add Content</div>
+        <raw data={ { 'html' : getContent() } } />
+      </div>
+      <div if={ !props.preview }>
+        <editor content={ props.data.content } on-update={ onUpdateContent } air-mode={ true } />
+      </div>
+    </div>
+
+    <div slot="modal">
+      <div class="form-group">
+        <label>
+          Content
+        </label>
+        <editor content={ props.data.content } on-update={ onUpdateContent } />
+      </div>
+    </div>
+  </block>
+
+  <script>
+    // import base
+    import Base from '../js/base';
+
+    // export default
+    export default class BlockContent extends Base {
+
+      /**
+       * on before mount
+       */
+      onBeforeMount() {
+        // run super
+        super.onBeforeMount(...arguments);
+
+        // bind methods
+        this.getContent = this.getContent.bind(this);
+        this.onUpdateContent = this.onUpdateContent.bind(this);
+      }
+
+      /**
+       * on update name
+       *
+       * @param  {Event} e
+       */
+      async onUpdateContent (content) {
+        // set name
+        this.props.data.content = content;
+
+        // do update
+        await this.props.onSave(this.props.block, this.props.data, this.props.placement, true);
+      }
+
+      /**
+       * get content
+       *
+       * @return {*}
+       */
+      getContent () {
+        // @todo allow bad dom throw
+
+        // return content
+        return this.props.data.content;
+      }
+    }
+  </script>
+</block-content>
