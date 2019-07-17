@@ -1,6 +1,6 @@
 <cms-placement>
-  <div class="cms-placement placement-{ props.placement.split('.').join('-') }">
-    <div class="cms-placement-blocks" data-placement={ props.placement } data-is="eden-blocks" ref={ ref('blocks') } blocks={ getBlocks() } placement={ getPlacement() } on-save={ onSave } position={ props.placement } preview={ typeof props.preview !== 'undefined' ? props.preview && !eden.get('user.acl.validate')('admin') : !eden.get('user.acl.validate')('admin') } />
+  <div class={ `cms-placement placement-${props.placement.split('.').join('-')}` }>
+    <div class="cms-placement-blocks" is="eden-blocks" data-placement={ props.placement } ref={ ref('blocks') } blocks={ getBlocks() } placement={ getPlacement() } on-save={ onSave } position={ props.placement } preview={ typeof props.preview !== 'undefined' ? props.preview && !eden.get('user.acl.validate')('admin') : !eden.get('user.acl.validate')('admin') } />
   </div>
 
   <script>
