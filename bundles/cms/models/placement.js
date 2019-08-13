@@ -2,9 +2,6 @@
 // import dependencies
 const Model = require('model');
 
-// import helpers
-const BlockHelper = helper('cms/block');
-
 /**
  * create user class
  */
@@ -21,6 +18,9 @@ class Placement extends Model {
       type   : this.get('type'),
       name   : this.get('name'),
       render : req ? (await Promise.all((this.get('elements') || []).map(async (block) => {
+        // import helpers
+        const BlockHelper = helper('cms/block');
+
         // get from register
         const registered = BlockHelper.blocks().find(b => b.type === block.type) || BlockHelper.blocks().find(b => b.type === 'frontend.content');
 

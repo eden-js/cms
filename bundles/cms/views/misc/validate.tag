@@ -191,6 +191,7 @@
     onChange (e) {
       // set value
       this.value = jQuery(e.target).val();
+      this.valueChanged = true;
       
       // set value
       this.value = ['checkbox'].includes(opts.type) ? (jQuery(e.target).is(':checked') ? jQuery(e.target).val() : null) : e.target.value;
@@ -260,6 +261,23 @@
       // set change
       this.onChange(faux);
     }
+
+    /**
+     * on mount
+     */
+    this.on('update', () => {
+      // check parent
+      if (!this.eden.frontend) return;
+
+      // check changed
+      if (this.value !== (opts.value || opts.dataValue) && !this.valueChanged) {
+        this.value = opts.value || opts.dataValue;
+      }
+
+      // check validated
+      if (opts.validated) this.validated = true;
+      
+    });
 
     /**
      * on mount

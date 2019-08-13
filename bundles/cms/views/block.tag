@@ -100,7 +100,7 @@
       this.showing = true;
       
       // set editing
-      opts.onEditing(opts.block);
+      if (opts.onEditing) opts.onEditing(opts.block);
 
       // update view
       this.update();
@@ -214,7 +214,7 @@
         opts.block.editing = false;
 
         // set false
-        opts.onEditing(false);
+        if (opts.onEditing) opts.onEditing(false);
       }
     });
 

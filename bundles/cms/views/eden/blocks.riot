@@ -95,7 +95,7 @@
         }
 
         // set containers
-        this.dragula.containers = jQuery('.eden-dropzone', this.refs.placement).toArray();
+        if (this.dragula) this.dragula.containers = jQuery('.eden-dropzone', this.refs.placement).toArray();
       }
 
       /**
