@@ -60,7 +60,7 @@
 
         // set variables
         this.type = props.type;
-        this.page = this.eden.get('model.get')('page', props.item.id, props.item);
+        this.page = this.eden.get('model.add')('page', props.item.id, props.item);
       
         // set to placements
         if (this.page.id) this.eden.set('placements.' + this.page.id, this.page.get('placement'));

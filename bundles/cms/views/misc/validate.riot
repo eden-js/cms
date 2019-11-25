@@ -55,7 +55,7 @@
       <slot name="prepend" />
       <select autocomplete={ props.autocomplete } id={ props.name } name={ props.name } onchange={ (e) => onChange(e) } class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } multiple={ props.multiple } required={ props.required } placeholder={ props.placeholder || props.label }>
         <option value="" if={ props.label }>Select { props.label }</option>
-        <option each={ (option, i) in props.options } value={ option.value } selected={ this.value.includes(option.value) }>{ option.label }</option>
+        <option each={ (option, i) in props.options } value={ option.value } selected={ value.includes(option.value) }>{ option.label }</option>
       </select>
       <div if={ props.append } data-is={ props.append } class="input-group-append" />
       <slot name="append" />
@@ -218,7 +218,7 @@
         this.value = jQuery(e.target).val();
         
         // set value
-        this.value = ['checkbox'].includes(props.type) ? (jQuery(e.target).is(':checked') ? jQuery(e.target).val() : null) : e.target.value;
+        this.value = ['checkbox'].includes(this.props.type) ? (jQuery(e.target).is(':checked') ? jQuery(e.target).val() : null) : e.target.value;
 
         // set validated
         this.validated = true;
@@ -242,7 +242,7 @@
         this.value = jQuery(e.target).val();
 
         // proxy change function
-        if (this.props.onKeyup) props.onKeyup(e);
+        if (this.props.onKeyup) this.props.onKeyup(e);
 
         // trigger update
         if (['msie', 'trident/'].find(key => (navigator.userAgent || '').toLowerCase().includes(key))) {
@@ -250,7 +250,7 @@
           this.onChange(e);
         } else {
           // trigger update
-          this.trigger('update');
+          this.update();
         }
       }
 

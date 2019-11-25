@@ -95,6 +95,9 @@ $eden-admin-aside-hover-color: $white!default;
       }
 
       &:hover {
+        .eden-add {
+          opacity : 1;
+        }
 
         &:before {
           @include border-radius($card-border-radius);
@@ -193,7 +196,7 @@ $eden-admin-aside-hover-color: $white!default;
     z-index  : 92;
     position : absolute;
 
-    background    : theme-color(secondary);
+    background    : theme-color(primary);
     border-radius : 50%;
 
     &:hover {

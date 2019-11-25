@@ -51,8 +51,14 @@
        * on mounted
        */
       onMounted() {
+        // on mounted
+        super.onMounted(...arguments);
+
         // set inner html
         this.$('[ref="editor"]').innerHTML = this.props.content;
+
+        // check frontend
+        if (!this.eden.frontend) return;
 
         // init summernote
         this._summernote();

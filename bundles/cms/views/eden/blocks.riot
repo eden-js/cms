@@ -9,7 +9,7 @@
       <div each={ (el, i) in getBlocks() } editing={ editing } is={ getIs(el) } preview={ preview } el={ el } class={ el.class } data-block={ el.uuid } data={ getData(el) } block={ el } get-data={ getData } on-editing={ onEditing } on-add-block={ onAddBlock } on-save={ onSaveBlock } on-remove={ onRemoveBlock } on-refresh={ onRefreshBlock } { ...attributes } placement={ i } i={ i } />
       <eden-add type="bottom" onclick={ (e) => onAddBlock(e) } way="push" if={ !preview } />
 
-      <button class="btn btn-sm btn-secondary eden-dropzone-preview" if={ eden.get('user.acl.validate')('admin') } onclick={ (e) => onPreview(e) }>
+      <button class="btn btn-sm btn-secondary eden-dropzone-preview" if={ user.acl.validate('admin') } onclick={ (e) => onPreview(e) }>
         <i class="fa fa-eye" />
       </button>
     </div>
@@ -22,6 +22,8 @@
     import qs from 'querystring';
     import Base from '../js/base';
     import uuid from 'uuid';
+    import User from '../js/user';
+    import Model from '../js/model';
     import dotProp from 'dot-prop';
 
     // export default class
@@ -43,6 +45,10 @@
         // on before mount
         super.onBeforeMount(...arguments);
 
+        // mixin model
+        User(this);
+        Model(this);
+
         // set filter blocks
         this.filter = {
           fix     : this.filterFix.bind(this),
@@ -57,14 +63,15 @@
         this.onSetBlock = this.onSetBlock.bind(this);
         this.onAddBlock = this.onAddBlock.bind(this);
         this.onSaveBlock = this.onSaveBlock.bind(this);
+        this.onRemoveBlock = this.onRemoveBlock.bind(this);
 
         // set update
         this.render    = (props.placement || {}).render || [];
         this.editing   = null;
-        this.preview   = !!(!this.eden.get('user.acl.validate')('admin') || props.preview);
+        this.preview   = !!(!this.user.acl.validate('admin') || props.preview);
         this.updating  = false;
         this.position  = props.position;
-        this.placement = props.placement ? (props.model ? this.parent.placement : this.eden.get('model.get')('placement', props.placement.id, props.placement)) : this.eden.get('model.get')('placement', null, {
+        this.placement = props.placement ? (props.model ? this.parent.placement : this.model('placement', props.placement)) : this.model('placement', {
           'position' : props.position
         });
 
@@ -106,7 +113,7 @@
         if (!this.eden.frontend) return;
 
         // init dragula
-        if (!this.dragula && this.eden.get('user.acl.validate')('admin')) this.initDragula();
+        if (!this.dragula && this.user.acl.validate('admin')) this.initDragula();
 
         // set default placements
         if (this.props.placements && !(this.placement.get('placements') || []).length && !this.placement.get('id')) {
@@ -544,7 +551,7 @@
         }
 
         // check matched type
-        if (!!(!this.eden.get('user.acl.validate')('admin') || this.props.preview) !== this.preview) {
+        if (!!(!this.user.acl.validate('admin') || this.props.preview) !== this.preview) {
           // type does not match
           return true;
         }
@@ -575,7 +582,7 @@
         }
 
         // check if empty placement
-        if (!(this.placement.get('render') || []).length && !(this.eden.get('positions') || {})[this.placement.get('id')]) {
+        if (!(this.placement.get('render') || []).length && !this.eden.get(`positions.${this.placement.get('id')}`)) {
           // field lengths do not match
           return true;
         }
