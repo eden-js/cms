@@ -43,7 +43,7 @@
           }
 
           // set value
-          jQuery(this.$('[ref="editor"]')).val(this.value);
+          $(this.$('[ref="editor"]')).val(this.value);
         });
       }
       
@@ -72,7 +72,7 @@
         if (!this.eden.frontend) return;
 
         // destroy summernote
-        jQuery(this.$('[ref="editor"]')).summernote('destroy');
+        $(this.$('[ref="editor"]')).summernote('destroy');
       }
 
       /**
@@ -123,22 +123,22 @@
               type = 'file';
 
               // insert html
-              let fileHTML = jQuery('<a target="_BLANK" href="#uploading" data-id="' + value.temp + '">' + value.name + '</a>');
+              let fileHTML = $('<a target="_BLANK" href="#uploading" data-id="' + value.temp + '">' + value.name + '</a>');
 
               // insert image
-              let insert = jQuery(this.$('[ref="editor"]')).summernote('insertNode', fileHTML[0]);
+              let insert = $(this.$('[ref="editor"]')).summernote('insertNode', fileHTML[0]);
             } else {
               // create figure
-              let imageHTML   = jQuery('<img src="' + value.src + '" data-id="' + value.temp + '" class="img-resize img-fluid img-grayscale" />');
-              let figureHTML  = jQuery('<figure class="embed figure-image" style="display:table" />');
-              let captionHTML = jQuery('<figcaption class="img-caption" />');
+              let imageHTML   = $('<img src="' + value.src + '" data-id="' + value.temp + '" class="img-resize img-fluid img-grayscale" />');
+              let figureHTML  = $('<figure class="embed figure-image" style="display:table" />');
+              let captionHTML = $('<figcaption class="img-caption" />');
 
               // append/prepend elements
               imageHTML.prependTo(figureHTML);
               captionHTML.appendTo(figureHTML);
 
               // insert image
-              let insert = jQuery(this.$('[ref="editor"]')).summernote('insertNode', figureHTML[0]);
+              let insert = $(this.$('[ref="editor"]')).summernote('insertNode', figureHTML[0]);
             }
 
             // do upload
@@ -195,10 +195,10 @@
             this.refs.upload.value = '';
 
             // remove overlay
-            jQuery('.note-link-popover').hide();
+            $('.note-link-popover').hide();
 
             // load image
-            let place = jQuery('[data-id="' + value.temp + '"]', this.root);
+            let place = $('[data-id="' + value.temp + '"]', this.root);
 
             // check if error
             if (data.error) {
@@ -220,14 +220,14 @@
                 place.removeClass('img-grayscale');
 
                 // remove i
-                let i = jQuery('i', place);
+                let i = $('i', place);
 
                 // check i
                 if (i && i.length) i.remove();
               }
 
               // get value
-              const val = jQuery(this.$('.note-codable')).is(':visible') ? jQuery(this.$('.note-codable')).val() : jQuery(this.$('[ref="editor"]')).summernote('code');
+              const val = $(this.$('.note-codable')).is(':visible') ? $(this.$('.note-codable')).val() : $(this.$('[ref="editor"]')).summernote('code');
 
               // do update
               this.emit('change', val);
@@ -265,7 +265,7 @@
         };
 
         // insert image
-        let insert = jQuery(this.$('[ref="editor"]')).summernote('insertNode', jQuery('<a href="#uploading" target="_blank" data-id="' + id + '">' + e.target.files[0].name + ' <i>Uploading...</i></a>')[0]);
+        let insert = $(this.$('[ref="editor"]')).summernote('insertNode', $('<a href="#uploading" target="_blank" data-id="' + id + '">' + e.target.files[0].name + ' <i>Uploading...</i></a>')[0]);
 
         // do upload
         this._ajaxUpload(value, 'file');
@@ -291,7 +291,7 @@
       */
       val () {
         // return value
-        return jQuery(this.$('[ref="editor"]')).summernote('code');
+        return $(this.$('[ref="editor"]')).summernote('code');
       }
 
       /**
@@ -358,14 +358,14 @@
         ];
 
         // run summernote
-        this.summernote = jQuery(this.$('[ref="editor"]')).summernote({
+        this.summernote = $(this.$('[ref="editor"]')).summernote({
           'focus'    : false,
           'icons'    : icons,
           'toolbar'  : toolbar,
           'airMode'  : !!this.props.airMode,
           'onChange' : () => {
             // get value
-            const val = jQuery(this.$('.note-codable')).is(':visible') ? jQuery(this.$('.note-codable')).val() : jQuery(this.$('[ref="editor"]')).summernote('code');
+            const val = $(this.$('.note-codable')).is(':visible') ? $(this.$('.note-codable')).val() : $(this.$('[ref="editor"]')).summernote('code');
 
             // trigger change
             this.emit('change', val);
@@ -373,7 +373,7 @@
           'callbacks' : {
             'onBlur' : () => {
               // get value
-              const val = jQuery(this.$('.note-codable')).is(':visible') ? jQuery(this.$('.note-codable')).val() : jQuery(this.$('[ref="editor"]')).summernote('code');
+              const val = $(this.$('.note-codable')).is(':visible') ? $(this.$('.note-codable')).val() : $(this.$('[ref="editor"]')).summernote('code');
 
               // trigger change
               this.emit('change', val);
@@ -388,16 +388,16 @@
         });
 
         // trigger change on keyup
-        jQuery(this.$('.note-codable')).on('keyup', () => {
+        $(this.$('.note-codable')).on('keyup', () => {
           // get value
-          const val = jQuery(this.$('.note-codable')).is(':visible') ? jQuery(this.$('.note-codable')).val() : jQuery(this.$('[ref="editor"]')).summernote('code');
+          const val = $(this.$('.note-codable')).is(':visible') ? $(this.$('.note-codable')).val() : $(this.$('[ref="editor"]')).summernote('code');
 
           // trigger change on keyup
           this.emit('change', val);
         });
 
         // remove toolbar
-        jQuery('body > .note-popover').hide();
+        $('body > .note-popover').hide();
       }
     }
   </script>

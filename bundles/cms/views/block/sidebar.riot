@@ -2,17 +2,19 @@
   <div class={ classes({ 'eden-blocks-sidebar' : true, 'eden-blocks-sidebar-show' : get('showing') }) }>
     <div class="card">
       <div class="card-header">
-        <h5>
-          Select Block
-        </h5>
-        
-        <ul class="nav nav-tabs card-header-tabs">
-          <li class="nav-item" each={ (t, i) in getTabs() }>
-            <button class={ classes({ 'nav-link' : true, 'active' : isTab(t) }) } onclick={ (e) => onTab(t, e) }>
-              { eden.get('i18n.t')(`cms.category.${t}`) }
-            </button>
-          </li>
-        </ul>
+        <div class="w-100">
+          <h5>
+            Select Block
+          </h5>
+          
+          <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item" each={ (t, i) in getTabs() }>
+              <button class={ classes({ 'nav-link' : true, 'active' : isTab(t) }) } onclick={ (e) => onTab(t, e) }>
+                { eden.get('i18n.t')(`cms.category.${t}`) }
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
       
       <div class="card-body">
@@ -58,6 +60,10 @@
         // bind methods
         this.hide = this.hide.bind(this);
         this.show = this.show.bind(this);
+
+        // bind on methods
+        this.onBlock = this.onBlock.bind(this);
+        this.onAddBlock = this.onAddBlock.bind(this);
 
         // set showing
         this.tab = 'default';

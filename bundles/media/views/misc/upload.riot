@@ -4,7 +4,7 @@
     <div class="d-inline" each={ (file, i) in value }>
       <input type="hidden" if={ file.id } name={ props.name + (multi ? '[' + i + ']' : '') } value={ file.id } class="file-input">
       <div class="btn-group mr-2 mb-2">
-        <a class="btn btn-secondary text-overflow" href={ eden.get('media.url')(file) } target="_blank">
+        <a class="btn btn-secondary text-overflow" href={ media.url(file) } target="_blank">
           { file.name }
         </a>
         <button onclick={ (e) => onRemove(e, file, i) } class="btn btn-danger">
@@ -43,7 +43,7 @@
           <div class="progress-bar bg-success" role="progressbar" style={ `width : ${file.uploaded}%;` } aria-valuenow={ file.uploaded } aria-valuemin="0" aria-valuemax="100"></div>
         </div>
         
-        <a href={ eden.get('media.url')(file) } class="name" target="_blank">{ file.name }</a>
+        <a href={ media.url(file) } class="name" target="_blank">{ file.name }</a>
       </div>
     </div>
     <div class={ `${props.col || 'col-6 col-md-4 col-xl-3'} mb-2` } if={ multi || !value.length }>
@@ -64,6 +64,7 @@
   <script>
     // import dependencies
     import Base from '../js/base';
+    import media from 'asset/public/js/bootstrap';
 
     // export default
     export default class Upload extends Base {
@@ -78,6 +79,7 @@
         // set value
         // this.name    = props.name || 'image';
         this.multi   = props.multi;
+        this.media   = media;
         this.value   = props.image ? (Array.isArray(props.image) ? props.image : [props.image]) : [];
         this.change  = false;
         this.removed = [];
@@ -114,7 +116,7 @@
         if (!file.id) return file.src;
 
         // return file
-        return this.eden.get('media.url')(file);
+        return media.url(file);
       }
 
       /**
@@ -127,7 +129,7 @@
         if (file.thumb) return file.thumb;
 
         // return file
-        return this.eden.get('media.url')(file, '3x-sq');
+        return media.url(file, '3x-sq');
       }
 
       /**
@@ -349,7 +351,7 @@
             'cache' : false,
             'error' : () => {
               // do error
-              this.eden.get('alert.alert')('error', 'Error uploading image');
+              this.eden.get('alert.error')('Error uploading image');
     
               // remove from array
               this._remove(value);
@@ -367,7 +369,7 @@
                 reject(data.message);
                 
                 // do message
-                return this.eden.get('alert.alert')('error', data.message);
+                return this.eden.get('alert.error')(data.message);
               }
     
               // check if image

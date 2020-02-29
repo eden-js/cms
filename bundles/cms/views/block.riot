@@ -1,7 +1,7 @@
 <block>
-  <div class={ classes({ 'eden-block' : true, 'eden-block-admin' : eden.get('user.acl.validate')('admin') && !props.preview }) } data-block={ props.block.uuid } id={ `block-${props.block.uuid}` }>
+  <div class={ classes({ 'eden-block' : true, 'eden-block-admin' : !props.preview }) } data-block={ props.block.uuid } id={ `block-${props.block.uuid}` }>
 
-    <div class={ `eden-block-hover${props.isContainer ? ' eden-block-hover-dropzone' : ''}` } if={ eden.get('user.acl.validate')('admin') && !props.preview }>
+    <div class={ `eden-block-hover${props.isContainer ? ' eden-block-hover-dropzone' : ''}` } if={ !props.preview }>
       <div class="row row-eq-height">
         <div class="col-8 d-flex align-items-center">
           <div class="w-100">
@@ -30,7 +30,7 @@
     <slot name="body" />
   </div>
 
-  <div class={ classes({ 'd-none' : !(showing && eden.get('user.acl.validate')('admin') && !props.preview) }) }>
+  <div class={ classes({ 'd-none' : !(showing && !props.preview) }) }>
     <div class="eden-blocks-backdrop" onclick={ (e) => ohHideSidebar(e) } />
     
     <div class={ classes({ 'eden-blocks-sidebar' : true, 'eden-blocks-sidebar-show' : get('sidebar.update') }) }>
@@ -83,6 +83,7 @@
   <script>
     // import base
     import Base from './js/base';
+    import User from './js/user';
 
     // export block
     export default class Block extends Base {
@@ -95,6 +96,9 @@
       onBeforeMount(props) {
         // run super
         super.onBeforeMount(...arguments);
+
+        // user mixin
+        User(this);
       }
 
       /**

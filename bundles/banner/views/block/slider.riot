@@ -49,12 +49,12 @@
           <li data-target={ `#slider-${props.data.uuid}` } each={ (indicator, i) in props.data.slides } data-slide-to={ i } class={ classes({ 'active' : i === 0 }) }></li>
         </ol>
         <div class="carousel-inner">
-          <div each={ (banner, i) in props.data.slides } class={ `${classes({ 'carousel-item' : true, 'active' : i === 0 })} ${banner.id} ${banner.class}` } style={ get('block.show.background') ? 'background-image:url(' + eden.get('media.url')(banner.image) + ');' : '' }>
-            <img src={ eden.get('media.url')(banner.image) } alt={ banner.title[eden.get('i18n.lang')()] } class="d-block w-100" if={ !get('block.show.background') }>
+          <div each={ (banner, i) in props.data.slides } class={ `${classes({ 'carousel-item' : true, 'active' : i === 0 })} ${banner.id} ${banner.class}` } style={ get('block.show.background') ? 'background-image:url(' + get('media.url')(banner.image) + ');' : '' }>
+            <img src={ get('media.url')(banner.image) } alt={ banner.title[get('i18n.lang')()] } class="d-block w-100" if={ !get('block.show.background') }>
             <div class="carousel-caption" if={ get('block.show.caption') }>
-              <h5 class="banner-title">{ banner.title[eden.get('i18n.lang')()] }</h5>
-              <div class="banner-content" if={ get(`banner.content.${eden.get('i18n.lang')()}`, '').length }>
-                <raw data={ { 'html' : banner.content[eden.get('i18n.lang')()] } } />
+              <h5 class="banner-title">{ banner.title[get('i18n.lang')()] }</h5>
+              <div class="banner-content" if={ get(`banner.content.${get('i18n.lang')()}`, '').length }>
+                <raw data={ { 'html' : banner.content[get('i18n.lang')()] } } />
               </div>
             </div>
           </div>
