@@ -5,73 +5,73 @@
     </label>
 
     <div class="input-group" if={ normalInputs.includes(props.type) }>
-      <div if={ props.prepend } data-is={ props.prepend } class="input-group-prepend" />
+      <div if={ props.prepend } is={ props.prepend } class="input-group-prepend" />
       <slot name="prepend" />
-      <input autocomplete={ props.autocomplete } id={ props.name } name={ props.name } onchange={ (e) => onChange(e) } onkeyup={ (e) => onKeyup(e) } type={ props.type } class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } required={ props.required } placeholder={ props.placeholder || props.label } value={ this.value } />
-      <div if={ props.append } data-is={ props.append } class="input-group-append" />
+      <input autocomplete={ props.autocomplete } value={ value } id={ props.name } name={ props.name } onchange={ (e) => onChange(e) } onkeyup={ (e) => onKeyup(e) } type={ props.type } class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } required={ props.required } placeholder={ props.placeholder || props.label } />
+      <div if={ props.append } is={ props.append } class="input-group-append" />
       <slot name="append" />
     </div>
     
     <div class="input-group" if={ textareaInputs.includes(props.type) }>
-      <div if={ props.prepend } data-is={ props.prepend } class="input-group-prepend" />
+      <div if={ props.prepend } is={ props.prepend } class="input-group-prepend" />
       <slot name="prepend" />
-      <textarea autocomplete={ props.autocomplete } id={ props.name } name={ props.name } onchange={ (e) => onChange(e) } onkeyup={ (e) => onKeyup(e) } class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } required={ props.required } placeholder={ props.placeholder || props.label }>{ this.value }</textarea>
-      <div if={ props.append } data-is={ props.append } class="input-group-append" />
+      <textarea autocomplete={ props.autocomplete } id={ props.name } name={ props.name } onchange={ (e) => onChange(e) } onkeyup={ (e) => onKeyup(e) } class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } required={ props.required } placeholder={ props.placeholder || props.label }>{ value }</textarea>
+      <div if={ props.append } is={ props.append } class="input-group-append" />
       <slot name="append" />
     </div>
 
     <div if={ dateInputs.includes(props.type) } class="row">
-      <input class="hidden" type="hidden" name={ props.name } value={ this.value } ref="date" />
+      <input class="hidden" type="hidden" name={ props.name } value={ value } ref="date" />
       <div class="col-md-4">
         <select ref="day" class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } onchange={ (e) => onDate(e) }>
-          <option each={ (day, i) in this.days } value={ day } selected={ this.value ? getDate().getDate() === day : null }>{ day }</option>
+          <option each={ (day, i) in days } value={ day } selected={ value ? getDate().getDate() === day : null }>{ day }</option>
         </select>
       </div>
       <div class="col-md-4">
         <select ref="month" class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } onchange={ (e) => onDate(e) }>
-          <option each={ (month, i) in this.months } value={ month } selected={ this.value ? getDate().getMonth() === i : null }>{ month }</option>
+          <option each={ (month, i) in months } value={ month } selected={ value ? getDate().getMonth() === i : null }>{ month }</option>
         </select>
       </div>
       <div class="col-md-4">
         <select ref="year" class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } onchange={ (e) => onDate(e) }>
-          <option each={ (year, i) in this.years } value={ year } selected={ this.value ? getDate().getFullYear() === year : null }>{ year }</option>
+          <option each={ (year, i) in years } value={ year } selected={ thivalue ? getDate().getFullYear() === year : null }>{ year }</option>
         </select>
       </div>
     </div>
 
     <div class="input-group" if={ booleanInputs.includes(props.type) }>
-      <div if={ props.prepend } data-is={ props.prepend } class="input-group-prepend" />
+      <div if={ props.prepend } is={ props.prepend } class="input-group-prepend" />
       <slot name="prepend" />
       <select autocomplete={ props.autocomplete } id={ props.name } name={ props.name } onchange={ (e) => onChange(e) } class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } required={ props.required } placeholder={ props.placeholder || props.label }>
-        <option value="true" selected={ this.value || this.value === 'true' }>Yes</option>
-        <option value="false" selected={ !this.value || this.value === 'false' }>No</option>
+        <option value="true" selected={ value || value === 'true' }>Yes</option>
+        <option value="false" selected={ !value || value === 'false' }>No</option>
       </select>
-      <div if={ props.append } data-is={ props.append } class="input-group-append" />
+      <div if={ props.append } is={ props.append } class="input-group-append" />
       <slot name="append" />
     </div>
 
     <div class="input-group" if={ selectInputs.includes(props.type) }>
-      <div if={ props.prepend } data-is={ props.prepend } class="input-group-prepend" />
+      <div if={ props.prepend } is={ props.prepend } class="input-group-prepend" />
       <slot name="prepend" />
       <select autocomplete={ props.autocomplete } id={ props.name } name={ props.name } onchange={ (e) => onChange(e) } class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } multiple={ props.multiple } required={ props.required } placeholder={ props.placeholder || props.label }>
         <option value="" if={ props.label }>Select { props.label }</option>
         <option each={ (option, i) in props.options } value={ option.value } selected={ value.includes(option.value) }>{ option.label }</option>
       </select>
-      <div if={ props.append } data-is={ props.append } class="input-group-append" />
+      <div if={ props.append } is={ props.append } class="input-group-append" />
       <slot name="append" />
     </div>
 
     <div if={ checkboxInputs.includes(props.type) } class={ `custom-control custom-checkbox ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` }>
-      <input type="checkbox" class={ `${props.inputClass || 'custom-control-input'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } name={ props.name } value={ props.dataValue || 'true' } id={ this.uuid } checked={ props.checked } onchange={ (e) => onChange(e) } />
-      <label class="custom-control-label" for={ this.uuid }>{ props.label }</label>
+      <input type="checkbox" class={ `${props.inputClass || 'custom-control-input'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } name={ props.name } value={ props.dataValue || 'true' } id={ uuid } checked={ props.checked } onchange={ (e) => onChange(e) } />
+      <label class="custom-control-label" for={ uuid }>{ props.label }</label>
 
       <div if={ isValid() === false } class={ `invalid-${props.errorType || 'tooltip'}` }>
-        { this.message }
+        { message }
       </div>
     </div>
 
     <div if={ !checkboxInputs.includes(props.type) && isValid() === false } class={ `invalid-${props.errorType || 'tooltip'}` }>
-      { this.message }
+      { message }
     </div>
 
     <slot />
@@ -127,6 +127,23 @@
       }
 
       /**
+       * on mounted
+       */
+      onMounted(...args) {
+        // run super
+        super.onMounted(...args);
+
+        // check frontend
+        if (!this.eden.frontend) return;
+
+        // set value
+        if (this.normalInputs.includes(this.props.type)) {
+          // set value
+          setTimeout(() => $(this.$('input')).val(this.value), 1);
+        }
+      }
+
+      /**
        * value
        *
        * @return {*}
@@ -136,7 +153,7 @@
         if (!value) return this.value;
 
         // set value
-        jQuery($('input, select')[0]).val(value);
+        $(this.$('input, textarea, select')[0]).val(value);
       }
 
       /**
