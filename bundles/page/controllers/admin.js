@@ -101,7 +101,12 @@ class PageAdminController extends Controller {
     opts.socket.join(`page.${id}`);
 
     // add to room
-    return await modelHelper.listen(opts.sessionID, await Page.findById(id), uuid);
+    return await modelHelper.addListener(await Page.findById(id), {
+      user      : opts.user,
+      atomic    : true,
+      listenID  : uuid,
+      sessionID : opts.sessionID,
+    });
   }
 
   /**
@@ -114,8 +119,16 @@ class PageAdminController extends Controller {
    * @return {Async}
    */
   async liveDeafenAction(id, uuid, opts) {
+    // join room
+    opts.socket.leave(`page.${id}`);
+
     // add to room
-    return await modelHelper.deafen(opts.sessionID, await Page.findById(id), uuid);
+    return await modelHelper.removeListener(await Page.findById(id), {
+      user      : opts.user,
+      atomic    : true,
+      listenID  : uuid,
+      sessionID : opts.sessionID,
+    });
   }
 
   /**

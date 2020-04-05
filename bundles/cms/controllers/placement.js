@@ -47,7 +47,12 @@ class PlacementController extends Controller {
     opts.socket.join(`placement.${id}`);
 
     // add to room
-    return await modelHelper.listen(opts.sessionID, await Placement.findById(id), uuid);
+    return await modelHelper.addListener(await Placement.findById(id), {
+      user      : opts.user,
+      atomic    : true,
+      listenID  : uuid,
+      sessionID : opts.sessionID,
+    });
   }
 
   /**
@@ -63,8 +68,16 @@ class PlacementController extends Controller {
     // / return if no id
     if (!id) return null;
 
+    // join room
+    opts.socket.leave(`placement.${id}`);
+
     // add to room
-    return await modelHelper.deafen(opts.sessionID, await Placement.findById(id), uuid);
+    return await modelHelper.removeListener(await Placement.findById(id), {
+      user      : opts.user,
+      atomic    : true,
+      listenID  : uuid,
+      sessionID : opts.sessionID,
+    });
   }
 
   /**
