@@ -9,7 +9,7 @@ const Block     = model('block');
 const Placement = model('placement');
 
 // require helpers
-const modelHelper = helper('model');
+const syncHelper  = helper('sync');
 const blockHelper = helper('cms/block');
 
 /**
@@ -47,7 +47,7 @@ class PlacementController extends Controller {
     opts.socket.join(`placement.${id}`);
 
     // add to room
-    return await modelHelper.addListener(await Placement.findById(id), {
+    return await syncHelper.addListener(await Placement.findById(id), {
       user      : opts.user,
       atomic    : true,
       listenID  : uuid,
@@ -72,7 +72,7 @@ class PlacementController extends Controller {
     opts.socket.leave(`placement.${id}`);
 
     // add to room
-    return await modelHelper.removeListener(await Placement.findById(id), {
+    return await syncHelper.removeListener(await Placement.findById(id), {
       user      : opts.user,
       atomic    : true,
       listenID  : uuid,

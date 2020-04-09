@@ -9,8 +9,8 @@ const Block     = model('block');
 const Placement = model('placement');
 
 // bind helpers
+const syncHelper  = helper('sync');
 const blockHelper = helper('cms/block');
-const modelHelper = helper('model');
 
 /**
  * build user PageAdminController controller
@@ -101,7 +101,7 @@ class PageAdminController extends Controller {
     opts.socket.join(`page.${id}`);
 
     // add to room
-    return await modelHelper.addListener(await Page.findById(id), {
+    return await syncHelper.addListener(await Page.findById(id), {
       user      : opts.user,
       atomic    : true,
       listenID  : uuid,
@@ -123,7 +123,7 @@ class PageAdminController extends Controller {
     opts.socket.leave(`page.${id}`);
 
     // add to room
-    return await modelHelper.removeListener(await Page.findById(id), {
+    return await syncHelper.removeListener(await Page.findById(id), {
       user      : opts.user,
       atomic    : true,
       listenID  : uuid,
