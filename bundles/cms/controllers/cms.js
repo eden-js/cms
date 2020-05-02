@@ -27,7 +27,7 @@ class CMSController extends Controller {
     this.build = this.build.bind(this);
 
     // bind private methods
-    this._middleware = this._middleware.bind(this);
+    this.middlewareAction = this.middlewareAction.bind(this);
 
     // run build method
     this.build();
@@ -38,17 +38,17 @@ class CMSController extends Controller {
    */
   build() {
     // on render
-    this.eden.router.use(this._middleware);
+    this.eden.router.use(this.middlewareAction);
 
     // on render
-    this.eden.pre('view.compile', async (render) => {
+    this.eden.pre('view.compile', async ({ res, render }) => {
       // set Block
       render.placements = {};
 
       // move menus
-      if (render.state.placements) {
+      if (res.placements) {
         // await promise
-        await Promise.all(render.state.placements.map(async (position) => {
+        await Promise.all(res.placements.map(async (position) => {
         // get Block
           const placement = await Placement.findOne({
             position,
@@ -64,9 +64,6 @@ class CMSController extends Controller {
         // render blocks
         render.blocks = BlockHelper.renderBlocks('frontend');
       }
-
-      // delete extra stuff
-      delete render.state.placements;
     });
   }
 
@@ -127,25 +124,24 @@ class CMSController extends Controller {
    * @param  {Response}  res
    * @param  {Function}  next
    */
-  _middleware(req, res, next) {
+  middlewareAction(req, res, next) {
     // set Block
-    res.locals.placements = [];
+    res.placements = [];
 
     // create Block method
     const middlePlacement = (placement) => {
       // check locals
-      if (!Array.isArray(res.locals.placements)) res.locals.placements = [];
+      if (!Array.isArray(res.placements)) res.placements = [];
 
       // push placement to Block
-      if (res.locals.placements.includes(placement)) return;
+      if (res.placements.includes(placement)) return;
 
       // add to Block
-      res.locals.placements.push(placement);
+      res.placements.push(placement);
     };
 
     // set to req/res
-    res.placement = middlePlacement;
-    req.placement = middlePlacement;
+    res.placement = req.placement = middlePlacement;
 
     // run next
     return next();

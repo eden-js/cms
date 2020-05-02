@@ -1,13 +1,13 @@
 <validate>
   <div class={ `${props.groupClass || 'form-group'} form-group-${props.type} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` }>
-    <label if={ !checkboxInputs.includes(props.type) } for={ props.name } class={ props.labelClass }>
+    <label if={ !checkboxInputs.includes(props.type) } for={ slug(props.name, { lower : true }) } class={ props.labelClass }>
       { props.label }
     </label>
 
     <div class="input-group" if={ normalInputs.includes(props.type) }>
       <div if={ props.prepend } is={ props.prepend } class="input-group-prepend" />
       <slot name="prepend" />
-      <input autocomplete={ props.autocomplete } value={ value } id={ props.name } name={ props.name } onchange={ (e) => onChange(e) } onkeyup={ (e) => onKeyup(e) } type={ props.type } class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } required={ props.required } placeholder={ props.placeholder || props.label } />
+      <input autocomplete={ props.autocomplete } value={ value } id={ slug(props.name, { lower : true }) } name={ props.name } onchange={ (e) => onChange(e) } onkeyup={ (e) => onKeyup(e) } type={ props.type } class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } required={ props.required } placeholder={ props.placeholder || props.label } />
       <div if={ props.append } is={ props.append } class="input-group-append" />
       <slot name="append" />
     </div>
@@ -15,7 +15,7 @@
     <div class="input-group" if={ textareaInputs.includes(props.type) }>
       <div if={ props.prepend } is={ props.prepend } class="input-group-prepend" />
       <slot name="prepend" />
-      <textarea autocomplete={ props.autocomplete } id={ props.name } name={ props.name } onchange={ (e) => onChange(e) } onkeyup={ (e) => onKeyup(e) } class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } required={ props.required } placeholder={ props.placeholder || props.label }>{ value }</textarea>
+      <textarea autocomplete={ props.autocomplete } id={ slug(props.name, { lower : true }) } name={ props.name } onchange={ (e) => onChange(e) } onkeyup={ (e) => onKeyup(e) } class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } required={ props.required } placeholder={ props.placeholder || props.label }>{ value }</textarea>
       <div if={ props.append } is={ props.append } class="input-group-append" />
       <slot name="append" />
     </div>
@@ -42,7 +42,7 @@
     <div class="input-group" if={ booleanInputs.includes(props.type) }>
       <div if={ props.prepend } is={ props.prepend } class="input-group-prepend" />
       <slot name="prepend" />
-      <select autocomplete={ props.autocomplete } id={ props.name } name={ props.name } onchange={ (e) => onChange(e) } class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } required={ props.required } placeholder={ props.placeholder || props.label }>
+      <select autocomplete={ props.autocomplete } id={ slug(props.name, { lower : true }) } name={ props.name } onchange={ (e) => onChange(e) } class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } required={ props.required } placeholder={ props.placeholder || props.label }>
         <option value="true" selected={ value || value === 'true' }>Yes</option>
         <option value="false" selected={ !value || value === 'false' }>No</option>
       </select>
@@ -53,7 +53,7 @@
     <div class="input-group" if={ selectInputs.includes(props.type) }>
       <div if={ props.prepend } is={ props.prepend } class="input-group-prepend" />
       <slot name="prepend" />
-      <select autocomplete={ props.autocomplete } id={ props.name } name={ props.name } onchange={ (e) => onChange(e) } class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } multiple={ props.multiple } required={ props.required } placeholder={ props.placeholder || props.label }>
+      <select autocomplete={ props.autocomplete } id={ slug(props.name, { lower : true }) } name={ props.name } onchange={ (e) => onChange(e) } class={ `${props.inputClass || 'form-control'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } multiple={ props.multiple } required={ props.required } placeholder={ props.placeholder || props.label }>
         <option value="" if={ props.label }>Select { props.label }</option>
         <option each={ (option, i) in props.options } value={ option.value } selected={ value.includes(option.value) }>{ option.label }</option>
       </select>
@@ -81,6 +81,7 @@
     // import base class
     import Base from '../js/base';
     import uuid from 'uuid';
+    import slug from 'slug';
 
     // export default class
     export default class Validate extends Base {
@@ -104,6 +105,7 @@
 
         // set value
         this.uuid      = uuid();
+        this.slug      = slug;
         this.value     = props.value || props.dataValue || '';
         this.message   = '';
         this.validated = props.validated || this.value || false;
