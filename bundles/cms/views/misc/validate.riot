@@ -61,8 +61,8 @@
       <slot name="append" />
     </div>
 
-    <div if={ checkboxInputs.includes(props.type) } class={ `custom-control custom-checkbox ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` }>
-      <input type="checkbox" class={ `${props.inputClass || 'custom-control-input'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } name={ props.name } value={ props.dataValue || 'true' } id={ uuid } checked={ props.checked } onchange={ (e) => onChange(e) } />
+    <div if={ checkboxInputs.includes(props.type) } class={ `custom-control custom-${props.type} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` }>
+      <input type={ props.type } class={ `${props.inputClass || 'custom-control-input'} ${classes({ 'is-invalid' : isValid() === false, 'is-valid' : isValid() === true })}` } name={ props.name } value={ props.dataValue || 'true' } id={ uuid } checked={ props.checked } onchange={ (e) => onChange(e) } />
       <label class="custom-control-label" for={ uuid }>{ props.label }</label>
 
       <div if={ isValid() === false } class={ `invalid-${props.errorType || 'tooltip'}` }>
@@ -100,7 +100,7 @@
         this.normalInputs = ['tel', 'text', 'email', 'number', 'password'];
         this.selectInputs = ['select'];
         this.booleanInputs = ['boolean'];
-        this.checkboxInputs = ['checkbox'];
+        this.checkboxInputs = ['checkbox', 'radio'];
         this.textareaInputs = ['textarea'];
 
         // set value
