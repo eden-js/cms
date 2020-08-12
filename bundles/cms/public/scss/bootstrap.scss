@@ -118,6 +118,10 @@ $eden-admin-aside-hover-color: $white!default;
         > .eden-dropzone-label {
           opacity : 1;
         }
+        .field-body {
+          z-index  : 1;
+          position : relative;
+        }
       }
 
       .eden-block {
