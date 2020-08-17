@@ -39,7 +39,7 @@ $eden-admin-aside-hover-color: $white!default;
 
     &:hover {
       opacity : 1;
-      z-index : 93;
+      // z-index : 93;
     }
   }
 
@@ -73,7 +73,7 @@ $eden-admin-aside-hover-color: $white!default;
         color      : $white;
         bottom     : calc(100% + #{($spacer / 2)});
         opacity    : 0;
-        z-index    : 91;
+        // z-index    : 91;
         position   : absolute;
         background : rgba(theme-color(info), 0.5);
 
@@ -119,7 +119,6 @@ $eden-admin-aside-hover-color: $white!default;
           opacity : 1;
         }
         .field-body {
-          z-index  : 1;
           position : relative;
         }
       }
@@ -135,7 +134,7 @@ $eden-admin-aside-hover-color: $white!default;
           right    : ($spacer / 2);
           bottom   : 100%;
           opacity  : 0;
-          z-index  : 92;
+          // z-index  : 92;
           position : absolute;
 
           border-bottom-left-radius  : 0;
@@ -147,7 +146,7 @@ $eden-admin-aside-hover-color: $white!default;
           }
 
           &:hover {
-            z-index : 93;
+            // z-index : 93;
           }
         }
 
@@ -167,7 +166,7 @@ $eden-admin-aside-hover-color: $white!default;
           > eden-add > .eden-add,
           > div > eden-add > .eden-add {
             opacity : 1;
-            z-index : 94;
+            // z-index : 94;
           }
           > .eden-block-hover {
             opacity : 1;
