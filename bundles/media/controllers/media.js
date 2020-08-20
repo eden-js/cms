@@ -6,6 +6,9 @@
 
 
 // require dependencies
+const fs         = require('fs');
+const uuid       = require('uuid/v4');
+const fetch      = require('node-fetch');
 const controller = require('controller');
 
 // require models
@@ -44,6 +47,7 @@ class mediaController extends controller {
    * @param res
    *
    * @acl      true
+   * @fail     next
    * @route    {post} /file
    * @upload   {single} file
    * @priority 2
@@ -80,7 +84,11 @@ class mediaController extends controller {
     const sanitised = await upload.sanitise();
 
     // set variables
-    sanitised.user = await req.user.sanitise();
+    if (req.user) {
+      sanitised.user = await req.user.sanitise();
+    }
+
+    // set temp
     sanitised.temp = upload.get('temp');
 
     // return json
@@ -99,7 +107,60 @@ class mediaController extends controller {
    * @param req
    * @param res
    *
+   * @route    {post}   /url
+   * @upload   {single} file
+   * @priority 2
+   */
+  async urlAction(req, res, next) {
+    // check if upload
+    if (!req.body.url) {
+      return res.json({
+        error   : true,
+        message : req.t('file empty'),
+      });
+    }
+
+    // id
+    const id = uuid();
+
+    // download image temporarily
+    const ws = fs.createWriteStream(`/tmp/${id}`);
+
+    // fetch data
+    const resp = await fetch(req.body.url);
+
+    // check if upload
+    if (!resp.ok) {
+      return res.json({
+        error   : true,
+        message : req.t('file empty'),
+      });
+    }
+
+    // pipe
+    resp.body.pipe(ws);
+
+    // await
+    await new Promise(resolve => resp.body.on('end', resolve));
+
+    // create faux file
+    req.file = {
+      path         : `/tmp/${id}`,
+      originalname : req.body.url.split('/').pop(),
+    };
+
+    // return this
+    return this[`${req.body.type || 'file'}Action`](req, res, next);
+  }
+
+  /**
+   * index action
+   *
+   * @param req
+   * @param res
+   *
    * @acl      true
+   * @fail     next
    * @route    {post}   /image
    * @upload   {single} file
    * @priority 2
@@ -188,7 +249,11 @@ class mediaController extends controller {
     const sanitised = await image.sanitise();
 
     // set variables
-    sanitised.user = await req.user.sanitise();
+    if (req.user) {
+      sanitised.user = await req.user.sanitise();
+    }
+
+    // set temp
     sanitised.temp = image.get('temp');
 
     // return json
