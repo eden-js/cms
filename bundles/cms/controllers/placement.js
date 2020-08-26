@@ -150,16 +150,18 @@ class PlacementController extends Controller {
 
     // check current
     if (!current) {
-      // return json
-      return res.json({
-        state   : 'fail',
-        result  : {},
-        message : 'Block not found',
+      // push block
+      blocks.push(req.body.block);
+    } else {
+      // set keys
+      Object.keys(req.body.block).forEach((key) => {
+        // set value
+        current[key] = req.body.block[key];
       });
     }
 
     // update
-    const registered = blockHelper.blocks().find(w => w.type === current.type) || blockHelper.blocks().find(w => w.type === 'frontend.content');
+    const registered = blockHelper.blocks().find(w => w.type === current.type);
 
     // await save
     if (registered) await registered.save(req, req.body.block);
@@ -169,6 +171,10 @@ class PlacementController extends Controller {
 
     // set uuid
     rendered.uuid = req.body.block.uuid;
+
+    // set elements
+    placement.set('elements', blocks);
+    await placement.save();
 
     // emit
     socket.room(`placement.${placement.get('_id').toString()}`, `placement.${placement.get('_id').toString()}.block`, rendered);
@@ -189,16 +195,34 @@ class PlacementController extends Controller {
    * @priority 12
    */
   async removeBlockAction(req, res) {
+    // set website variable
+    let placement = new Placement({
+      position : req.body.position,
+    });
+
+    // run try/catch
+    try {
+      // check for website model
+      if (req.params.id && req.params.id !== 'undefined' && req.params.id !== 'null') {
+        // load by id
+        placement = await Placement.findById(req.params.id);
+      }
+    } catch (e) { }
+
+    // get block
+    const blocks = placement.get('elements') || [];
+
+    // set elements
+    placement.set('elements', blocks.filter(block => block.uuid !== req.body.block.uuid));
+    await placement.save();
+
     // get notes block from db
     const blockModel = await Block.findOne({
       uuid : req.body.block.uuid,
-    }) || new Block({
-      uuid : req.body.block.uuid,
-      type : req.body.block.type,
     });
 
     // remove block
-    if (blockModel.get('_id')) await blockModel.remove(req.user);
+    if (blockModel) await blockModel.remove(req.user);
 
     // return JSON
     res.json({
@@ -240,9 +264,9 @@ class PlacementController extends Controller {
     }
 
     // update placement
-    placement.set('name', req.body.name);
-    placement.set('elements', req.body.elements);
-    placement.set('position', req.body.position);
+    placement.set('name',      req.body.name);
+    placement.set('elements',  req.body.elements);
+    placement.set('position',  req.body.position);
     placement.set('positions', req.body.positions);
 
     // save placement
