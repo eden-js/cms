@@ -24,9 +24,8 @@ $eden-admin-aside-hover-color: $white!default;
 
 // alter dashboard options
 .eden-blocks {
-  @include transition(all 0.5s ease);
-
-  position : relative;
+  position   : relative;
+  transition : all 0.2s ease;
 
   .eden-dropzone-preview {
     right    : 0;
@@ -67,27 +66,24 @@ $eden-admin-aside-hover-color: $white!default;
       }
 
       .eden-dropzone-label {
-        @include border-radius();
-
         left       : 0;
         color      : $white;
         bottom     : calc(100% + #{($spacer / 2)});
         opacity    : 0;
-        // z-index    : 91;
         position   : absolute;
         background : rgba(theme-color(info), 0.5);
 
         padding-left  : ($spacer / 2);
         padding-right : ($spacer / 2);
+        border-radius : $border-radius;
 
         border-bottom-left-radius  : 0;
         border-bottom-right-radius : 0;
 
         &.eden-dropzone-label-end {
-          @include border-radius();
-
-          top    : calc(100% + #{($spacer / 2)});
-          bottom : auto;
+          top           : calc(100% + #{($spacer / 2)});
+          bottom        : auto;
+          border-radius : $border-radius;
 
           border-top-left-radius  : 0;
           border-top-right-radius : 0;
@@ -100,16 +96,15 @@ $eden-admin-aside-hover-color: $white!default;
         }
 
         &:before {
-          @include border-radius($card-border-radius);
-
-          top        : -($spacer / 2);
-          left       : -($spacer / 2);
-          right      : -($spacer / 2);
-          bottom     : -($spacer / 2);
-          border     : $border-width solid rgba(theme-color(info), 0.5);
-          content    : '';
-          position   : absolute;
-          background : rgba(theme-color(info), 0.1);
+          top           : -($spacer / 2);
+          left          : -($spacer / 2);
+          right         : -($spacer / 2);
+          bottom        : -($spacer / 2);
+          border        : $border-width solid rgba(theme-color(info), 0.5);
+          content       : '';
+          position      : absolute;
+          background    : rgba(theme-color(info), 0.1);
+          border-radius : $card-border-radius;
         }
 
         > .eden-block-hover {
@@ -128,14 +123,12 @@ $eden-admin-aside-hover-color: $white!default;
 
         // alter hover
         > .eden-block-hover {
-          @include transition(all 0.5s ease);
-          @include border-radius($card-border-radius);
-
-          right    : ($spacer / 2);
-          bottom   : 100%;
-          opacity  : 0;
-          // z-index  : 92;
-          position : absolute;
+          right         : ($spacer / 2);
+          bottom        : 100%;
+          opacity       : 0;
+          position      : absolute;
+          transition    : all 0.2s ease;
+          border-radius : $card-border-radius;
 
           border-bottom-left-radius  : 0;
           border-bottom-right-radius : 0;
@@ -181,8 +174,6 @@ $eden-admin-aside-hover-color: $white!default;
   }
 
   .eden-add {
-    @include transition(all 0.5s ease);
-
     top    : 0;
     left   : 0;
     right  : 0;
@@ -198,8 +189,9 @@ $eden-admin-aside-hover-color: $white!default;
     opacity  : 0;
     z-index  : 92;
     position : absolute;
-
+    
     background    : theme-color(primary);
+    transition    : all 0.2s ease;
     border-radius : 50%;
 
     &:hover {
@@ -246,14 +238,13 @@ $eden-admin-aside-hover-color: $white!default;
 
 
 .eden-blocks-sidebar {
-  @include transition(all 0.5s ease);
-
-  top      : 0;
-  left     : 100%;
-  width    : ($spacer * 30);
-  z-index  : 1032;
-  opacity  : 0;
-  position : fixed;
+  top        : 0;
+  left       : 100%;
+  width      : ($spacer * 30);
+  z-index    : 1032;
+  opacity    : 0;
+  position   : fixed;
+  transition : all 0.2s ease;
 
   &.eden-blocks-sidebar-show {
     // move into view
