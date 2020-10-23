@@ -78,7 +78,9 @@ class mediaController extends controller {
     upload.set('user', req.user);
 
     // save image
-    await upload.save(req.user);
+    await upload.save({
+      user : req.user,
+    });
 
     // return image
     const sanitised = await upload.sanitise();
@@ -243,7 +245,9 @@ class mediaController extends controller {
     image.set('user', req.user);
 
     // save image
-    await image.save(req.user);
+    await image.save({
+      user : req.user,
+    });
 
     // return image
     const sanitised = await image.sanitise();

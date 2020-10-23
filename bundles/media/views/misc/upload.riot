@@ -49,7 +49,7 @@
     </div>
     <div class={ `${props.col || 'col-6 col-md-4 col-xl-3'} mb-2` } if={ multi || !value.length }>
       <label class="card card-outline-success card-upload" for={ props.name }>
-        <input type="file" ref="file" id={ props.name } name={ props.name } class="file-input" multiple={ multi } onchange={ (e) => onUpload(e) }>
+        <input type="file" ref="file" id={ props.name } class="file-input" multiple={ multi } onchange={ (e) => onUpload(e) }>
         <div class="d-flex align-items-center">
           <div>
             <i class="fa fa-plus" />

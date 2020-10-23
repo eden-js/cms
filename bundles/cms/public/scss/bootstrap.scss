@@ -145,14 +145,15 @@ $eden-admin-aside-hover-color: $white!default;
 
         &:hover {
           &:before {
-            top        : -($spacer / 2);
-            left       : -($spacer / 2);
-            right      : -($spacer / 2);
-            bottom     : -($spacer / 2);
-            border     : $border-width solid rgba(theme-color(info), 0.5);
-            content    : '';
-            position   : absolute;
-            background : rgba(theme-color(info), 0.2);
+            top           : -($spacer / 4);
+            left          : -($spacer / 4);
+            right         : -($spacer / 4);
+            bottom        : -($spacer / 4);
+            border        : $border-width solid rgba(theme-color(info), 0.5);
+            content       : '';
+            position      : absolute;
+            background    : rgba(theme-color(info), 0.2);
+            border-radius : $card-border-radius;
           }
 
           // on hover
