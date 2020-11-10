@@ -388,7 +388,7 @@
         // await done
         this.loading(value.temp).then((done) => {
           // changed
-          if (this.props.onChange) this.props.onChange(done);
+          if (this.props.onChange) this.props.onChange(this.value);
 
           // done
           this.loading(value.temp, false);
