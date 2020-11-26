@@ -7,7 +7,7 @@
 
 // require dependencies
 const fs         = require('fs');
-const uuid       = require('uuid/v4');
+const uuid       = require('uuid').v4;
 const fetch      = require('node-fetch');
 const controller = require('controller');
 
