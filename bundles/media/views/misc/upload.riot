@@ -66,6 +66,7 @@
     // import dependencies
     import Base from '../js/base';
     import media from 'asset/public/js/bootstrap';
+    import { v4 as uuid } from 'uuid';
 
     // export default
     export default class Upload extends Base {
@@ -198,9 +199,6 @@
           // alert
           return eden.alert.alert('error', 'Please set files');
         }
-        
-        // require uuid
-        const uuid = require('uuid');
 
         // loop files
         for (var i = 0; i < e.target.files.length; i++) {
@@ -306,9 +304,6 @@
        * @private
        */
       _ajaxUpload (value) {
-        // require uuid
-        const uuid = require('uuid');
-        
         // let change
         this.change = uuid();
 

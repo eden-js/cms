@@ -8,6 +8,7 @@
   <script>
     // import base
     import Base from '../js/base';
+    import { v4 as uuid } from 'uuid';
 
     // export default
     export default class Editor extends Base {
@@ -94,9 +95,6 @@
 
           // onload
           fr.onload = () => {
-            // require uuid
-            const uuid = require('uuid');
-
             // let uuid
             let id   = uuid();
             let type = 'image';
@@ -158,9 +156,6 @@
       * @private
       */
       _ajaxUpload (value, type) {
-        // require uuid
-        const uuid = require('uuid');
-
         // let change
         this.change = uuid();
 
@@ -247,9 +242,6 @@
       onFile (e) {
         // check files
         if (!e.target.files.length) return;
-
-        // require uuid
-        const uuid = require('uuid');
 
         // let uuid
         let id = uuid();
