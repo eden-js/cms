@@ -17,12 +17,8 @@
       <div class="progress-bar bg-success" role="progressbar" style={ `width:${file.uploaded}%` } aria-valuenow={ file.uploaded } aria-valuemin="0" aria-valuemax="100"></div>
     </div>
 
-    <div class="form-file" if={ !value.length || multi }>
-      <input type="file" class="form-file-input" id={ props.name } onchange={ (e) => onUpload(e) } multiple={ multi }>
-      <label class="form-file-label" for={ props.name }>
-        <span class="form-file-text">Choose file...</span>
-        <span class="form-file-button">Browse</span>
-      </label>
+    <div if={ !value.length || multi }>
+      <input type="file" class="form-control" id={ props.name } onchange={ (e) => onUpload(e) } multiple={ multi }>
     </div>
   </div>
   <div class="row row-eq-height upload upload-images" if={ props.showType === 'box' || props.showType === 'boxed' || !props.showType }>
